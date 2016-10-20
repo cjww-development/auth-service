@@ -1,0 +1,23 @@
+@(title: String)(mainContent: Html)(implicit request : Request[_])
+
+@import views.html.templates._
+
+@devPhase = {
+    @com.typesafe.config.ConfigFactory.load.getString("cjww.dev-phase")
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        @Head()
+    </head>
+
+    <body>
+        @NavBar()
+        @DevelopmentBanner()
+        @mainContent
+    </body>
+
+    @Footer()
+</html>

@@ -1,0 +1,156 @@
+@import "public/stylesheets/bootstrap.min";
+
+$screen-sm-min: 768px;
+
+body {
+  background-color: #124AA0;
+  padding-top: 50px;
+}
+
+.cjww-jumbo {
+  @extend .jumbotron;
+  background-color: #124AA0;
+  a {
+    color: #FFFFFF;
+  }
+
+  h1 {
+    color: #FFFFFF;
+  }
+
+  p {
+    color: #FFFFFF;
+  }
+
+  .btn {
+    color: #FFFFFF;
+  }
+}
+
+.cjww-jumbo:nth-of-type(even) {
+  background-color: #FFFFFF;
+  a {
+    color: #000000;
+  }
+
+  h1 {
+    color: #000000;
+  }
+
+  p {
+    color: #000000;
+  }
+
+  .btn {
+    color: #FFFFFF;
+  }
+}
+
+.dev-banner {
+  background-color: #FFFFFF;
+
+  font-size: 17px;
+
+  a {
+    text-decoration: underline;
+  }
+
+  .phase-tag {
+    border: solid;
+    border-radius: 10px;
+    padding: 5px;
+    color: #ffffff;
+  }
+
+  .alpha {
+    @extend .phase-tag;
+    background-color: #3a7aaa;
+    border: #0A5A95;
+  }
+
+  .beta {
+    @extend .phase-tag;
+    background-color: #f3a244;
+    border: #F08B16;
+  }
+
+  .open-beta {
+    @extend .phase-tag;
+    background-color: #ae3a3c;
+    border: #9A090C;
+  }
+
+  .rc {
+    @extend .phase-tag;
+    background-color: #78a73b;
+    border: #57920B;
+  }
+}
+
+.top-block {
+  @extend .cjww-jumbo;
+  margin-top: 51px;
+}
+
+.top-block-single {
+  @extend .jumbotron;
+  margin-top: 51px;
+  background-color: #FFFFFF;
+}
+
+.cjww-footer {
+  @extend .jumbotron;
+  background-color: #124AA0;
+
+  a {
+    color: #FFFFFF;
+  }
+
+  h1 {
+    color: #FFFFFF;
+  }
+
+  p {
+    color: #FFFFFF;
+  }
+
+  .btn {
+    color: #FFFFFF;
+  }
+}
+
+.responsive-container {
+  position: relative;
+  width: 100%;
+}
+
+.dummy {
+  padding-top: 75%; /* forces 1:1 aspect ratio */
+}
+
+.img-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  text-align:center; /* Align center inline elements */
+  font: 0/0 a;
+}
+
+.img-container:before {
+  content: ' ';
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+
+.img-container img {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.input-group-addon {
+  min-width:150px;
+}
