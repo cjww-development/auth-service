@@ -22,7 +22,6 @@ cjww.auth.register.email.error.invalid=This is not a valid email address
 cjww.auth.register.email.error.inuse=This email is already registered
 
 cjww.auth.register.password.error.notfound=You have not entered your first name
-cjww.auth.register.password.error.invalid=The first name you have entered is too long
 
 cjww.auth.password.error.nomatch=The passwords you have entered do not match
 cjww.auth.password.error.notfound=You have not entered a password

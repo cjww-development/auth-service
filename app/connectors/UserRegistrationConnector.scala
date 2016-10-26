@@ -17,8 +17,17 @@
 
 package connectors
 
+import java.io.File
+
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import com.typesafe.config.ConfigFactory
+import config.WSConfiguration
 import models.UserRegister
-import play.api.Logger
+import org.asynchttpclient.AsyncHttpClientConfig
+import play.api.libs.ws.WSConfigParser
+import play.api.libs.ws.ahc.{AhcConfigBuilder, AhcWSClient, AhcWSClientConfig}
+import play.api.{Configuration, Environment, Logger, Mode}
 import utils.httpverbs.HttpPost
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -30,8 +39,8 @@ case class UserRegisterClientErrorResponse(status : Int) extends UserRegisterRes
 case class UserRegisterServerErrorResponse(status : Int) extends UserRegisterResponse
 case class UserRegisterErrorResponse(status : Int) extends UserRegisterResponse
 
-object UserRegistrationConnector extends UserRegistrationConnector {
-  val http = HttpPost
+object UserRegistrationConnector extends UserRegistrationConnector with WSConfiguration {
+  val http = new HttpPost(getWSClient)
 }
 
 trait UserRegistrationConnector {

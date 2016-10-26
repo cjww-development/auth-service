@@ -17,23 +17,24 @@
 
 package utils.httpverbs
 
+import javax.inject.Inject
+
 import play.api.Logger
 import config.FrontendConfiguration
 import play.api.libs.json.Format
-import play.api.libs.ws.{WS, WSResponse}
-import play.api.Play.current
+import play.api.libs.ws.{WSClient, WSResponse}
 import security.JsonSecurity
 
 import scala.concurrent.Future
 
-object HttpPost extends HttpPost
-
-trait HttpPost extends JsonSecurity with FrontendConfiguration {
+class HttpPost @Inject()(http : WSClient) extends JsonSecurity with FrontendConfiguration {
 
   private def post[T](url : String, data : T)(implicit format : Format[T]): Future[WSResponse] = {
     Logger.debug(s"[HttpPost] [post] Url call : $apiCall$url")
     val body = encryptModel[T](data).get
-    WS.url(s"$apiCall$url").withHeaders("appID" -> APPLICATION_ID).withBody(body).post(body)
+    val response = http.url(s"$apiCall$url").withHeaders("appID" -> APPLICATION_ID).withBody(body).post(body)
+    http.close()
+    response
   }
 
   def postUser[T](url : String, data : T)(implicit format : Format[T]) : Future[WSResponse] = {

@@ -17,12 +17,9 @@
 package utils.validation
 
 import models.UserRegister
-import play.api.Play.current
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 
 object RegisterValidation {
 
@@ -32,8 +29,8 @@ object RegisterValidation {
       text =>
         val error = text match {
           case validfirstname() => Nil
-          case "" => Seq(ValidationError(Messages("cjww.auth.register.firstname.error.notfound")))
-          case _ => if (text.length > 30) Seq(ValidationError(Messages("cjww.auth.register.firstname.error.invalid"))) else Nil
+          case "" => Seq(ValidationError("You have not entered your first name"))
+          case _ => if (text.length > 30) Seq(ValidationError("The first name you have entered is too long")) else Nil
         }
         if(error.isEmpty) Valid else Invalid(error)
     })
@@ -46,8 +43,8 @@ object RegisterValidation {
       text =>
         val error = text match {
           case validLastName() => Nil
-          case "" => Seq(ValidationError(Messages("cjww.auth.register.lastname.error.notfound")))
-          case _ => if (text.length > 30) Seq(ValidationError(Messages("cjww.auth.register.lastname.error.invalid"))) else Nil
+          case "" => Seq(ValidationError("You have not entered your last name"))
+          case _ => if (text.length > 30) Seq(ValidationError("The last name you have entered is too long")) else Nil
         }
         if(error.isEmpty) Valid else Invalid(error)
     })
@@ -62,9 +59,8 @@ object RegisterValidation {
         val inUse = false
         val error = (text, inUse) match {
           case (validUserName(), false) => Nil
-          case ("", _) => Seq(ValidationError(Messages("cjww.auth.register.username.error.notfound")))
-          case (_, true) => Seq(ValidationError(Messages("cjww.auth.register.username.error.inuse")))
-          case (_, _) => if (text.length > 20) Seq(ValidationError(Messages("cjww.auth.register.username.error.invalid"))) else Nil
+          case ("", _) => Seq(ValidationError("You have not entered your user name"))
+          case (_, _) => if (text.length > 20) Seq(ValidationError("The user name you have entered is too long")) else Nil
         }
         if (error.isEmpty) Valid else Invalid(error)
 
@@ -80,9 +76,8 @@ object RegisterValidation {
         val inUse = false
         val error = (text, inUse) match {
           case (validEmail(), false) => Nil
-          case ("", _) => Seq(ValidationError(Messages("cjww.auth.register.email.error.notfound")))
-          case (_, true) => Seq(ValidationError(Messages("cjww.auth.register.email.error.inuse")))
-          case (_,_) => if(text.length > 254) Seq(ValidationError(Messages("cjww.auth.email.username.error.invalid"))) else Nil
+          case ("", _) => Seq(ValidationError("Please enter a valid email address"))
+          case (_,_) => if(text.length > 254) Seq(ValidationError("This is not a valid email address")) else Nil
         }
         if(error.isEmpty) Valid else Invalid(error)
     })
@@ -93,7 +88,7 @@ object RegisterValidation {
     val passwordCheckConstraint: Constraint[String] = Constraint("constraints.password")({
       text =>
         val error = text match {
-          case "" => Seq(ValidationError(Messages("cjww.auth.password.error.notfound")))
+          case "" => Seq(ValidationError("You have not entered a password"))
           case _ => Nil
         }
         if(error.isEmpty) Valid else Invalid(error)
@@ -105,7 +100,7 @@ object RegisterValidation {
     val confirmPasswordCheckConstraint: Constraint[String] = Constraint("constraints.confirmPassword")({
       text =>
         val error = text match {
-          case "" => Seq(ValidationError(Messages("cjww.auth.confirmpassword.error.notfound")))
+          case "" => Seq(ValidationError("You have not confirmed your password"))
           case _ => Nil
         }
         if(error.isEmpty) Valid else Invalid(error)
@@ -134,11 +129,11 @@ object RegisterValidation {
         if(urForm.password == urForm.confirmPassword) {
           Valid
         } else if(urForm.password.isEmpty) {
-          Invalid(Seq(ValidationError(Messages("cjww.auth.password.error.notfound"))))
+          Invalid(Seq(ValidationError("You have not entered a password")))
         } else if(urForm.confirmPassword.isEmpty) {
-          Invalid(Seq(ValidationError(Messages("cjww.auth.confirmpassword.error.notfound"))))
+          Invalid(Seq(ValidationError("You have not confirmed your password")))
         } else {
-          Invalid(Seq(ValidationError(Messages("cjww.auth.password.error.nomatch"))))
+          Invalid(Seq(ValidationError("The passwords you have entered do not match")))
         }
     })
   }
