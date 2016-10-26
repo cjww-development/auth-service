@@ -1,0 +1,51 @@
+@(register: Form[models.UserRegister])(implicit request: Request[_])
+
+@import views.html.helpers._
+@import controllers.register.{routes => registerRoutes}
+
+@main_template(title = "CJWW Account - Register"){
+    <div class="top-block-single">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <div class="responsive-container">
+                        <div class="dummy"></div>
+
+                        <div class="img-container">
+                            <img src="@routes.Assets.versioned("images/logo.png")" width="100%" alt="">
+                        </div>
+                    </div>
+
+                    @errorPanel(register)
+                </div>
+
+                <div class="col-md-8 col-sm-8 col-xs-12" id="welcome">
+                    <div class="page-header">
+                        <h1 class="pageTitle">No account?<small> Register here!</small></h1>
+                    </div>
+
+                    <form action="@registerRoutes.UserRegisterController.submit()" method="post">
+                        @textInput(register("firstName"), "firstName", "First name", "First name", "text")
+
+                        @textInput(register("lastName"), "lastName", "Last name", "Last name", "text")
+
+                        @textInput(register("userName"), "userName", "User name", "User name", "text")
+
+                        @textInput(register("email"), "email", "Email", "Email", "text")
+
+                        @textInput(register("password"), "password", "Password", "Password", "password")
+
+                        @textInput(register("confirmPassword"), "confirmPassword", "Confirm", "Confirm password", "password")
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
+                                    Register </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,26 @@
+@(devPhase : String = com.typesafe.config.ConfigFactory.load.getString("cjww.dev-phase"))
+
+@determineWording = {
+    @if(devPhase == "alpha" || devPhase == "open beta") {
+        This is an <a href="#">@devPhase</a> service
+    } else {
+        @if(devPhase == "rc") {
+            This is a <a href="#">release candidate</a> service
+        } else {
+            This is a <a href="#">@devPhase</a> service
+        }
+    }
+}
+
+@if(!devPhase.isEmpty) {
+    <div class="dev-banner @devPhase.replace(" ","-")-border">
+        <div class="alert" role="alert">
+            <div class="container">
+                <div class="row">
+                    <span class="@devPhase.replace(" ", "-")"><strong>@devPhase.toUpperCase()</strong></span> @determineWording - your <a href="#">feedback</a> is appreciated
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

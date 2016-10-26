@@ -1,0 +1,30 @@
+#Error messages
+cjww.auth.error.generic=There was problem and we are working to resolve it. Please try again later!
+
+#Login utilities.validation
+cjww.auth.login.username.error.notfound=You have not entered your username
+cjww.auth.login.password.error.notfound=You have not entered your password
+cjww.auth.login.error.invalid=Your username or password wasn't correct
+
+#Register utilities.validation
+cjww.auth.register.firstname.error.notfound=You have not entered your first name
+cjww.auth.register.firstname.error.invalid=The first name you have entered is too long
+
+cjww.auth.register.lastname.error.notfound=You have not entered your last name
+cjww.auth.register.lastname.error.invalid=The last name you have entered is too long
+
+cjww.auth.register.username.error.notfound=You have not entered your user name
+cjww.auth.register.username.error.invalid=The user name you have entered is too long
+cjww.auth.register.username.error.inuse=This user name has been taken
+
+cjww.auth.register.email.error.notfound=Please enter a valid email address
+cjww.auth.register.email.error.invalid=This is not a valid email address
+cjww.auth.register.email.error.inuse=This email is already registered
+
+cjww.auth.register.password.error.notfound=You have not entered your first name
+cjww.auth.register.password.error.invalid=The first name you have entered is too long
+
+cjww.auth.password.error.nomatch=The passwords you have entered do not match
+cjww.auth.password.error.notfound=You have not entered a password
+cjww.auth.confirmpassword.error.notfound=You have not confirmed your password
+
