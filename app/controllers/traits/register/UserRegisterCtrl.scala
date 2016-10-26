@@ -19,7 +19,6 @@ package controllers.traits.register
 import connectors._
 import models.UserRegister
 import forms.UserRegisterForm._
-import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
@@ -34,6 +33,8 @@ trait UserRegisterCtrl extends FrontendController {
 
   val userRegister : UserRegistrationConnector
 
+  val errorMessage : String
+
   def show : Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(Ok(UserRegisterView(RegisterUserForm.fill(UserRegister.empty))))
@@ -46,9 +47,9 @@ trait UserRegisterCtrl extends FrontendController {
         newUser =>
           userRegister.createNewIndividualUser(newUser.encryptPasswords) map {
             case UserRegisterSuccessResponse(code) => Ok(RegisterSuccess("individual"))
-            case UserRegisterClientErrorResponse(code) => BadRequest(error_template(Messages("cjww.auth.error.generic")))
-            case UserRegisterServerErrorResponse(code) => InternalServerError(error_template(Messages("cjww.auth.error.generic")))
-            case UserRegisterErrorResponse(code) => InternalServerError(error_template(Messages("cjww.auth.error.generic")))
+            case UserRegisterClientErrorResponse(code) => BadRequest(error_template(errorMessage))
+            case UserRegisterServerErrorResponse(code) => InternalServerError(error_template(errorMessage))
+            case UserRegisterErrorResponse(code) => InternalServerError(error_template(errorMessage))
           }
       )
   }

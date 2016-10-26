@@ -36,6 +36,7 @@ class RegisterControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSu
   class Setup {
     class TestController extends UserRegisterCtrl {
       val userRegister = mockUserRegisterConnector
+      val errorMessage = "testErrorMessage"
     }
 
     val testController = new TestController
