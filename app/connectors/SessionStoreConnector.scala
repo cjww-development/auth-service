@@ -13,24 +13,23 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package connectors
 
+import config.{FrontendConfiguration, WSConfiguration}
+import play.api.libs.ws.{WSClient, WSResponse}
+import utils.httpverbs.HttpVerbs
 
-package config
+import scala.concurrent.Future
 
-import com.typesafe.config.ConfigFactory
+object SessionStoreConnector extends SessionStoreConnector with WSConfiguration {
+  val http = new HttpVerbs(getWSClient)
+}
 
-trait FrontendConfiguration {
-  final val config = ConfigFactory.load
+trait SessionStoreConnector extends FrontendConfiguration {
 
-  final val env = config.getString("cjww.environment")
+  val http : HttpVerbs
 
-  final val apiCall = config.getString(s"$env.routes.rest-api")
-  final val sessionStore = config.getString(s"$env.routes.session-store")
-
-  final val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  final val deversityFrontend = s"deversity-frontend"
-  final val hubFrontend = s"hub-frontend"
-
-
-  final val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
+  def cache(sessionId : String, data : String) : Future[WSResponse] = {
+    http.cache[String](s"$sessionStore/cache", sessionId, data)
+  }
 }

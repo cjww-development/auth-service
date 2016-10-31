@@ -17,18 +17,10 @@
 
 package connectors
 
-import java.io.File
-
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import com.typesafe.config.ConfigFactory
 import config.WSConfiguration
 import models.UserRegister
-import org.asynchttpclient.AsyncHttpClientConfig
-import play.api.libs.ws.WSConfigParser
-import play.api.libs.ws.ahc.{AhcConfigBuilder, AhcWSClient, AhcWSClientConfig}
-import play.api.{Configuration, Environment, Logger, Mode}
-import utils.httpverbs.HttpPost
+import play.api.Logger
+import utils.httpverbs.HttpVerbs
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -40,12 +32,12 @@ case class UserRegisterServerErrorResponse(status : Int) extends UserRegisterRes
 case class UserRegisterErrorResponse(status : Int) extends UserRegisterResponse
 
 object UserRegistrationConnector extends UserRegistrationConnector with WSConfiguration {
-  val http = new HttpPost(getWSClient)
+  val http = new HttpVerbs(getWSClient)
 }
 
 trait UserRegistrationConnector {
 
-  val http : HttpPost
+  val http : HttpVerbs
 
   protected def processStatusCode(statusCode : Int) : UserRegisterResponse = {
     class Contains(r : Range) {
@@ -66,7 +58,7 @@ trait UserRegistrationConnector {
   def createNewIndividualUser(userDetails : UserRegister) : Future[UserRegisterResponse] = {
     http.postUser[UserRegister]("/create-new-user", userDetails) map {
       resp =>
-        Logger.debug(s"[UserRegistrationConnector] [createIndividualUser] Response code from API Call : ${resp.status} - ${resp.statusText}")
+        Logger.info(s"[UserRegistrationConnector] [createIndividualUser] Response code from API Call : ${resp.status} - ${resp.statusText}")
         processStatusCode(resp.status)
     }
   }

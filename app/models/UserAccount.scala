@@ -13,24 +13,21 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package models
 
+import java.util.UUID
 
-package config
+import play.api.libs.json.Json
 
-import com.typesafe.config.ConfigFactory
+case class UserAccount(_id : Option[String], firstName : String, lastName : String, userName : String, email : String, password : String) {
+  def sessionMap : Map[String, String] =
+    Map(
+      "cookieID" -> s"session-${UUID.randomUUID().toString}",
+      "_id" -> _id.get,
+      "firstName" -> firstName,
+      "lastName" -> lastName)
+}
 
-trait FrontendConfiguration {
-  final val config = ConfigFactory.load
-
-  final val env = config.getString("cjww.environment")
-
-  final val apiCall = config.getString(s"$env.routes.rest-api")
-  final val sessionStore = config.getString(s"$env.routes.session-store")
-
-  final val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  final val deversityFrontend = s"deversity-frontend"
-  final val hubFrontend = s"hub-frontend"
-
-
-  final val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
+object UserAccount {
+  implicit val format = Json.format[UserAccount]
 }

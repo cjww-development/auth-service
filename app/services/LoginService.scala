@@ -13,24 +13,28 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package services
 
+import connectors.UserLoginConnector
+import models.{UserAccount, UserLogin}
+import play.api.mvc.Session
+import security.JsonSecurity
 
-package config
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-import com.typesafe.config.ConfigFactory
+object LoginService extends LoginService {
+  val userLogin = UserLoginConnector
+}
 
-trait FrontendConfiguration {
-  final val config = ConfigFactory.load
+trait LoginService {
 
-  final val env = config.getString("cjww.environment")
+  val userLogin : UserLoginConnector
 
-  final val apiCall = config.getString(s"$env.routes.rest-api")
-  final val sessionStore = config.getString(s"$env.routes.session-store")
-
-  final val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  final val deversityFrontend = s"deversity-frontend"
-  final val hubFrontend = s"hub-frontend"
-
-
-  final val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
+  def processLoginAttempt(credentials : UserLogin) : Future[Option[(Session, Option[String])]] = {
+    userLogin.getUserAccountInformation(credentials.encryptPassword) map {
+      case Some(user) => Some((Session(user.sessionMap), JsonSecurity.encryptModel[UserAccount](user)))
+      case None => None
+    }
+  }
 }

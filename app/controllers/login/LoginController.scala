@@ -13,24 +13,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package controllers.login
 
+import javax.inject.Inject
 
-package config
+import connectors.SessionStoreConnector
+import controllers.traits.login.LoginCtrl
+import play.api.Configuration
+import play.api.i18n.MessagesApi
+import services.LoginService
 
-import com.typesafe.config.ConfigFactory
-
-trait FrontendConfiguration {
-  final val config = ConfigFactory.load
-
-  final val env = config.getString("cjww.environment")
-
-  final val apiCall = config.getString(s"$env.routes.rest-api")
-  final val sessionStore = config.getString(s"$env.routes.session-store")
-
-  final val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  final val deversityFrontend = s"deversity-frontend"
-  final val hubFrontend = s"hub-frontend"
-
-
-  final val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
+class LoginController @Inject()(val messagesApi: MessagesApi, configuration: Configuration) extends LoginCtrl {
+  val userLogin = LoginService
+  val sessionStoreConnector = SessionStoreConnector
 }

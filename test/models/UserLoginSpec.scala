@@ -13,24 +13,31 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package models
 
+import org.scalatestplus.play.PlaySpec
 
-package config
+class UserLoginSpec extends PlaySpec {
 
-import com.typesafe.config.ConfigFactory
+  val testData =
+    UserLogin(
+      "testUserName",
+      "testPassword"
+    )
 
-trait FrontendConfiguration {
-  final val config = ConfigFactory.load
+  "UserLogin" should {
+    "encrypt the password AND should not equal testPassword" in {
+      val result = testData.encryptPassword
 
-  final val env = config.getString("cjww.environment")
+      assert(result.password != "testPassword")
+      assert(result.password.length == 128)
+    }
 
-  final val apiCall = config.getString(s"$env.routes.rest-api")
-  final val sessionStore = config.getString(s"$env.routes.session-store")
+    "return an empty UserLogin model" in {
+      val result = UserLogin.empty
 
-  final val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  final val deversityFrontend = s"deversity-frontend"
-  final val hubFrontend = s"hub-frontend"
-
-
-  final val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
+      assert(result.userName == "")
+      assert(result.password == "")
+    }
+  }
 }

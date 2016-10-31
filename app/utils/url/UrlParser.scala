@@ -13,24 +13,22 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package utils.url
 
+import config.FrontendConfiguration
+import play.api.Logger
+import play.api.mvc.Request
 
-package config
+object UrlParser extends UrlParser
 
-import com.typesafe.config.ConfigFactory
+trait UrlParser extends FrontendConfiguration {
 
-trait FrontendConfiguration {
-  final val config = ConfigFactory.load
-
-  final val env = config.getString("cjww.environment")
-
-  final val apiCall = config.getString(s"$env.routes.rest-api")
-  final val sessionStore = config.getString(s"$env.routes.session-store")
-
-  final val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  final val deversityFrontend = s"deversity-frontend"
-  final val hubFrontend = s"hub-frontend"
-
-
-  final val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
+  def serviceDirector(implicit request: Request[_]) : String = {
+    Logger.info(s"[UrlParse] [serviceDirector] - ${request.queryString("redirect").head}")
+    request.queryString("redirect").head match {
+      case "diagnostics" => diagnosticsFrontend
+      case "deversity" => deversityFrontend
+      case "hub" => hubFrontend
+    }
+  }
 }

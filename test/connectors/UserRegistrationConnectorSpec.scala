@@ -21,15 +21,15 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import org.mockito.Mockito._
 import org.mockito.Matchers
+import utils.httpverbs.HttpVerbs
 import play.api.test.Helpers._
-import utils.httpverbs.HttpPost
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
 class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with MockResponse {
 
-  val mockHttp = mock[HttpPost]
+  val mockHttp = mock[HttpVerbs]
 
   val successResponse = mockWSResponse(statusCode = CREATED)
   val clientResponse = mockWSResponse(statusCode = BAD_REQUEST)

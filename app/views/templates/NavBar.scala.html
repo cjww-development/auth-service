@@ -1,6 +1,8 @@
 @()(implicit request : Request[_])
 
 @import views.html.templates.MicroserviceLinks
+@import controllers.login.{routes => loginRoutes}
+@import controllers.register.{routes => registerRoutes}
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
@@ -26,7 +28,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Register <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> As yourself</a>
+                            <a href="@registerRoutes.UserRegisterController.show()"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> As yourself</a>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>
@@ -38,17 +40,17 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> As yourself</a>
+                            <a href="@loginRoutes.LoginController.show("auth-service")"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> As yourself</a>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>
-                            <a href="#"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> As an organisation</a>
+                            <a href="@loginRoutes.LoginController.show("auth-service")"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> As an organisation</a>
                         </li>
                     </ul>
                 </li>
             } else {
                 <li>
-                    <a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Welcome, @request.session.get("first_name") @request.session.get("last_name")</a>
+                    <a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Welcome, @request.session.get("firstName") @request.session.get("lastName")</a>
                 </li>
                 <li>
                     <form class="navbar-form navbar-left" role="button" action="/goodbye">
