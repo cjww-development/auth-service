@@ -17,7 +17,7 @@
 
 package connectors
 
-import config.WSConfiguration
+import config.{FrontendConfiguration, WSConfiguration}
 import models.UserRegister
 import play.api.Logger
 import utils.httpverbs.HttpVerbs
@@ -35,7 +35,7 @@ object UserRegistrationConnector extends UserRegistrationConnector with WSConfig
   val http = new HttpVerbs(getWSClient)
 }
 
-trait UserRegistrationConnector {
+trait UserRegistrationConnector extends FrontendConfiguration {
 
   val http : HttpVerbs
 
@@ -56,7 +56,7 @@ trait UserRegistrationConnector {
   }
 
   def createNewIndividualUser(userDetails : UserRegister) : Future[UserRegisterResponse] = {
-    http.postUser[UserRegister]("/create-new-user", userDetails) map {
+    http.postUser[UserRegister](s"$apiCall/create-new-user", userDetails) map {
       resp =>
         Logger.info(s"[UserRegistrationConnector] [createIndividualUser] Response code from API Call : ${resp.status} - ${resp.statusText}")
         processStatusCode(resp.status)
