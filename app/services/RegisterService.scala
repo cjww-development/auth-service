@@ -34,7 +34,7 @@ trait RegisterService {
 
   def registerIndividual(user : UserRegister) : Future[UserRegisterResponse] = {
     userRegistration.createNewIndividualUser(user) map {
-      resp => Logger.debug(s"[UserRegistrationConnector] [registerIndividual] response is $resp")
+      resp => Logger.info(s"[UserRegistrationConnector] [registerIndividual] response is $resp")
         resp
     }
   }

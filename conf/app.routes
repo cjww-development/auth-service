@@ -5,5 +5,8 @@
 GET     /create-an-account          controllers.register.UserRegisterController.show
 POST    /create-an-account          controllers.register.UserRegisterController.submit
 
+GET     /login                      controllers.login.LoginController.show(redirect : String)
+POST    /login                      controllers.login.LoginController.submit
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

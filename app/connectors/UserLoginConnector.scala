@@ -13,31 +13,30 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package connectors
 
-
-package utils.httpverbs
-
-import javax.inject.Inject
-
+import config.WSConfiguration
+import models.{UserAccount, UserLogin}
 import play.api.Logger
-import config.FrontendConfiguration
-import play.api.libs.json.Format
-import play.api.libs.ws.{WSClient, WSResponse}
 import security.JsonSecurity
+import utils.httpverbs.HttpVerbs
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class HttpPost @Inject()(http : WSClient) extends JsonSecurity with FrontendConfiguration {
+object UserLoginConnector extends UserLoginConnector with WSConfiguration {
+  val http = new HttpVerbs(getWSClient)
+}
 
-  private def post[T](url : String, data : T)(implicit format : Format[T]): Future[WSResponse] = {
-    Logger.debug(s"[HttpPost] [post] Url call : $apiCall$url")
-    val body = encryptModel[T](data).get
-    val response = http.url(s"$apiCall$url").withHeaders("appID" -> APPLICATION_ID).withBody(body).post(body)
-    http.close()
-    response
-  }
+trait UserLoginConnector {
 
-  def postUser[T](url : String, data : T)(implicit format : Format[T]) : Future[WSResponse] = {
-    post[T](url, data)
+  val http : HttpVerbs
+
+  def getUserAccountInformation(loginDetails : UserLogin) : Future[Option[UserAccount]] = {
+    http.getUserDetails[UserLogin]("/individual-user-login", loginDetails) map {
+      resp =>
+        Logger.info(s"[UserLoginConnector] [getUserAccountInformation] Response code from api call : ${resp.status} - ${resp.statusText}")
+        JsonSecurity.decryptInto[UserAccount](resp.body)
+    }
   }
 }

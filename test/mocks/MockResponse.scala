@@ -15,15 +15,23 @@
 // limitations under the License.
 package mocks
 
+import models.{UserAccount, UserLogin}
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import play.api.libs.ws.WSResponse
+import security.JsonSecurity
 
 trait MockResponse extends MockitoSugar{
 
-  def mockWSResponse(statusCode : Int) : WSResponse = {
+  def mockWSResponse(statusCode : Int, body : String = "") : WSResponse = {
     val m = mock[WSResponse]
     when(m.status).thenReturn(statusCode)
+    when(m.body).thenReturn(body)
     m
   }
+
+  val testUserCredentials = UserLogin("testUserName","testPassword")
+  val testUserDetails = UserAccount(Some("testID"),"testFirstName","testLastName","testUserName","test@email.com","testPassword")
+
+  val encryptedUserDetails = JsonSecurity.encryptModel[UserAccount](testUserDetails)
 }

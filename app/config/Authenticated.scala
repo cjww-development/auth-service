@@ -13,24 +13,19 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-
 package config
 
-import com.typesafe.config.ConfigFactory
+import controllers.login.routes
+import play.api.mvc._
+import play.api.mvc.Results._
 
-trait FrontendConfiguration {
-  final val config = ConfigFactory.load
+import scala.concurrent.Future
 
-  final val env = config.getString("cjww.environment")
-
-  final val apiCall = config.getString(s"$env.routes.rest-api")
-  final val sessionStore = config.getString(s"$env.routes.session-store")
-
-  final val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  final val deversityFrontend = s"deversity-frontend"
-  final val hubFrontend = s"hub-frontend"
-
-
-  final val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
+object Authenticated extends ActionBuilder[Request] {
+  override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
+    request.session.isEmpty match {
+      case true => Future.successful(Redirect(routes.LoginController.show(request.queryString("redirect").head)))
+      case false => block(request)
+    }
+  }
 }
