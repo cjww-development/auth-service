@@ -15,7 +15,7 @@
 // limitations under the License.
 package connectors
 
-import config.WSConfiguration
+import config.{FrontendConfiguration, WSConfiguration}
 import models.{UserAccount, UserLogin}
 import play.api.Logger
 import security.JsonSecurity
@@ -28,12 +28,12 @@ object UserLoginConnector extends UserLoginConnector with WSConfiguration {
   val http = new HttpVerbs(getWSClient)
 }
 
-trait UserLoginConnector {
+trait UserLoginConnector extends FrontendConfiguration{
 
   val http : HttpVerbs
 
   def getUserAccountInformation(loginDetails : UserLogin) : Future[Option[UserAccount]] = {
-    http.getUserDetails[UserLogin]("/individual-user-login", loginDetails) map {
+    http.getUserDetails[UserLogin](s"$apiCall/individual-user-login", loginDetails) map {
       resp =>
         Logger.info(s"[UserLoginConnector] [getUserAccountInformation] Response code from api call : ${resp.status} - ${resp.statusText}")
         JsonSecurity.decryptInto[UserAccount](resp.body)
