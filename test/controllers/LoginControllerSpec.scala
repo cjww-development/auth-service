@@ -36,7 +36,8 @@ class LoginControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar
 
   val testSession = Session(testUserDetails.sessionMap)
 
-  val successReponse = mockWSResponse(statusCode = CREATED)
+  val successResponse = mockWSResponse(statusCode = CREATED)
+  val okResponse = mockWSResponse(statusCode = OK)
 
   class Setup {
     class TestController extends LoginCtrl {
@@ -113,12 +114,22 @@ class LoginControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar
           .thenReturn(Future.successful(Some((testSession, encryptedUserDetails))))
 
         when(mockSessionStoreConnector.cache(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(successReponse))
+          .thenReturn(Future.successful(successResponse))
 
         val result = testController.submit()(request)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some("http://localhost:9970/diagnostics")
       }
+    }
+  }
+
+  "signOut" should {
+    "return a 303 regardless" in new Setup {
+      when(mockSessionStoreConnector.destroySession(Matchers.any()))
+        .thenReturn(Future.successful(okResponse))
+
+      val result = testController.signOut()(FakeRequest().withSession("cookieID" -> "sessionID"))
+      status(result) mustBe SEE_OTHER
     }
   }
 }

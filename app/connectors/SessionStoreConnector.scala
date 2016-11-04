@@ -32,4 +32,8 @@ trait SessionStoreConnector extends FrontendConfiguration {
   def cache(sessionId : String, data : String) : Future[WSResponse] = {
     http.cache[String](s"$sessionStore/cache", sessionId, data)
   }
+
+  def destroySession(sessionId : String) : Future[WSResponse] = {
+    http.destroySession(s"$sessionStore/destroy", sessionId)
+  }
 }
