@@ -53,7 +53,7 @@
                     <a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Welcome, @request.session.get("firstName") @request.session.get("lastName")</a>
                 </li>
                 <li>
-                    <form class="navbar-form navbar-left" role="button" action="/goodbye">
+                    <form class="navbar-form navbar-left" role="button" action="@loginRoutes.LoginController.signOut()">
                         <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Log out</button>
                     </form>
                 </li>

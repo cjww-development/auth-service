@@ -58,4 +58,8 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
   def cache[T](url : String, sessionID : String, data : T)(implicit format: Format[T]) : Future[WSResponse] = {
     post[T](url, data, "sessionID" -> sessionID)
   }
+
+  def destroySession(url : String, sessionId : String)(implicit format: Format[String]) : Future[WSResponse] = {
+    get[String](url, sessionId)
+  }
 }

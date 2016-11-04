@@ -31,6 +31,7 @@ class SessionStoreConnectorSpec extends PlaySpec with OneAppPerSuite with Mockit
   val mockHttp = mock[HttpVerbs]
 
   val successResponse = mockWSResponse(statusCode = CREATED)
+  val okResponse = mockWSResponse(statusCode = OK)
 
   class Setup {
     object TestConnector extends SessionStoreConnector {
@@ -46,6 +47,18 @@ class SessionStoreConnectorSpec extends PlaySpec with OneAppPerSuite with Mockit
 
         val result = Await.result(TestConnector.cache("sessionID","testData"), 5.seconds)
         result.status mustBe CREATED
+      }
+    }
+  }
+
+  "destroySession" should {
+    "return OK" when {
+      "getting with session id" in new Setup {
+        when(mockHttp.destroySession(Matchers.any(), Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(okResponse))
+
+        val result = Await.result(TestConnector.destroySession("sessionID"), 5.seconds)
+        result.status mustBe OK
       }
     }
   }

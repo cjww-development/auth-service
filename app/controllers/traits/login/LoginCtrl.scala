@@ -16,11 +16,13 @@
 package controllers.traits.login
 
 import connectors.SessionStoreConnector
+import controllers.login.routes
 import forms.UserLoginForm
 import play.api.mvc.{Action, AnyContent}
 import utils.application.FrontendController
 import forms.UserLoginForm._
 import models.UserLogin
+import play.api.Logger
 import services.LoginService
 import views.html.login.UserLoginView
 
@@ -50,5 +52,14 @@ trait LoginCtrl extends FrontendController {
             case None => Future.successful(Ok(UserLoginView(loginForm.fill(valid).withGlobalError("Your user name or password is incorrect"))))
           }
       )
+  }
+
+  def signOut : Action[AnyContent] = Action.async {
+    implicit request =>
+      sessionStoreConnector.destroySession(request.session("cookieID")) map {
+        resp =>
+          Logger.info(s"[LoginController] - [signOut] : Response from session store - ${resp.status} : ${resp.statusText}")
+          Redirect(routes.LoginController.show(None)).withNewSession
+      }
   }
 }
