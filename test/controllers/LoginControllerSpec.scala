@@ -49,7 +49,7 @@ class LoginControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar
 
   "show" should {
     "return an OK" in new Setup {
-      val result = testController.show("diagnostics")(FakeRequest())
+      val result = testController.show(Some("diagnostics"))(FakeRequest())
       status(result) mustBe OK
     }
   }

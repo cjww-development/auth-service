@@ -40,11 +40,11 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="@loginRoutes.LoginController.show("auth-service")"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> As yourself</a>
+                            <a href="@loginRoutes.LoginController.show(Some("auth-service"))"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> As yourself</a>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>
-                            <a href="@loginRoutes.LoginController.show("auth-service")"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> As an organisation</a>
+                            <a href="@loginRoutes.LoginController.show(Some("auth-service"))"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> As an organisation</a>
                         </li>
                     </ul>
                 </li>

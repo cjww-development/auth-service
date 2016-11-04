@@ -13,26 +13,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package controllers.redirect
 
+import javax.inject.Inject
 
-package config
+import config.FrontendConfiguration
+import controllers.traits.redirect.RedirectCtrl
+import play.api.Configuration
+import play.api.i18n.MessagesApi
 
-import com.typesafe.config.ConfigFactory
-
-object FrontendConfiguration extends FrontendConfiguration
-
-trait FrontendConfiguration {
-  final val config = ConfigFactory.load
-
-  final val env = config.getString("cjww.environment")
-
-  final val apiCall = config.getString(s"$env.routes.rest-api")
-  final val sessionStore = config.getString(s"$env.routes.session-store")
-
-  final val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  final val deversityFrontend = s"deversity-frontend"
-  final val hubFrontend = s"hub-frontend"
-
-
-  final val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
-}
+class RedirectController  @Inject()(val messagesApi: MessagesApi, configuration: Configuration) extends RedirectCtrl

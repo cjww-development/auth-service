@@ -32,7 +32,7 @@ trait LoginCtrl extends FrontendController {
   val userLogin : LoginService
   val sessionStoreConnector : SessionStoreConnector
 
-  def show(redirect : String) : Action[AnyContent] = Action.async {
+  def show(redirect : Option[String]) : Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(Ok(UserLoginView(loginForm.fill(UserLogin.empty))))
   }
