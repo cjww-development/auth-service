@@ -13,26 +13,25 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package controllers
 
+import controllers.traits.redirect.RedirectCtrl
+import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 
-package config
+class RedirectControllerSpec extends PlaySpec with OneAppPerSuite {
 
-import com.typesafe.config.ConfigFactory
+  class Setup {
+    class TestController extends RedirectCtrl
 
-object FrontendConfiguration extends FrontendConfiguration
+    val testController = new TestController
+  }
 
-trait FrontendConfiguration {
-  final val config = ConfigFactory.load
-
-  final val env = config.getString("cjww.environment")
-
-  final val apiCall = config.getString(s"$env.routes.rest-api")
-  final val sessionStore = config.getString(s"$env.routes.session-store")
-
-  final val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  final val deversityFrontend = s"deversity-frontend"
-  final val hubFrontend = s"hub-frontend"
-
-
-  final val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
+  "chooseService" should {
+    "return an OK" in new Setup {
+      val result = testController.chooseService()(FakeRequest())
+      status(result) mustBe OK
+    }
+  }
 }

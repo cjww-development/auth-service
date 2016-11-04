@@ -13,26 +13,20 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package controllers.traits.redirect
 
+import config.FrontendConfiguration
+import play.api.mvc.{Action, AnyContent}
+import utils.application.FrontendController
+import views.html.redirect.ServiceSelector
 
-package config
+import scala.concurrent.Future
 
-import com.typesafe.config.ConfigFactory
+trait RedirectCtrl extends FrontendController {
 
-object FrontendConfiguration extends FrontendConfiguration
-
-trait FrontendConfiguration {
-  final val config = ConfigFactory.load
-
-  final val env = config.getString("cjww.environment")
-
-  final val apiCall = config.getString(s"$env.routes.rest-api")
-  final val sessionStore = config.getString(s"$env.routes.session-store")
-
-  final val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  final val deversityFrontend = s"deversity-frontend"
-  final val hubFrontend = s"hub-frontend"
-
-
-  final val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
+  def chooseService : Action[AnyContent] = Action.async {
+    implicit request =>
+      implicit val config = FrontendConfiguration
+      Future.successful(Ok(ServiceSelector()))
+  }
 }

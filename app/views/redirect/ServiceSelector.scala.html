@@ -1,0 +1,55 @@
+@import config.FrontendConfiguration
+
+@()(implicit request: Request[_], configuration: FrontendConfiguration)
+
+@main_template(title = "CJWW - Where do you want to go?"){
+    <div class="top-block-single">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <h1 class="pageTitle">Where would you like to go?<small> Choose below</small></h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <img src="@routes.Assets.versioned("images/Diag_Black.png")" width="100%" alt="...">
+                        <div class="caption">
+                            <h3>Diagnostics</h3>
+                            <p>
+                                <a href="@configuration.diagnosticsFrontend" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Go to Diagnostics</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <img src="@routes.Assets.versioned("images/Deversity_Black.png")" width="100%" alt="...">
+                        <div class="caption">
+                            <h3>Deversity</h3>
+                            <p>
+                                <a href="@configuration.deversityFrontend" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> Go to Deversity</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <img src="@routes.Assets.versioned("images/logo.png")" width="100%" alt="...">
+                        <div class="caption">
+                            <h3>The Hub</h3>
+                            <p>
+                                <a href="@configuration.hubFrontend" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> Go to The Hub</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
