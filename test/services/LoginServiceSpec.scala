@@ -15,13 +15,14 @@
 // limitations under the License.
 package services
 
-import connectors.UserLoginConnector
+import connectors.{SessionStoreConnector, UserLoginConnector}
 import mocks.MockResponse
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.Matchers
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.mvc.Session
+import play.api.test.Helpers._
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -29,12 +30,16 @@ import scala.concurrent.duration._
 class LoginServiceSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with MockResponse {
 
   val mockConnector = mock[UserLoginConnector]
+  val mockSessionStoreConnector = mock[SessionStoreConnector]
 
   final val testSession = Session(testUserDetails.sessionMap)
+
+  val successResponse = mockWSResponse(statusCode = CREATED)
 
   class Setup {
     object TestService extends LoginService {
       val userLogin = mockConnector
+      val sessionStoreConnector = mockSessionStoreConnector
     }
   }
 
@@ -44,9 +49,11 @@ class LoginServiceSpec extends PlaySpec with OneAppPerSuite with MockitoSugar wi
         when(mockConnector.getUserAccountInformation(Matchers.any()))
           .thenReturn(Future.successful(Some(testUserDetails)))
 
+        when(mockSessionStoreConnector.cache(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(successResponse))
+
         val result = Await.result(TestService.processLoginAttempt(testUserCredentials), 5.seconds)
-        result.get._1.get("_id") mustBe Some("testID")
-        result.get._2.get mustBe encryptedUserDetails.get
+        result.get("_id") mustBe "testID"
       }
     }
 

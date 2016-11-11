@@ -15,7 +15,7 @@
 // limitations under the License.
 package services
 
-import connectors.UserLoginConnector
+import connectors.{SessionStoreConnector, UserLoginConnector}
 import models.{UserAccount, UserLogin}
 import play.api.mvc.Session
 import security.JsonSecurity
@@ -25,16 +25,24 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object LoginService extends LoginService {
   val userLogin = UserLoginConnector
+  val sessionStoreConnector = SessionStoreConnector
 }
 
 trait LoginService {
 
   val userLogin : UserLoginConnector
 
-  def processLoginAttempt(credentials : UserLogin) : Future[Option[(Session, Option[String])]] = {
-    userLogin.getUserAccountInformation(credentials.encryptPassword) map {
-      case Some(user) => Some((Session(user.sessionMap), JsonSecurity.encryptModel[UserAccount](user)))
-      case None => None
+  val sessionStoreConnector : SessionStoreConnector
+
+  def processLoginAttempt(credentials : UserLogin) : Future[Option[Session]] = {
+    userLogin.getUserAccountInformation(credentials.encryptPassword) flatMap {
+      case Some(user) =>
+        val session = Session(user.sessionMap)
+        val data = JsonSecurity.encryptModel[UserAccount](user).get
+        sessionStoreConnector.cache(session("cookieID"), data).map {
+          _ => Some(session)
+        }
+      case None => Future.successful(None)
     }
   }
 }
