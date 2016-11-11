@@ -44,12 +44,9 @@ trait LoginCtrl extends FrontendController {
       UserLoginForm.loginForm.bindFromRequest.fold(
         errors => Future.successful(BadRequest(UserLoginView(errors))),
         valid =>
-          userLogin.processLoginAttempt(valid) flatMap {
-            case Some((session, Some(data))) =>
-              sessionStoreConnector.cache(session("cookieID"), data).map {
-                _ => Redirect(serviceDirector).withSession(session)
-              }
-            case None => Future.successful(Ok(UserLoginView(loginForm.fill(valid).withGlobalError("Your user name or password is incorrect"))))
+          userLogin.processLoginAttempt(valid) map {
+            case Some(session) => Redirect(serviceDirector).withSession(session)
+            case None => Ok(UserLoginView(loginForm.fill(valid).withGlobalError("Your user name or password is incorrect")))
           }
       )
   }

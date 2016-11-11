@@ -111,7 +111,7 @@ class LoginControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar
         )
 
         when(mockLoginService.processLoginAttempt(Matchers.eq(testUserCredentials)))
-          .thenReturn(Future.successful(Some((testSession, encryptedUserDetails))))
+          .thenReturn(Future.successful(Some(testSession)))
 
         when(mockSessionStoreConnector.cache(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(successResponse))
