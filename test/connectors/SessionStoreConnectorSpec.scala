@@ -22,16 +22,24 @@ import utils.httpverbs.HttpVerbs
 import play.api.test.Helpers._
 import org.mockito.Mockito._
 import org.mockito.Matchers
+import play.api.libs.json.Json
+import security.JsonSecurity
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
 class SessionStoreConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with MockResponse {
 
+  case class TestModel(string : String, int : Int)
+  implicit val format = Json.format[TestModel]
+
   val mockHttp = mock[HttpVerbs]
 
   val successResponse = mockWSResponse(statusCode = CREATED)
   val okResponse = mockWSResponse(statusCode = OK)
+
+  val data = TestModel("string", 1)
+  val getDataResponse = mockWSResponse(statusCode = CREATED, body = JsonSecurity.encryptModel[TestModel](data).get)
 
   class Setup {
     object TestConnector extends SessionStoreConnector {

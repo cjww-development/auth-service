@@ -113,7 +113,7 @@ class LoginControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar
         when(mockLoginService.processLoginAttempt(Matchers.eq(testUserCredentials)))
           .thenReturn(Future.successful(Some(testSession)))
 
-        when(mockSessionStoreConnector.cache(Matchers.any(), Matchers.any()))
+        when(mockSessionStoreConnector.cache(Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(successResponse))
 
         val result = testController.submit()(request)

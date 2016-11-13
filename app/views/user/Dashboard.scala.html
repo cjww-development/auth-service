@@ -1,0 +1,63 @@
+@(userInformation : UserAccount)(implicit request : Request[_])
+
+@main_template(title = "CJWW Account - dashboard") {
+    <div class="top-block-single">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <strong>This is your profile @request.session("firstName")</strong>
+                        </div>
+                        <div class="panel-body">
+                            <svg viewBox="0 0 140 140" preserveAspectRatio="xMinYMin meet">
+                                <g>
+                                    <circle fill="#124AA0" r="50%" cx="50%" cy="50%" class="circle-back" />
+                                    <text fill="#ffffff" font-size="45" font-family="Verdana" x="50%" y="60%">
+                                        <tspan text-anchor="middle">@request.session("firstName").head@request.session("lastName").head</tspan>
+                                    </text>
+                                </g>
+                            </svg>
+                        </div>
+
+                            <!-- List group -->
+                        <ul class="list-group">
+                            <li class="list-group-item">@userInformation.firstName @userInformation.lastName</li>
+                            <li class="list-group-item">@userInformation.userName</li>
+                            <li class="list-group-item">@userInformation.email</li>
+                            <li class="list-group-item">
+                                <button class="btn btn-primary">Change password</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                    <div class="page-header">
+                        <h1 id="main-title" onclick="setTitle()" class="pageTitle">Welcome @userInformation.firstName @userInformation.lastName</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script >
+        function setTitle() {
+            var title = document.getElementById("main-title");
+
+            var optionA = "Welcome @userInformation.firstName @userInformation.lastName";
+            var optionB = "Welcome @userInformation.firstName";
+            var optionC = "Welcome @userInformation.userName";
+
+            if(title.innerHTML == optionA) {
+                title.innerHTML = optionB;
+            } else if (title.innerHTML == optionB) {
+                title.innerHTML = optionC;
+            } else if(title.innerHTML == optionC) {
+                title.innerHTML = optionA;
+            } else {
+                title.innerHTML = "error";
+            }
+        }
+    </script>
+}

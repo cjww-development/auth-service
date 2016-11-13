@@ -3,6 +3,7 @@
 @import views.html.templates.MicroserviceLinks
 @import controllers.login.{routes => loginRoutes}
 @import controllers.register.{routes => registerRoutes}
+@import controllers.user.{routes => userRoutes}
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
@@ -50,7 +51,7 @@
                 </li>
             } else {
                 <li>
-                    <a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Welcome, @request.session.get("firstName") @request.session.get("lastName")</a>
+                    <a href="@userRoutes.DashboardController.show"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Welcome, @request.session.get("firstName") @request.session.get("lastName")</a>
                 </li>
                 <li>
                     <form class="navbar-form navbar-left" role="button" action="@loginRoutes.LoginController.signOut()">
