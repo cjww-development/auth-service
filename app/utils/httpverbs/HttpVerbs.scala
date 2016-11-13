@@ -41,10 +41,15 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
       .post(body)
   }
 
-  private def get[T](url: String, data: T)(implicit format: Format[T]): Future[WSResponse] = {
+  private def get[T](url: String, data: T, additionalHeaders : (String, String) = "" -> "")(implicit format: Format[T]): Future[WSResponse] = {
     Logger.info(s"[HttPost] [get] Url call : $url")
     val body = encryptModel[T](data).get
-    http.url(s"$url").withHeaders("appID" -> APPLICATION_ID).withBody(body).get()
+    http.url(s"$url")
+      .withHeaders(
+        "appID" -> APPLICATION_ID,
+        additionalHeaders
+      )
+      .withBody(body).get()
   }
 
   def postUser[T](url: String, data: T)(implicit format: Format[T]): Future[WSResponse] = {
@@ -57,6 +62,10 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
 
   def cache[T](url : String, sessionID : String, data : T)(implicit format: Format[T]) : Future[WSResponse] = {
     post[T](url, data, "sessionID" -> sessionID)
+  }
+
+  def getDataEntry(url : String, sessionID : String, key : String)(implicit format: Format[String]) : Future[WSResponse] = {
+    get[String](url, key, "sessionID" -> sessionID)
   }
 
   def destroySession(url : String, sessionId : String)(implicit format: Format[String]) : Future[WSResponse] = {

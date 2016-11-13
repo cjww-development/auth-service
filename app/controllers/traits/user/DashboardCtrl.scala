@@ -13,35 +13,25 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package services
+package controllers.traits.user
 
-import connectors.{SessionStoreConnector, UserLoginConnector}
-import models.{UserAccount, UserLogin}
-import play.api.mvc.Session
-import security.JsonSecurity
+import connectors.SessionStoreConnector
+import models.UserAccount
+import play.api.mvc.{Action, AnyContent}
+import utils.application.FrontendController
+import views.html.user.Dashboard
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object LoginService extends LoginService {
-  val userLogin = UserLoginConnector
-  val sessionStoreConnector = SessionStoreConnector
-}
-
-trait LoginService {
-
-  val userLogin : UserLoginConnector
+trait DashboardCtrl extends FrontendController {
 
   val sessionStoreConnector : SessionStoreConnector
 
-  def processLoginAttempt(credentials : UserLogin) : Future[Option[Session]] = {
-    userLogin.getUserAccountInformation(credentials.encryptPassword) flatMap {
-      case Some(user) =>
-        val session = Session(user.sessionMap)
-        sessionStoreConnector.cache[UserAccount](session("cookieID"), user).map {
-          _ => Some(session)
-        }
-      case None => Future.successful(None)
-    }
+  def show : Action[AnyContent] = Action.async {
+    implicit request =>
+      sessionStoreConnector.getDataElement[UserAccount](request.session("cookieID"), "userInfo") map {
+        account =>
+          Ok(Dashboard(account.get))
+      }
   }
 }

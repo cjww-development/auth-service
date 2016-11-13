@@ -24,6 +24,7 @@ import javax.crypto.spec.SecretKeySpec
 import play.api.libs.json.{Format, JsValue, Json}
 import com.typesafe.config.ConfigFactory
 import org.apache.commons.codec.binary.Base64
+import play.api.Logger
 
 import scala.util.Try
 
@@ -49,7 +50,9 @@ trait JsonSecurity extends JsonCommon {
       case true =>
         val unlocked = new String(attempt.get)
         validate[T](unlocked)
-      case false => None
+      case false =>
+        Logger.debug(s"[JsonSecurity] - [decryptInto] : Failed decryption, return None")
+        None
     }
   }
 }

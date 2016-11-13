@@ -12,5 +12,7 @@ GET     /where-do-you-want-to-go    controllers.redirect.RedirectController.choo
 
 GET     /goodbye                    controllers.login.LoginController.signOut
 
+GET     /dashboard                  controllers.user.DashboardController.show
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

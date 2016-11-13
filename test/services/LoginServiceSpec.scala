@@ -49,7 +49,7 @@ class LoginServiceSpec extends PlaySpec with OneAppPerSuite with MockitoSugar wi
         when(mockConnector.getUserAccountInformation(Matchers.any()))
           .thenReturn(Future.successful(Some(testUserDetails)))
 
-        when(mockSessionStoreConnector.cache(Matchers.any(), Matchers.any()))
+        when(mockSessionStoreConnector.cache(Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(successResponse))
 
         val result = Await.result(TestService.processLoginAttempt(testUserCredentials), 5.seconds)

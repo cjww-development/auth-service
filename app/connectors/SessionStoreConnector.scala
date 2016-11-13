@@ -13,13 +13,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package connectors
 
 import config.{FrontendConfiguration, WSConfiguration}
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.Logger
+import play.api.libs.json.Format
+import play.api.libs.ws.WSResponse
+import security.JsonSecurity
 import utils.httpverbs.HttpVerbs
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object SessionStoreConnector extends SessionStoreConnector with WSConfiguration {
   val http = new HttpVerbs(getWSClient)
@@ -29,9 +34,21 @@ trait SessionStoreConnector extends FrontendConfiguration {
 
   val http : HttpVerbs
 
-  def cache(sessionId : String, data : String) : Future[WSResponse] = {
-    http.cache[String](s"$sessionStore/cache", sessionId, data)
+  def cache[T](sessionId : String, data : T)(implicit format: Format[T]) : Future[WSResponse] = {
+    Logger.debug(s"data being inserted = $data")
+    http.cache[T](s"$sessionStore/cache", sessionId, data)
   }
+
+  //TODO Test this [getDataElement]
+  // $COVERAGE-OFF$
+  def getDataElement[T](sessionID : String, key : String)(implicit format : Format[T]) : Future[Option[T]] = {
+    http.getDataEntry(s"$sessionStore/get-data-element", sessionID, key) map {
+      data =>
+        Logger.debug(s"[SessionStoreConnector] - [getDataElement] : Data from session store = ${data.body}")
+        JsonSecurity.decryptInto[T](data.body)
+    }
+  }
+  // $COVERAGE-ON$
 
   def destroySession(sessionId : String) : Future[WSResponse] = {
     http.destroySession(s"$sessionStore/destroy", sessionId)
