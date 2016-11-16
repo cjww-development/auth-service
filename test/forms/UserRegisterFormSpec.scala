@@ -16,9 +16,12 @@
 package forms
 
 import models.UserRegister
+import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import org.mockito.Mockito._
+import org.mockito.Matchers
 
-class UserRegisterFormSpec extends PlaySpec with OneAppPerSuite {
+class UserRegisterFormSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
 
   class Setup {
     val testData = UserRegister("testFirstName","testLastName","testUserName","test@email.com","testPassword","testPassword")
@@ -68,20 +71,20 @@ class UserRegisterFormSpec extends PlaySpec with OneAppPerSuite {
         result.error("lastName").get.message mustBe "You have not entered your last name"
       }
 
-      "no user name is entered" in new Setup {
-        val result = testForm.bind(
-          Map(
-            "firstName" -> testData.firstName,
-            "lastName" -> testData.lastName,
-            "userName" -> "",
-            "email" -> testData.email,
-            "password" -> testData.password,
-            "confirmPassword" -> testData.confirmPassword
-          )
-        )
-
-        result.error("userName").get.message mustBe "You have not entered your user name"
-      }
+//      "no user name is entered" in new Setup {
+//        val result = testForm.bind(
+//          Map(
+//            "firstName" -> testData.firstName,
+//            "lastName" -> testData.lastName,
+//            "userName" -> "",
+//            "email" -> testData.email,
+//            "password" -> testData.password,
+//            "confirmPassword" -> testData.confirmPassword
+//          )
+//        )
+//
+//        result.error("userName").get.message mustBe "You have not entered your user name"
+//      }
 
       "no email name is entered" in new Setup {
         val result = testForm.bind(
