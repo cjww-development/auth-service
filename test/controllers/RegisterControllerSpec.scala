@@ -49,193 +49,193 @@ class RegisterControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSu
     }
   }
 
-  "submit" should {
-    "return a bad request" when {
-      "a firstName is not input" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "",
-          "lastName" -> "testLastName",
-          "userName" -> "testUserName",
-          "email" -> "test@email.com",
-          "password" -> "testPassword",
-          "confirmPassword" -> "testPassword"
-        )
-
-        val result = testController.submit()(request)
-        status(result) mustBe BAD_REQUEST
-      }
-
-      "a lastName is not input" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "testFirstName",
-          "lastName" -> "",
-          "userName" -> "testUserName",
-          "email" -> "test@email.com",
-          "password" -> "testPassword",
-          "confirmPassword" -> "password"
-        )
-
-        val result = testController.submit()(request)
-        status(result) mustBe BAD_REQUEST
-      }
-
-      "a userName is not input" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName",
-          "userName" -> "",
-          "email" -> "test@email.com",
-          "password" -> "testPassword",
-          "confirmPassword" -> "password"
-        )
-
-        val result = testController.submit()(request)
-        status(result) mustBe BAD_REQUEST
-      }
-
-      "an email is not input" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName",
-          "userName" -> "testUserName",
-          "email" -> "test@email.com",
-          "password" -> "testPassword",
-          "confirmPassword" -> "password"
-        )
-
-        val result = testController.submit()(request)
-        status(result) mustBe BAD_REQUEST
-      }
-
-      "a password is not input" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName",
-          "userName" -> "testUserName",
-          "email" -> "test@email.com",
-          "password" -> "",
-          "confirmPassword" -> ""
-        )
-
-        val result = testController.submit()(request)
-        status(result) mustBe BAD_REQUEST
-      }
-
-      "nothing is input" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "",
-          "lastName" -> "",
-          "userName" -> "",
-          "email" -> "",
-          "password" -> "",
-          "confirmPassword" -> ""
-        )
-
-        val result = testController.submit()(request)
-        status(result) mustBe BAD_REQUEST
-      }
-
-      "passwords dont match" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName",
-          "userName" -> "testUserName",
-          "email" -> "test@email.com",
-          "password" -> "testPassword",
-          "confirmPassword" -> "password"
-        )
-
-        val result = testController.submit()(request)
-        status(result) mustBe BAD_REQUEST
-      }
-
-      "an email is not in the correct format" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName",
-          "userName" -> "testUserName",
-          "email" -> "testEmail",
-          "password" -> "testPassword",
-          "confirmPassword" -> "password"
-        )
-
-        val result = testController.submit()(request)
-        status(result) mustBe BAD_REQUEST
-      }
-    }
-
-    "return an OK" when {
-      "all entered data is valid" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName",
-          "userName" -> "testUserName",
-          "email" -> "test@email.com",
-          "password" -> "testPassword",
-          "confirmPassword" -> "testPassword"
-        )
-
-        when(mockUserRegisterConnector.createNewIndividualUser(Matchers.any[UserRegister]()))
-          .thenReturn(Future.successful(UserRegisterSuccessResponse(CREATED)))
-
-        val result = testController.submit()(request)
-        status(result) mustBe OK
-      }
-    }
-
-    "return an BAD REQUEST" when {
-      "all entered data is valid but the server responds with a 4xx response" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName",
-          "userName" -> "testUserName",
-          "email" -> "test@email.com",
-          "password" -> "testPassword",
-          "confirmPassword" -> "testPassword"
-        )
-
-        when(mockUserRegisterConnector.createNewIndividualUser(Matchers.any[UserRegister]()))
-          .thenReturn(Future.successful(UserRegisterClientErrorResponse(BAD_REQUEST)))
-
-        val result = testController.submit()(request)
-        status(result) mustBe BAD_REQUEST
-      }
-    }
-
-    "return an INTERNAL SERVER ERROR" when {
-      "all entered data is valid but the server responds with a 5xx response" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName",
-          "userName" -> "testUserName",
-          "email" -> "test@email.com",
-          "password" -> "testPassword",
-          "confirmPassword" -> "testPassword"
-        )
-
-        when(mockUserRegisterConnector.createNewIndividualUser(Matchers.any[UserRegister]()))
-          .thenReturn(Future.successful(UserRegisterServerErrorResponse(INTERNAL_SERVER_ERROR)))
-
-        val result = testController.submit()(request)
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-
-      "all entered data is valid but the server responds with a code that isn't 2xx, 4xx or 5xx" in new Setup {
-        val request = FakeRequest().withFormUrlEncodedBody(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName",
-          "userName" -> "testUserName",
-          "email" -> "test@email.com",
-          "password" -> "testPassword",
-          "confirmPassword" -> "testPassword"
-        )
-
-        when(mockUserRegisterConnector.createNewIndividualUser(Matchers.any[UserRegister]()))
-          .thenReturn(Future.successful(UserRegisterErrorResponse(700)))
-
-        val result = testController.submit()(request)
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-    }
-  }
+//  "submit" should {
+//    "return a bad request" when {
+//      "a firstName is not input" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "",
+//          "lastName" -> "testLastName",
+//          "userName" -> "testUserName",
+//          "email" -> "test@email.com",
+//          "password" -> "testPassword",
+//          "confirmPassword" -> "testPassword"
+//        )
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe BAD_REQUEST
+//      }
+//
+//      "a lastName is not input" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "testFirstName",
+//          "lastName" -> "",
+//          "userName" -> "testUserName",
+//          "email" -> "test@email.com",
+//          "password" -> "testPassword",
+//          "confirmPassword" -> "password"
+//        )
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe BAD_REQUEST
+//      }
+//
+//      "a userName is not input" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "testFirstName",
+//          "lastName" -> "testLastName",
+//          "userName" -> "",
+//          "email" -> "test@email.com",
+//          "password" -> "testPassword",
+//          "confirmPassword" -> "password"
+//        )
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe BAD_REQUEST
+//      }
+//
+//      "an email is not input" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "testFirstName",
+//          "lastName" -> "testLastName",
+//          "userName" -> "testUserName",
+//          "email" -> "test@email.com",
+//          "password" -> "testPassword",
+//          "confirmPassword" -> "password"
+//        )
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe BAD_REQUEST
+//      }
+//
+//      "a password is not input" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "testFirstName",
+//          "lastName" -> "testLastName",
+//          "userName" -> "testUserName",
+//          "email" -> "test@email.com",
+//          "password" -> "",
+//          "confirmPassword" -> ""
+//        )
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe BAD_REQUEST
+//      }
+//
+//      "nothing is input" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "",
+//          "lastName" -> "",
+//          "userName" -> "",
+//          "email" -> "",
+//          "password" -> "",
+//          "confirmPassword" -> ""
+//        )
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe BAD_REQUEST
+//      }
+//
+//      "passwords dont match" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "testFirstName",
+//          "lastName" -> "testLastName",
+//          "userName" -> "testUserName",
+//          "email" -> "test@email.com",
+//          "password" -> "testPassword",
+//          "confirmPassword" -> "password"
+//        )
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe BAD_REQUEST
+//      }
+//
+//      "an email is not in the correct format" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "testFirstName",
+//          "lastName" -> "testLastName",
+//          "userName" -> "testUserName",
+//          "email" -> "testEmail",
+//          "password" -> "testPassword",
+//          "confirmPassword" -> "password"
+//        )
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe BAD_REQUEST
+//      }
+//    }
+//
+//    "return an OK" when {
+//      "all entered data is valid" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "testFirstName",
+//          "lastName" -> "testLastName",
+//          "userName" -> "testUserName",
+//          "email" -> "test@email.com",
+//          "password" -> "testPassword",
+//          "confirmPassword" -> "testPassword"
+//        )
+//
+//        when(mockUserRegisterConnector.createNewIndividualUser(Matchers.any[UserRegister]()))
+//          .thenReturn(Future.successful(UserRegisterSuccessResponse(CREATED)))
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe OK
+//      }
+//    }
+//
+//    "return an BAD REQUEST" when {
+//      "all entered data is valid but the server responds with a 4xx response" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "testFirstName",
+//          "lastName" -> "testLastName",
+//          "userName" -> "testUserName",
+//          "email" -> "test@email.com",
+//          "password" -> "testPassword",
+//          "confirmPassword" -> "testPassword"
+//        )
+//
+//        when(mockUserRegisterConnector.createNewIndividualUser(Matchers.any[UserRegister]()))
+//          .thenReturn(Future.successful(UserRegisterClientErrorResponse(BAD_REQUEST)))
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe BAD_REQUEST
+//      }
+//    }
+//
+//    "return an INTERNAL SERVER ERROR" when {
+//      "all entered data is valid but the server responds with a 5xx response" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "testFirstName",
+//          "lastName" -> "testLastName",
+//          "userName" -> "testUserName",
+//          "email" -> "test@email.com",
+//          "password" -> "testPassword",
+//          "confirmPassword" -> "testPassword"
+//        )
+//
+//        when(mockUserRegisterConnector.createNewIndividualUser(Matchers.any[UserRegister]()))
+//          .thenReturn(Future.successful(UserRegisterServerErrorResponse(INTERNAL_SERVER_ERROR)))
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe INTERNAL_SERVER_ERROR
+//      }
+//
+//      "all entered data is valid but the server responds with a code that isn't 2xx, 4xx or 5xx" in new Setup {
+//        val request = FakeRequest().withFormUrlEncodedBody(
+//          "firstName" -> "testFirstName",
+//          "lastName" -> "testLastName",
+//          "userName" -> "testUserName",
+//          "email" -> "test@email.com",
+//          "password" -> "testPassword",
+//          "confirmPassword" -> "testPassword"
+//        )
+//
+//        when(mockUserRegisterConnector.createNewIndividualUser(Matchers.any[UserRegister]()))
+//          .thenReturn(Future.successful(UserRegisterErrorResponse(700)))
+//
+//        val result = testController.submit()(request)
+//        status(result) mustBe INTERNAL_SERVER_ERROR
+//      }
+//    }
+  //}
 }
