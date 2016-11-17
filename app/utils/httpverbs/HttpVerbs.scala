@@ -71,4 +71,12 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
   def destroySession(url : String, sessionId : String)(implicit format: Format[String]) : Future[WSResponse] = {
     get[String](url, sessionId)
   }
+
+  def checkUserName(url : String, username : String)(implicit format: Format[String]) : Future[WSResponse] = {
+    get[String](url, username)
+  }
+
+  def checkEmailAddress(url : String, email : String)(implicit format: Format[String]) : Future[WSResponse] = {
+    get[String](url, email)
+  }
 }

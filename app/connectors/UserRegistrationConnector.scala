@@ -62,4 +62,20 @@ trait UserRegistrationConnector extends FrontendConfiguration {
         processStatusCode(resp.status)
     }
   }
+
+  def checkUserName(username : String) : Future[Boolean] = {
+    http.checkUserName(s"$apiCall/check-user-name", username) map {
+      resp =>
+        Logger.info(s"[UserRegistrationConnector] - [checkUserName] Response body : ${resp.body}")
+        resp.body.toBoolean
+    }
+  }
+
+  def checkEmailAddress(email : String) : Future[Boolean] = {
+    http.checkEmailAddress(s"$apiCall/check-email", email) map {
+      resp =>
+        Logger.info(s"[UserRegistrationConnector] - [checkEmailAddress] Response bpdy ${resp.body}")
+        resp.body.toBoolean
+    }
+  }
 }
