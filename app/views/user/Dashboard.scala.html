@@ -1,4 +1,8 @@
-@(userInformation : UserAccount)(implicit request : Request[_])
+@import models.accounts.UserAccount
+@import models.accounts.UserProfile
+@(userInformation : UserAccount, profile : Form[UserProfile])(implicit request : Request[_])
+
+@import views.html.helpers.{textInput, disabledTextInput}
 
 @main_template(title = "CJWW Account - dashboard") {
     <div class="top-block-single">
@@ -26,7 +30,7 @@
                             <li class="list-group-item">@userInformation.userName</li>
                             <li class="list-group-item">@userInformation.email</li>
                             <li class="list-group-item">
-                                <button class="btn btn-primary">Change password</button>
+                                <button class="btn btn-primary"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Edit profile</button>
                             </li>
                         </ul>
                     </div>
@@ -35,6 +39,58 @@
                 <div class="col-md-9 col-sm-9 col-xs-12">
                     <div class="page-header">
                         <h1 id="main-title" onclick="setTitle()" class="pageTitle">Welcome @userInformation.firstName @userInformation.lastName</h1>
+                    </div>
+
+                    <div>
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation">
+                                <a href="#home" aria-controls="home" role="tab" data-toggle="tab">
+                                    <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home
+                                </a>
+                            </li>
+
+                            <li role="presentation" class="active">
+                                <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">
+                                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Profile
+                                </a>
+                            </li>
+
+                            <li role="presentation">
+                                <a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">
+                                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane" id="home">
+                                ...
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane active" id="profile">
+                                <h2>Edit your profile</h2>
+
+                                <form action="@controllers.user.routes.DashboardController.updateProfile()" method="post">
+                                    @textInput(profile("firstName"), "firstName", "First name", "First name", "text")
+
+                                    @textInput(profile("lastName"), "lastName", "Last name", "Last name", "text")
+
+                                    @disabledTextInput(profile("userName"), "userName", "User name", "User name", "text")
+
+                                    @textInput(profile("email"), "email", "Email", "Email", "text")
+
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Update your profile</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane" id="settings">
+                                ...
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

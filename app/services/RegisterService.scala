@@ -18,7 +18,7 @@
 package services
 
 import connectors.{UserRegisterResponse, UserRegistrationConnector}
-import models.UserRegister
+import models.accounts.UserRegister
 import play.api.Logger
 
 import scala.concurrent.Future

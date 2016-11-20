@@ -13,27 +13,20 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package forms
 
-package models
+import models.accounts.UserProfile
+import play.api.data.Form
+import play.api.data.Forms._
 
-import play.api.libs.json.Json
+object UserProfileForm {
 
-import security.Encryption.sha512
-
-case class UserRegister(firstName: String,
-                        lastName: String,
-                        userName: String,
-                        email: String,
-                        password: String,
-                        confirmPassword: String) {
-
-  def encryptPasswords : UserRegister = {
-    this.copy(password = sha512(password), confirmPassword = sha512(confirmPassword))
-  }
-}
-
-object UserRegister {
-  implicit val format = Json.format[UserRegister]
-
-  def empty : UserRegister = UserRegister("","","","","","")
+  val form = Form(
+    mapping(
+      "firstName" -> nonEmptyText,
+      "lastName" -> nonEmptyText,
+      "userName" -> nonEmptyText,
+      "email" -> nonEmptyText
+    )(UserProfile.apply)(UserProfile.unapply)
+  )
 }

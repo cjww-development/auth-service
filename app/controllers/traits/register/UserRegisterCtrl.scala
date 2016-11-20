@@ -17,8 +17,9 @@
 package controllers.traits.register
 
 import connectors._
-import models.UserRegister
 import forms.UserRegisterForm._
+import models.accounts.UserRegister
+import play.api.Logger
 import play.api.i18n.Messages.Implicits._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
@@ -40,17 +41,23 @@ trait UserRegisterCtrl extends FrontendController {
       Future.successful(Ok(UserRegisterView(RegisterUserForm.fill(UserRegister.empty))))
   }
 
+  //$COVERAGE-OFF$
   def submit : Action[AnyContent] = Action.async {
     implicit request =>
       RegisterUserForm.bindFromRequest.fold(
-        errors => Future.successful(BadRequest(UserRegisterView(errors))),
-        newUser =>
+        errors => {
+          Logger.debug("NO BAD REQUEST WITH ERRORS")
+          Future.successful(BadRequest(UserRegisterView(errors)))
+        },
+        newUser => {
+          Logger.debug("NO BAD REQUEST")
           userRegister.createNewIndividualUser(newUser.encryptPasswords) map {
             case UserRegisterSuccessResponse(code) => Ok(RegisterSuccess("individual"))
             case UserRegisterClientErrorResponse(code) => BadRequest(error_template(errorMessage))
             case UserRegisterServerErrorResponse(code) => InternalServerError(error_template(errorMessage))
             case UserRegisterErrorResponse(code) => InternalServerError(error_template(errorMessage))
           }
+        }
       )
   }
 }

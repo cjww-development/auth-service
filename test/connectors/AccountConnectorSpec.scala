@@ -13,39 +13,43 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package controllers
+package connectors
 
-import connectors._
-import controllers.traits.register.UserRegisterCtrl
-import models.accounts.UserRegister
+import mocks.MockResponse
+import models.accounts.UserProfile
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import org.mockito.Mockito._
 import org.mockito.Matchers
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import utils.httpverbs.HttpVerbs
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
 
-class RegisterControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
+class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with MockResponse {
 
-  val mockUserRegisterConnector = mock[UserRegistrationConnector]
+  val mockHttp = mock[HttpVerbs]
 
-  val testUser = UserRegister("testFirstName","testLastName","testUserName","test@email.com","testPassword","testPassword")
+  val successResponse = mockWSResponse(OK)
+
+  val testProfile = UserProfile("testFirstName","testLastName","testUserName","test@email.com")
 
   class Setup {
-    class TestController extends UserRegisterCtrl {
-      val userRegister = mockUserRegisterConnector
-      val errorMessage = "testErrorMessage"
+    object TestConnector extends AccountConnector {
+      val http = mockHttp
     }
-
-    val testController = new TestController
   }
 
-  "show" should {
-    "return an OK" in new Setup {
-      val result = testController.show()(FakeRequest())
-      status(result) mustBe OK
+  "updateProfile" should {
+    "the http response status code" when {
+      "given a set of user profile information" in new Setup {
+        when(mockHttp.updateProfile(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(successResponse))
+
+        val result = Await.result(TestConnector.updateProfile(testProfile), 5.seconds)
+        result mustBe OK
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
-@(register: Form[models.UserRegister])(implicit request: Request[_])
+@import models.accounts.UserRegister
+@(register: Form[UserRegister])(implicit request: Request[_])
 
 @import views.html.helpers._
 @import controllers.register.{routes => registerRoutes}

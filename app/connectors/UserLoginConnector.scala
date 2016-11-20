@@ -16,7 +16,8 @@
 package connectors
 
 import config.{FrontendConfiguration, WSConfiguration}
-import models.{UserAccount, UserLogin}
+import models.UserLogin
+import models.accounts.UserAccount
 import play.api.Logger
 import security.JsonSecurity
 import utils.httpverbs.HttpVerbs

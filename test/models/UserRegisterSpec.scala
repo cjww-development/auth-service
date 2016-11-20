@@ -15,6 +15,7 @@
 // limitations under the License.
 package models
 
+import models.accounts.UserRegister
 import org.scalatestplus.play.PlaySpec
 
 class UserRegisterSpec extends PlaySpec {
