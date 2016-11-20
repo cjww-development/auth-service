@@ -23,9 +23,13 @@ import scala.concurrent.Future
 
 object Authenticated extends ActionBuilder[Request] {
   override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
-    request.session("cookieID").isEmpty match {
-      case true => Future.successful(Redirect(routes.LoginController.show(Some(request.queryString("redirect").head))))
-      case false => block(request)
+    request.session.get("cookieID") match {
+      case None =>
+        request.getQueryString("redirect") match {
+          case redirect => Future.successful(Redirect(routes.LoginController.show(redirect)))
+          case None => Future.successful(Redirect(routes.LoginController.show(None)))
+        }
+      case cookieID => block(request)
     }
   }
 }
