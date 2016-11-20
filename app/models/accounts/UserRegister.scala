@@ -13,19 +13,26 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package config
 
-import controllers.login.routes
-import play.api.mvc._
-import play.api.mvc.Results._
+package models.accounts
 
-import scala.concurrent.Future
+import play.api.libs.json.Json
+import security.Encryption.sha512
 
-object Authenticated extends ActionBuilder[Request] {
-  override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
-    request.session("cookieID").isEmpty match {
-      case true => Future.successful(Redirect(routes.LoginController.show(Some(request.queryString("redirect").head))))
-      case false => block(request)
-    }
+case class UserRegister(firstName: String,
+                        lastName: String,
+                        userName: String,
+                        email: String,
+                        password: String,
+                        confirmPassword: String) {
+
+  def encryptPasswords : UserRegister = {
+    this.copy(password = sha512(password), confirmPassword = sha512(confirmPassword))
   }
+}
+
+object UserRegister {
+  implicit val format = Json.format[UserRegister]
+
+  def empty : UserRegister = UserRegister("","","","","","")
 }

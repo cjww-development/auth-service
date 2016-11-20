@@ -16,7 +16,8 @@
 package services
 
 import connectors.{SessionStoreConnector, UserLoginConnector}
-import models.{UserAccount, UserLogin}
+import models.UserLogin
+import models.accounts.UserAccount
 import play.api.mvc.Session
 import security.JsonSecurity
 

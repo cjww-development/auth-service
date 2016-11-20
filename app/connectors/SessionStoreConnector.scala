@@ -20,6 +20,7 @@ import config.{FrontendConfiguration, WSConfiguration}
 import play.api.Logger
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
+import play.api.mvc.Request
 import security.JsonSecurity
 import utils.httpverbs.HttpVerbs
 
@@ -41,8 +42,8 @@ trait SessionStoreConnector extends FrontendConfiguration {
 
   //TODO Test this [getDataElement]
   // $COVERAGE-OFF$
-  def getDataElement[T](sessionID : String, key : String)(implicit format : Format[T]) : Future[Option[T]] = {
-    http.getDataEntry(s"$sessionStore/get-data-element", sessionID, key) map {
+  def getDataElement[T](key : String)(implicit format : Format[T], request: Request[_]) : Future[Option[T]] = {
+    http.getDataEntry(s"$sessionStore/get-data-element", request.session("cookieID"), key) map {
       data =>
         Logger.debug(s"[SessionStoreConnector] - [getDataElement] : Data from session store = ${data.body}")
         JsonSecurity.decryptInto[T](data.body)

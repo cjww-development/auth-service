@@ -18,7 +18,7 @@
 package connectors
 
 import config.{FrontendConfiguration, WSConfiguration}
-import models.UserRegister
+import models.accounts.UserRegister
 import play.api.Logger
 import utils.httpverbs.HttpVerbs
 

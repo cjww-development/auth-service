@@ -13,21 +13,27 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package models
+package connectors
 
-import java.util.UUID
+import config.{FrontendConfiguration, WSConfiguration}
+import models.accounts.UserProfile
+import play.api.libs.ws.WSResponse
+import utils.httpverbs.HttpVerbs
 
-import play.api.libs.json.Json
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-case class UserAccount(_id : Option[String], firstName : String, lastName : String, userName : String, email : String, password : String) {
-  def sessionMap : Map[String, String] =
-    Map(
-      "cookieID" -> s"session-${UUID.randomUUID().toString}",
-      "_id" -> _id.get,
-      "firstName" -> firstName,
-      "lastName" -> lastName)
+object AccountConnector extends AccountConnector with WSConfiguration {
+  val http = new HttpVerbs(getWSClient)
 }
 
-object UserAccount {
-  implicit val format = Json.format[UserAccount]
+trait AccountConnector extends FrontendConfiguration {
+
+  val http : HttpVerbs
+
+  def updateProfile(userProfile: UserProfile) : Future[Int] = {
+    http.updateProfile(s"$apiCall/update-profile", userProfile) map {
+      _.status
+    }
+  }
 }

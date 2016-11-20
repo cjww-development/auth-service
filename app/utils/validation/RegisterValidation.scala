@@ -17,7 +17,7 @@
 package utils.validation
 
 import connectors.UserRegistrationConnector
-import models.UserRegister
+import models.accounts.UserRegister
 import play.api.Logger
 import play.api.data.Forms._
 import play.api.data.Mapping

@@ -16,7 +16,7 @@
 
 package forms
 
-import models.UserRegister
+import models.accounts.UserRegister
 import play.api.data.Form
 import play.api.data.Forms._
 import utils.validation.RegisterValidation._

@@ -16,7 +16,7 @@
 
 package security
 
-import models.UserRegister
+import models.accounts.UserRegister
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 

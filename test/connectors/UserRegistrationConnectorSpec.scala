@@ -16,7 +16,7 @@
 package connectors
 
 import mocks.MockResponse
-import models.UserRegister
+import models.accounts.UserRegister
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import org.mockito.Mockito._
@@ -35,6 +35,9 @@ class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with Mo
   val clientResponse = mockWSResponse(statusCode = BAD_REQUEST)
   val serverResponse = mockWSResponse(statusCode = INTERNAL_SERVER_ERROR)
   val errorResponse = mockWSResponse(statusCode = 700)
+
+  val trueResponse = mockWSResponseWithBody("true")
+  val falseResponse = mockWSResponseWithBody("false")
 
   val testNewUser = UserRegister("testFirstName","testLastName","testUserName","testEmail","testPassword","testPassword")
 
@@ -79,6 +82,50 @@ class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with Mo
       val result = TestConnector.createNewIndividualUser(testNewUser)
 
       Await.result(result, 5.seconds) mustBe UserRegisterErrorResponse(700)
+    }
+  }
+
+  "checkUserName" should {
+    "return true" when {
+      "the given user name is in use" in new Setup {
+        when(mockHttp.checkUserName(Matchers.any(), Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(trueResponse))
+
+        val result = Await.result(TestConnector.checkUserName("testUserName"), 5.seconds)
+        result mustBe true
+      }
+    }
+
+    "return false" when {
+      "the given user name is not in use" in new Setup {
+        when(mockHttp.checkUserName(Matchers.any(), Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(falseResponse))
+
+        val result = Await.result(TestConnector.checkUserName("testUserName"), 5.seconds)
+        result mustBe false
+      }
+    }
+  }
+
+  "checkEmailAddress" should {
+    "return true" when {
+      "the given email address is in use" in new Setup {
+        when(mockHttp.checkEmailAddress(Matchers.any(), Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(trueResponse))
+
+        val result = Await.result(TestConnector.checkEmailAddress("test@email.com"), 5.seconds)
+        result mustBe true
+      }
+    }
+
+    "return false" when {
+      "the given email address is not in use" in new Setup {
+        when(mockHttp.checkEmailAddress(Matchers.any(), Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(falseResponse))
+
+        val result = Await.result(TestConnector.checkEmailAddress("test@email.com"), 5.seconds)
+        result mustBe false
+      }
     }
   }
 }

@@ -15,7 +15,8 @@
 // limitations under the License.
 package mocks
 
-import models.{UserAccount, UserLogin}
+import models.accounts.UserAccount
+import models.UserLogin
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import play.api.libs.ws.WSResponse
@@ -27,6 +28,12 @@ trait MockResponse extends MockitoSugar{
     val m = mock[WSResponse]
     when(m.status).thenReturn(statusCode)
     when(m.body).thenReturn(body)
+    m
+  }
+
+  def mockWSResponseWithBody(data : String) : WSResponse = {
+    val m = mock[WSResponse]
+    when(m.body).thenReturn(data)
     m
   }
 

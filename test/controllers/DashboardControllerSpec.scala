@@ -16,9 +16,9 @@
 
 package controllers
 
-import connectors.SessionStoreConnector
+import connectors.{AccountConnector, SessionStoreConnector}
 import controllers.traits.user.DashboardCtrl
-import models.UserAccount
+import models.accounts.{UserAccount, UserProfile}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import org.mockito.Mockito._
@@ -31,12 +31,14 @@ import scala.concurrent.Future
 class DashboardControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
 
   val mockSessionStore = mock[SessionStoreConnector]
+  val mockAccountConnector = mock[AccountConnector]
 
   val testUser = UserAccount(Some("testID"), "testFirstName", "testLastName", "testUserName", "testEmail", "testPassword")
 
   class Setup {
     class TestController extends DashboardCtrl {
       val sessionStoreConnector = mockSessionStore
+      val accountConnector = mockAccountConnector
     }
 
     val testController = new TestController
@@ -44,7 +46,7 @@ class DashboardControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
 
   "show" should {
     "return an OK" in new Setup {
-      when(mockSessionStore.getDataElement[UserAccount](Matchers.any(), Matchers.any())(Matchers.any()))
+      when(mockSessionStore.getDataElement[UserAccount](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(testUser)))
 
       val result = testController.show()(FakeRequest()
@@ -53,6 +55,53 @@ class DashboardControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
           "firstName" -> "testFirstName",
           "lastName" -> "testLastName"))
       status(result) mustBe OK
+    }
+  }
+
+  "updateProfile" should {
+    "return a bad request" when {
+      "given a set of invalid user profile information" in new Setup {
+        when(mockSessionStore.getDataElement[UserAccount](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(testUser)))
+
+        val request = FakeRequest().withFormUrlEncodedBody(
+          "firstName" -> "",
+          "lastName" -> "",
+          "userName" -> "",
+          "email" -> ""
+        ).withSession(
+          "cookieID" -> "sessionID",
+          "firstName" -> "testFirstName",
+          "lastName" -> "testLastName"
+        )
+
+        val result = testController.updateProfile()(request)
+        status(result) mustBe BAD_REQUEST
+      }
+    }
+
+    "return an Ok" when {
+      "given a set of valid user profile information" in new Setup {
+        when(mockAccountConnector.updateProfile(Matchers.any()))
+          .thenReturn(Future.successful(OK))
+
+        when(mockSessionStore.getDataElement[UserAccount](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(testUser)))
+
+        val request = FakeRequest().withFormUrlEncodedBody(
+          "firstName" -> "aaa",
+          "lastName" -> "bbb",
+          "userName" -> "testUserName",
+          "email" -> "ccc"
+        ).withSession(
+          "cookieID" -> "sessionID",
+          "firstName" -> "testFirstName",
+          "lastName" -> "testLastName"
+        )
+
+        val result = testController.updateProfile()(request)
+        status(result) mustBe OK
+      }
     }
   }
 }

@@ -15,8 +15,10 @@
 // limitations under the License.
 package controllers.traits.user
 
-import connectors.SessionStoreConnector
-import models.UserAccount
+import config.Authenticated
+import connectors.{AccountConnector, SessionStoreConnector}
+import forms.UserProfileForm
+import models.accounts.{UserAccount, UserProfile}
 import play.api.mvc.{Action, AnyContent}
 import utils.application.FrontendController
 import views.html.user.Dashboard
@@ -26,12 +28,34 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait DashboardCtrl extends FrontendController {
 
   val sessionStoreConnector : SessionStoreConnector
+  val accountConnector : AccountConnector
 
-  def show : Action[AnyContent] = Action.async {
+  def show : Action[AnyContent] = Authenticated.async {
     implicit request =>
-      sessionStoreConnector.getDataElement[UserAccount](request.session("cookieID"), "userInfo") map {
+      sessionStoreConnector.getDataElement[UserAccount]("userInfo") map {
         account =>
-          Ok(Dashboard(account.get))
+          Ok(Dashboard(account.get, UserProfileForm.form.fill(UserProfile.fromAccount(account.get))))
       }
+  }
+
+  def updateProfile() : Action[AnyContent] = Authenticated.async {
+    implicit request =>
+      UserProfileForm.form.bindFromRequest.fold(
+        errors => {
+          sessionStoreConnector.getDataElement[UserAccount]("userInfo") map {
+            account =>
+              BadRequest(Dashboard(account.get, errors))
+          }
+        },
+        valid => {
+          accountConnector.updateProfile(valid) flatMap {
+            case OK =>
+              sessionStoreConnector.getDataElement[UserAccount]("userInfo") map {
+                account =>
+                  Ok(Dashboard(account.get, UserProfileForm.form.fill(UserProfile.fromAccount(account.get))))
+              }
+          }
+        }
+      )
   }
 }

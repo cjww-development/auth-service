@@ -17,11 +17,12 @@ package controllers.user
 
 import javax.inject.Inject
 
-import connectors.SessionStoreConnector
+import connectors.{AccountConnector, SessionStoreConnector}
 import controllers.traits.user.DashboardCtrl
 import play.api.Configuration
 import play.api.i18n.MessagesApi
 
 class DashboardController @Inject() (val messagesApi: MessagesApi, configuration: Configuration) extends DashboardCtrl {
   val sessionStoreConnector = SessionStoreConnector
+  val accountConnector = AccountConnector
 }

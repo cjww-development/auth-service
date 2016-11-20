@@ -16,7 +16,7 @@
 package services
 
 import connectors._
-import models.UserRegister
+import models.accounts.UserRegister
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import org.mockito.Mockito._

@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import play.api.Logger
 import config.FrontendConfiguration
+import models.accounts.UserProfile
 import play.api.libs.json.Format
 import play.api.libs.ws.{WSClient, WSResponse}
 import security.JsonSecurity
@@ -78,5 +79,9 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
 
   def checkEmailAddress(url : String, email : String)(implicit format: Format[String]) : Future[WSResponse] = {
     get[String](url, email)
+  }
+
+  def updateProfile(url : String, profile : UserProfile) : Future[WSResponse] = {
+    post[UserProfile](url, profile)
   }
 }
