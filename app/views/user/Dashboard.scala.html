@@ -1,6 +1,7 @@
 @import models.accounts.UserAccount
 @import models.accounts.UserProfile
-@(userInformation : UserAccount, profile : Form[UserProfile])(implicit request : Request[_])
+@import models.accounts.NewPasswords
+@(userInformation : UserAccount, profile : Form[UserProfile], passwords : Form[NewPasswords])(implicit request : Request[_])
 
 @import views.html.helpers.{textInput, disabledTextInput}
 
@@ -42,7 +43,7 @@
                     </div>
 
                     <div>
-                        <ul class="nav nav-tabs" role="tablist">
+                        <ul class="nav nav-tabs nav-justified" role="tablist">
                             <li role="presentation">
                                 <a href="#home" aria-controls="home" role="tab" data-toggle="tab">
                                     <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home
@@ -82,6 +83,24 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Update your profile</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <hr>
+
+                                <h2>Change your password</h2>
+
+                                <form action="" method="post">
+                                    @textInput(passwords("oldPassword"), "oldPassword", "Old password", "Old password", "password")
+
+                                    @textInput(passwords("newPassword"), "newPassword", "New password", "New password", "password")
+
+                                    @textInput(passwords("confirmPassword"), "confirmPassword", "Confirm password", "Confirm password", "password")
+
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Change your password</button>
                                         </div>
                                     </div>
                                 </form>

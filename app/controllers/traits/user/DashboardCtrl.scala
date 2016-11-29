@@ -17,8 +17,8 @@ package controllers.traits.user
 
 import config.Authenticated
 import connectors.{AccountConnector, SessionStoreConnector}
-import forms.UserProfileForm
-import models.accounts.{UserAccount, UserProfile}
+import forms.{NewPasswordForm, UserProfileForm}
+import models.accounts.{NewPasswords, UserAccount, UserProfile}
 import play.api.mvc.{Action, AnyContent}
 import utils.application.FrontendController
 import views.html.user.Dashboard
@@ -34,7 +34,13 @@ trait DashboardCtrl extends FrontendController {
     implicit request =>
       sessionStoreConnector.getDataElement[UserAccount]("userInfo") map {
         account =>
-          Ok(Dashboard(account.get, UserProfileForm.form.fill(UserProfile.fromAccount(account.get))))
+          Ok(
+            Dashboard(
+              account.get,
+              UserProfileForm.form.fill(UserProfile.fromAccount(account.get)),
+              NewPasswordForm.form.fill(NewPasswords("","",""))
+            )
+          )
       }
   }
 
@@ -44,7 +50,13 @@ trait DashboardCtrl extends FrontendController {
         errors => {
           sessionStoreConnector.getDataElement[UserAccount]("userInfo") map {
             account =>
-              BadRequest(Dashboard(account.get, errors))
+              BadRequest(
+                Dashboard(
+                  account.get,
+                  errors,
+                  NewPasswordForm.form.fill(NewPasswords("","",""))
+                )
+              )
           }
         },
         valid => {
@@ -52,7 +64,13 @@ trait DashboardCtrl extends FrontendController {
             case OK =>
               sessionStoreConnector.getDataElement[UserAccount]("userInfo") map {
                 account =>
-                  Ok(Dashboard(account.get, UserProfileForm.form.fill(UserProfile.fromAccount(account.get))))
+                  Ok(
+                    Dashboard(
+                      account.get,
+                      UserProfileForm.form.fill(UserProfile.fromAccount(account.get)),
+                      NewPasswordForm.form.fill(NewPasswords("","",""))
+                    )
+                  )
               }
           }
         }
