@@ -17,7 +17,7 @@ package connectors
 
 import config.{FrontendConfiguration, WSConfiguration}
 import models.accounts.UserProfile
-import play.api.libs.ws.WSResponse
+import play.api.Logger
 import utils.httpverbs.HttpVerbs
 
 import scala.concurrent.Future
@@ -33,7 +33,9 @@ trait AccountConnector extends FrontendConfiguration {
 
   def updateProfile(userProfile: UserProfile) : Future[Int] = {
     http.updateProfile(s"$apiCall/update-profile", userProfile) map {
-      _.status
+      resp =>
+        Logger.info(s"[AccountConnector] - [updateProfile] Response from API Call ${resp.status} - ${resp.statusText}")
+        resp.status
     }
   }
 }

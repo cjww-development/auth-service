@@ -25,6 +25,11 @@ import utils.httpverbs.HttpVerbs
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
+sealed trait UserLoginResponse
+case class UserLoginSuccessResponse(account : UserAccount) extends UserLoginResponse
+case object UserLoginFailedResponse extends UserLoginResponse
+case object UserLoginException extends UserLoginResponse
+
 object UserLoginConnector extends UserLoginConnector with WSConfiguration {
   val http = new HttpVerbs(getWSClient)
 }
@@ -33,11 +38,14 @@ trait UserLoginConnector extends FrontendConfiguration{
 
   val http : HttpVerbs
 
-  def getUserAccountInformation(loginDetails : UserLogin) : Future[Option[UserAccount]] = {
+  def getUserAccountInformation(loginDetails : UserLogin) : Future[UserLoginResponse] = {
     http.getUserDetails[UserLogin](s"$apiCall/individual-user-login", loginDetails) map {
       resp =>
         Logger.info(s"[UserLoginConnector] [getUserAccountInformation] Response code from api call : ${resp.status} - ${resp.statusText}")
-        JsonSecurity.decryptInto[UserAccount](resp.body)
+        JsonSecurity.decryptInto[UserAccount](resp.body) match {
+          case Some(account) => UserLoginSuccessResponse(account)
+          case None => UserLoginFailedResponse
+        }
     }
   }
 }

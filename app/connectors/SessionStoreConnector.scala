@@ -36,8 +36,11 @@ trait SessionStoreConnector extends FrontendConfiguration {
   val http : HttpVerbs
 
   def cache[T](sessionId : String, data : T)(implicit format: Format[T]) : Future[WSResponse] = {
-    Logger.debug(s"data being inserted = $data")
-    http.cache[T](s"$sessionStore/cache", sessionId, data)
+    http.cache[T](s"$sessionStore/cache", sessionId, data) map {
+      resp =>
+        Logger.info(s"[SessionStoreController] - [cache] Response from API Call ${resp.status} - ${resp.statusText}")
+        resp
+    }
   }
 
   //TODO Test this [getDataElement]
@@ -45,13 +48,17 @@ trait SessionStoreConnector extends FrontendConfiguration {
   def getDataElement[T](key : String)(implicit format : Format[T], request: Request[_]) : Future[Option[T]] = {
     http.getDataEntry(s"$sessionStore/get-data-element", request.session("cookieID"), key) map {
       data =>
-        Logger.debug(s"[SessionStoreConnector] - [getDataElement] : Data from session store = ${data.body}")
+        Logger.info(s"[SessionStoreController] - [getDataElement] Response from API Call ${data.status} - ${data.statusText}")
         JsonSecurity.decryptInto[T](data.body)
     }
   }
   // $COVERAGE-ON$
 
   def destroySession(sessionId : String) : Future[WSResponse] = {
-    http.destroySession(s"$sessionStore/destroy", sessionId)
+    http.destroySession(s"$sessionStore/destroy", sessionId) map {
+      resp =>
+        Logger.info(s"[SessionStoreController] - [destroySession] Response from API Call ${resp.status} - ${resp.statusText}")
+        resp
+    }
   }
 }

@@ -16,6 +16,7 @@
 package config
 
 import controllers.login.routes
+import play.api.Logger
 import play.api.mvc._
 import play.api.mvc.Results._
 
@@ -25,6 +26,7 @@ object Authenticated extends ActionBuilder[Request] {
   override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
     request.session.get("cookieID") match {
       case None =>
+        Logger.warn("[Authenticated] No valid session detected redirecting to ")
         request.getQueryString("redirect") match {
           case redirect => Future.successful(Redirect(routes.LoginController.show(redirect)))
           case None => Future.successful(Redirect(routes.LoginController.show(None)))
