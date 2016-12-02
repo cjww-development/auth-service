@@ -37,7 +37,7 @@ class ErrorHandler @Inject()
 
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String) : Future[Result] = {
-    Logger.error(s"[ErrorHandler] - [onClientError] - Url : ${request.uri}, Status code : $statusCode, Message : $message")
+    Logger.error(s"[ErrorHandler] - [onClientError] - Url : ${request.uri}, Status code : $statusCode")
     implicit val req = buildNewRequest[String](request, "")
     statusCode match {
       case NOT_FOUND => Future.successful(NotFound(views.html.errors.NotFoundPage()))

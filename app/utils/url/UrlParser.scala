@@ -24,7 +24,7 @@ object UrlParser extends UrlParser
 trait UrlParser extends FrontendConfiguration {
 
   def serviceDirector(implicit request: Request[_]) : String = {
-    Logger.info(s"[UrlParse] [serviceDirector] - ${request.getQueryString("redirect").getOrElse("Redirecting to service selector")}")
+    Logger.info(s"[UrlParse] - [serviceDirector] ${request.getQueryString("redirect").getOrElse("Redirecting to service selector")}")
     request.getQueryString("redirect") match {
       case Some("diagnostics") => diagnosticsFrontend
       case Some("deversity") => deversityFrontend

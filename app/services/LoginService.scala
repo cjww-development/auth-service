@@ -15,11 +15,10 @@
 // limitations under the License.
 package services
 
-import connectors.{SessionStoreConnector, UserLoginConnector}
+import connectors.{SessionStoreConnector, UserLoginConnector, UserLoginFailedResponse, UserLoginSuccessResponse}
 import models.UserLogin
 import models.accounts.UserAccount
 import play.api.mvc.Session
-import security.JsonSecurity
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -37,12 +36,12 @@ trait LoginService {
 
   def processLoginAttempt(credentials : UserLogin) : Future[Option[Session]] = {
     userLogin.getUserAccountInformation(credentials.encryptPassword) flatMap {
-      case Some(user) =>
+      case UserLoginSuccessResponse(user) =>
         val session = Session(user.sessionMap)
         sessionStoreConnector.cache[UserAccount](session("cookieID"), user).map {
           _ => Some(session)
         }
-      case None => Future.successful(None)
+      case UserLoginFailedResponse => Future.successful(None)
     }
   }
 }

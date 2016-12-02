@@ -49,7 +49,7 @@ class UserLoginConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSu
         val result = TestConnector.getUserAccountInformation(testUserCredentials)
         val userDetails = Await.result(result, 5.seconds)
 
-        userDetails mustBe Some(testUserDetails)
+        userDetails mustBe UserLoginSuccessResponse(testUserDetails)
       }
     }
 
@@ -61,7 +61,7 @@ class UserLoginConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSu
         val result = TestConnector.getUserAccountInformation(testUserCredentials)
         val userDetails = Await.result(result, 5.seconds)
 
-        userDetails mustBe None
+        userDetails mustBe UserLoginFailedResponse
       }
     }
   }

@@ -19,9 +19,6 @@ package controllers.traits.register
 import connectors._
 import forms.UserRegisterForm._
 import models.accounts.UserRegister
-import play.api.Logger
-import play.api.i18n.Messages.Implicits._
-import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
 import utils.application.FrontendController
 import views.html.register.{RegisterSuccess, UserRegisterView}
@@ -46,11 +43,9 @@ trait UserRegisterCtrl extends FrontendController {
     implicit request =>
       RegisterUserForm.bindFromRequest.fold(
         errors => {
-          Logger.debug("NO BAD REQUEST WITH ERRORS")
           Future.successful(BadRequest(UserRegisterView(errors)))
         },
         newUser => {
-          Logger.debug("NO BAD REQUEST")
           userRegister.createNewIndividualUser(newUser.encryptPasswords) map {
             case UserRegisterSuccessResponse(code) => Ok(RegisterSuccess("individual"))
             case UserRegisterClientErrorResponse(code) => BadRequest(error_template(errorMessage))

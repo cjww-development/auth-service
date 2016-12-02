@@ -17,7 +17,6 @@ package controllers.redirect
 
 import javax.inject.Inject
 
-import config.FrontendConfiguration
 import controllers.traits.redirect.RedirectCtrl
 import play.api.Configuration
 import play.api.i18n.MessagesApi
