@@ -15,7 +15,7 @@
 // limitations under the License.
 package services
 
-import connectors.{SessionStoreConnector, UserLoginConnector}
+import connectors.{SessionStoreConnector, UserLoginConnector, UserLoginFailedResponse, UserLoginSuccessResponse}
 import mocks.MockResponse
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
@@ -47,7 +47,7 @@ class LoginServiceSpec extends PlaySpec with OneAppPerSuite with MockitoSugar wi
     "return a tuple containing a session and an optional string" when {
       "given valid credentials" in new Setup {
         when(mockConnector.getUserAccountInformation(Matchers.any()))
-          .thenReturn(Future.successful(Some(testUserDetails)))
+          .thenReturn(Future.successful(UserLoginSuccessResponse(testUserDetails)))
 
         when(mockSessionStoreConnector.cache(Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(successResponse))
@@ -60,7 +60,7 @@ class LoginServiceSpec extends PlaySpec with OneAppPerSuite with MockitoSugar wi
     "return none" when {
       "given invalid credentials" in new Setup {
         when(mockConnector.getUserAccountInformation(Matchers.any()))
-          .thenReturn(Future.successful(None))
+          .thenReturn(Future.successful(UserLoginFailedResponse))
 
         val result = Await.result(TestService.processLoginAttempt(testUserCredentials), 5.seconds)
         result mustBe None
