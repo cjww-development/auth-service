@@ -23,7 +23,7 @@ import config.FrontendConfiguration
 import models.accounts.UserProfile
 import play.api.libs.json.Format
 import play.api.libs.ws.{WSClient, WSResponse}
-import security.JsonSecurity
+import security.{Encryption, JsonSecurity}
 
 import scala.concurrent.Future
 
@@ -34,7 +34,7 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
     val body = encryptModel[T](data).get
     http.url(s"$url")
       .withHeaders(
-        "appID" -> APPLICATION_ID,
+        "appID" -> Encryption.sha512(APPLICATION_ID),
         "Content-Type" -> "text/plain",
         additionalHeaders
       )
@@ -47,7 +47,7 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
     val body = encryptModel[T](data).get
     http.url(s"$url")
       .withHeaders(
-        "appID" -> APPLICATION_ID,
+        "appID" -> Encryption.sha512(APPLICATION_ID),
         additionalHeaders
       )
       .withBody(body).get()
