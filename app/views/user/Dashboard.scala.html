@@ -26,111 +26,97 @@
 }
 
 @main_template(title = "CJWW Account - dashboard") {
-    <div class="top-block-single">
+    <div class="cjww-jumbo-background">
         <div class="container">
             <div class="row">
-                <div class="col-md-3 col-sm-3 col-xs-12">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <strong>This is your profile @request.session("firstName")</strong>
-                        </div>
-                        <div class="panel-body">
-                            <svg viewBox="0 0 140 140" preserveAspectRatio="xMinYMin meet">
-                                <g>
-                                    <circle fill="@colourSwitcher(scala.util.Random.nextInt(4))" r="50%" cx="50%" cy="50%" class="circle-back" />
-                                    <text fill="#ffffff" font-size="45" font-family="Verdana" x="50%" y="60%">
-                                        <tspan text-anchor="middle">@request.session("firstName").head@request.session("lastName").head</tspan>
-                                    </text>
-                                </g>
-                            </svg>
-                        </div>
+                <div class="col-md-3">
+                    <object>
+                        <svg viewBox="0 0 140 140" preserveAspectRatio="xMinYMin meet">
+                            <g>
+                                <circle fill="@colourSwitcher(scala.util.Random.nextInt(4))" r="50%" cx="50%" cy="50%" class="circle-back" />
+                                <text fill="#ffffff" font-size="45" font-family="Verdana" x="50%" y="60%">
+                                    <tspan text-anchor="middle">@request.session("firstName").head@request.session("lastName").head</tspan>
+                                </text>
+                            </g>
+                        </svg>
+                    </object>
+                </div>
+            </div>
 
-                            <!-- List group -->
-                        <ul class="list-group">
-                            <li class="list-group-item">@userInformation.firstName @userInformation.lastName</li>
-                            <li class="list-group-item">@userInformation.userName</li>
-                            <li class="list-group-item">@userInformation.email</li>
-                            <li class="list-group-item">
-                                <button class="btn btn-primary"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Edit profile</button>
-                            </li>
+            <div class="row">
+                <div class="col-md-11">
+                    <h1 id="main-title" onclick="setTitle()" class="page-title">Welcome @userInformation.firstName @userInformation.lastName</h1>
+                </div>
+
+                <div class="col-md-1">
+                    <div class="btn-group cjww-button">
+                        <button class="btn btn-default btn-lg dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>  <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> Change cover image</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Edit Profile</a></li>
                         </ul>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <div class="col-md-9 col-sm-9 col-xs-12">
-                    <div class="page-header">
-                        <h1 id="main-title" onclick="setTitle()" class="pageTitle">Welcome @userInformation.firstName @userInformation.lastName</h1>
+    <div class="top-block-single">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h2>Quick links</h2>
+                    <hr>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Edit profile</h4>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Messages <span class="badge">0</span></h4>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> View saved work</h4>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> View problem reports</h4>
+                        </a>
                     </div>
+                </div>
 
-                    <div>
-                        <ul class="nav nav-tabs nav-justified" role="tablist">
-                            <li role="presentation">
-                                <a href="#home" aria-controls="home" role="tab" data-toggle="tab">
-                                    <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home
-                                </a>
-                            </li>
+                <div class="col-md-9">
+                    <h2>Your feed</h2>
+                    <hr>
 
-                            <li role="presentation" class="active">
-                                <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">
-                                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Profile
-                                </a>
-                            </li>
-
-                            <li role="presentation">
-                                <a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">
-                                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings
-                                </a>
-                            </li>
-                        </ul>
-
-                        <div class="tab-content">
-                            <div role="tabpanel" class="tab-pane" id="home">
-                                ...
-                            </div>
-
-                            <div role="tabpanel" class="tab-pane active" id="profile">
-                                <h2>Edit your profile</h2>
-
-                                <form action="@controllers.user.routes.DashboardController.updateProfile()" method="post">
-                                    @textInput(profile("firstName"), "firstName", "First name", "First name", "text")
-
-                                    @textInput(profile("lastName"), "lastName", "Last name", "Last name", "text")
-
-                                    @disabledTextInput(profile("userName"), "userName", "User name", "User name", "text")
-
-                                    @textInput(profile("email"), "email", "Email", "Email", "text")
-
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Update your profile</button>
-                                        </div>
-                                    </div>
-                                </form>
-
-                                <hr>
-                            </div>
-
-                            <div role="tabpanel" class="tab-pane" id="settings">
-                                <h2>Change your password</h2>
-
-                                <form action="" method="post">
-                                    @textInput(passwords("oldPassword"), "oldPassword", "Old password", "Old password", "password")
-
-                                    @textInput(passwords("newPassword"), "newPassword", "New password", "New password", "password")
-
-                                    @textInput(passwords("confirmPassword"), "confirmPassword", "Confirm password", "Confirm password", "password")
-
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Change your password</button>
-                                        </div>
-                                    </div>
-                                </form>
-
-                                <hr>
-                            </div>
+                    <div class="media">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object" src="@routes.Assets.versioned("images/Deversity_Black.png")" width="100px" alt="">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">Example feed item from Deversity</h4>
+                            An action the user has performed
                         </div>
                     </div>
+
+                    <hr>
+
+                    <div class="media">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object" src="@routes.Assets.versioned("images/Diag_Black.png")" width="100px" alt="">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">Example feed item from Diagnostics</h4>
+                            An action the user has performed
+                        </div>
+                    </div>
+
+                    <hr>
                 </div>
             </div>
         </div>
