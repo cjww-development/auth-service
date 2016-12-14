@@ -13,12 +13,11 @@
 }
 
 @if(!devPhase.isEmpty) {
-    <div class="dev-banner @devPhase.replace(" ","-")-border">
-        <div class="alert" role="alert">
-            <div class="container">
-                <div class="row">
-                    <span class="@devPhase.replace(" ", "-")"><strong>@devPhase.toUpperCase()</strong></span> @determineWording - your <a href="#">feedback</a> is appreciated
-                </div>
+    <div class="alert dev-banner alert-dismissible @devPhase.replace(" ","-")-border" role="alert">
+        <div class="container">
+            <div class="row">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span class="@devPhase.replace(" ", "-")"><strong>@devPhase.toUpperCase()</strong></span> @determineWording - your <a href="#">feedback</a> is appreciated
             </div>
         </div>
     </div>
