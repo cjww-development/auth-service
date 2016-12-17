@@ -31,3 +31,16 @@ object NewPasswords {
   implicit val format = Json.format[NewPasswords]
 }
 
+case class PasswordSet(userId : String, previousPassword : String, newPassword : String)
+
+object PasswordSet {
+  implicit val format = Json.format[PasswordSet]
+
+  def create(userId : String, passwords : NewPasswords) : PasswordSet = {
+    PasswordSet(
+      userId,
+      passwords.oldPassword,
+      passwords.newPassword
+    )
+  }
+}

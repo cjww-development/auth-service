@@ -13,19 +13,16 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package forms
+package controllers.user
 
-import models.accounts.NewPasswords
-import play.api.data.Form
-import play.api.data.Forms._
-import utils.validation.RegisterValidation._
+import javax.inject.Inject
 
-object NewPasswordForm {
-  val form = Form(
-    mapping(
-      "oldPassword" -> oldPasswordCheck,
-      "newPassword" -> passwordCheck,
-      "confirmPassword" -> confirmPasswordCheck
-    )(NewPasswords.apply)(NewPasswords.unapply).verifying(profileXPasswordCheck)
-  )
+import connectors.{AccountConnector, SessionStoreConnector}
+import controllers.traits.user.EditProfileCtrl
+import play.api.Configuration
+import play.api.i18n.MessagesApi
+
+class EditProfileController @Inject()(val messagesApi: MessagesApi, configuration: Configuration) extends EditProfileCtrl {
+  val sessionStoreConnector = SessionStoreConnector
+  val accountConnector = AccountConnector
 }

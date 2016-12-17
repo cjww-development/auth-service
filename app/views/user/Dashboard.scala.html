@@ -1,9 +1,8 @@
 @import models.accounts.UserAccount
-@import models.accounts.UserProfile
-@import models.accounts.NewPasswords
-@(userInformation : UserAccount, profile : Form[UserProfile], passwords : Form[NewPasswords])(implicit request : Request[_])
 
-@import views.html.helpers.{textInput, disabledTextInput}
+@(userInformation : UserAccount)(implicit request : Request[_])
+
+@import controllers.user.{routes => userRoutes}
 
 @colourSwitcher(random : Int) = {
     @random match {
@@ -21,6 +20,21 @@
         }
         case _ => {
             #0A5A95
+        }
+    }
+}
+
+@displayNameSelector(option : String) = {
+    @option match {
+        case "full" => {
+            @userInformation.firstName @userInformation.lastName
+        }
+        case "short" => {
+            @userInformation.firstName
+        }
+
+        case "user" => {
+            @userInformation.userName
         }
     }
 }
@@ -45,7 +59,17 @@
 
             <div class="row">
                 <div class="col-md-11">
-                    <h1 id="main-title" onclick="setTitle()" class="page-title">Welcome @userInformation.firstName @userInformation.lastName</h1>
+                    <h1 id="main-title" class="page-title">Welcome
+                        @if(userInformation.settings.isDefined){
+                            @if(userInformation.settings.get.get("displayName").isDefined) {
+                                @displayNameSelector(userInformation.settings.get("displayName"))
+                            } else {
+                                @userInformation.firstName @userInformation.lastName
+                            }
+                        } else {
+                            @userInformation.firstName @userInformation.lastName
+                        }
+                    </h1>
                 </div>
 
                 <div class="col-md-1">
@@ -56,7 +80,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="#"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> Change cover image</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Edit Profile</a></li>
+                            <li><a href="@userRoutes.EditProfileController.show()"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Edit Profile</a></li>
                         </ul>
                     </div>
                 </div>
@@ -71,7 +95,7 @@
                     <h2>Quick links</h2>
                     <hr>
                     <div class="list-group">
-                        <a href="#" class="list-group-item">
+                        <a href="@userRoutes.EditProfileController.show()" class="list-group-item">
                             <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Edit profile</h4>
                         </a>
                         <a href="#" class="list-group-item">
@@ -121,24 +145,4 @@
             </div>
         </div>
     </div>
-
-    <script >
-        function setTitle() {
-            var title = document.getElementById("main-title");
-
-            var optionA = "Welcome @userInformation.firstName @userInformation.lastName";
-            var optionB = "Welcome @userInformation.firstName";
-            var optionC = "Welcome @userInformation.userName";
-
-            if(title.innerHTML == optionA) {
-                title.innerHTML = optionB;
-            } else if (title.innerHTML == optionB) {
-                title.innerHTML = optionC;
-            } else if(title.innerHTML == optionC) {
-                title.innerHTML = optionA;
-            } else {
-                title.innerHTML = "error";
-            }
-        }
-    </script>
 }

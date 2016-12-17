@@ -49,6 +49,7 @@ trait JsonSecurity extends JsonCommon {
     attempt.isSuccess match {
       case true =>
         val unlocked = new String(attempt.get)
+        Logger.debug(s"[JsonSecurity] - [decryptInto] : $unlocked")
         validate[T](unlocked)
       case false =>
         Logger.debug(s"[JsonSecurity] - [decryptInto] : Failed decryption, return None")

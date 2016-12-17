@@ -15,17 +15,14 @@
 // limitations under the License.
 package forms
 
-import models.accounts.NewPasswords
+import models.accounts.DisplayName
 import play.api.data.Form
 import play.api.data.Forms._
-import utils.validation.RegisterValidation._
 
-object NewPasswordForm {
+object DisplayNameForm {
   val form = Form(
     mapping(
-      "oldPassword" -> oldPasswordCheck,
-      "newPassword" -> passwordCheck,
-      "confirmPassword" -> confirmPasswordCheck
-    )(NewPasswords.apply)(NewPasswords.unapply).verifying(profileXPasswordCheck)
+      "displayName" -> text
+    )(DisplayName.apply)(DisplayName.unapply)
   )
 }

@@ -18,6 +18,7 @@ package services
 import connectors.{SessionStoreConnector, UserLoginConnector, UserLoginFailedResponse, UserLoginSuccessResponse}
 import models.UserLogin
 import models.accounts.UserAccount
+import play.api.Logger
 import play.api.mvc.Session
 
 import scala.concurrent.Future
@@ -38,6 +39,7 @@ trait LoginService {
     userLogin.getUserAccountInformation(credentials.encryptPassword) flatMap {
       case UserLoginSuccessResponse(user) =>
         val session = Session(user.sessionMap)
+        Logger.debug(s"[Login Service] - [processLoginAttempt] : Resp Model - $user")
         sessionStoreConnector.cache[UserAccount](session("cookieID"), user).map {
           _ => Some(session)
         }

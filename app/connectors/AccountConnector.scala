@@ -16,12 +16,21 @@
 package connectors
 
 import config.{FrontendConfiguration, WSConfiguration}
-import models.accounts.UserProfile
+import models.accounts.{AccountSettings, PasswordSet, UserProfile}
 import play.api.Logger
+import play.api.http.Status._
 import utils.httpverbs.HttpVerbs
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+
+sealed trait UpdatedPasswordResponse
+case object InvalidOldPassword extends UpdatedPasswordResponse
+case object PasswordUpdated extends UpdatedPasswordResponse
+
+sealed trait UpdatedSettingsResponse
+case object UpdatedSettingsSuccess extends UpdatedSettingsResponse
+case object UpdatedSettingsFailed extends UpdatedSettingsResponse
 
 object AccountConnector extends AccountConnector with WSConfiguration {
   val http = new HttpVerbs(getWSClient)
@@ -36,6 +45,24 @@ trait AccountConnector extends FrontendConfiguration {
       resp =>
         Logger.info(s"[AccountConnector] - [updateProfile] Response from API Call ${resp.status} - ${resp.statusText}")
         resp.status
+    }
+  }
+
+  def updatePassword(passwordSet: PasswordSet) : Future[UpdatedPasswordResponse] = {
+    http.updatePassword(s"$apiCall/update-password", passwordSet) map {
+      _.status match {
+        case CONFLICT => InvalidOldPassword
+        case OK => PasswordUpdated
+      }
+    }
+  }
+
+  def updateSettings(settings: AccountSettings) : Future[UpdatedSettingsResponse] = {
+    http.updateSettings(s"$apiCall/update-settings", settings) map {
+      _.status match {
+        case OK => UpdatedSettingsSuccess
+        case INTERNAL_SERVER_ERROR => UpdatedSettingsFailed
+      }
     }
   }
 }

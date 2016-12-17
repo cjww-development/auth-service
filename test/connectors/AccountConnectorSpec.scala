@@ -16,7 +16,7 @@
 package connectors
 
 import mocks.MockResponse
-import models.accounts.UserProfile
+import models.accounts.{AccountSettings, PasswordSet, UserProfile}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import org.mockito.Mockito._
@@ -34,6 +34,8 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
   val successResponse = mockWSResponse(OK)
 
   val testProfile = UserProfile("testFirstName","testLastName","testUserName","test@email.com")
+  val testPassSet = PasswordSet("testUserId","testOldPassword","testNewPassword")
+  val testAccSettings = AccountSettings("testUserId", Map("displayName" -> "testValue"))
 
   class Setup {
     object TestConnector extends AccountConnector {
@@ -42,13 +44,37 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
   }
 
   "updateProfile" should {
-    "the http response status code" when {
+    "return the http response status code" when {
       "given a set of user profile information" in new Setup {
         when(mockHttp.updateProfile(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(successResponse))
 
         val result = Await.result(TestConnector.updateProfile(testProfile), 5.seconds)
         result mustBe OK
+      }
+    }
+  }
+
+  "updatePassword" should {
+    "return the http response status code" when {
+      "given a PasswordSet" in new Setup {
+        when(mockHttp.updatePassword(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(successResponse))
+
+        val result = Await.result(TestConnector.updatePassword(testPassSet), 5.seconds)
+        result mustBe PasswordUpdated
+      }
+    }
+  }
+
+  "updateSettings" should {
+    "return the http response status code" when {
+      "given a set of AccSettings" in new Setup {
+        when(mockHttp.updateSettings(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(successResponse))
+
+        val result = Await.result(TestConnector.updateSettings(testAccSettings), 5.seconds)
+        result mustBe UpdatedSettingsSuccess
       }
     }
   }

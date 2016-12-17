@@ -1,0 +1,121 @@
+@import models.accounts.UserAccount
+@import models.accounts.UserProfile
+@import models.accounts.NewPasswords
+
+@import models.accounts.DisplayName
+@(userInformation : Option[UserAccount], profile : Form[UserProfile], passwords : Form[NewPasswords], displayname : Form[DisplayName])(implicit request : Request[_])
+
+@import views.html.helpers.{textInput, disabledTextInput, errorPanel, radioButton}
+
+@main_template(title = "CJWW Account - dashboard") {
+    <div class="top-block-single">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <h1>@userInformation.get.firstName @userInformation.get.lastName's <small>profile</small></h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>Basic Information</h2>
+                    <hr>
+
+                    <form action="@controllers.user.routes.EditProfileController.updateProfile()" method="post">
+                        @textInput(profile("firstName"), "firstName", "First name", "Your first name", "text")
+                        @textInput(profile("lastName"), "lastName", "Last name", "Your last name", "text")
+                        @disabledTextInput(profile("userName"), "userName", "User name", "Your user name", "text")
+                        @textInput(profile("email"), "email", "Email", "Your email address", "text")
+
+                        <div class="alert alert-warning" role="alert"><strong>You will need to log out and log back in to see these changes</strong></div>
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save</button>
+                            </div>
+                        </div>
+                        <hr>
+                    </form>
+                </div>
+
+                <div class="col-md-4">
+                    @errorPanel(profile)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>Change your password</h2>
+                    <hr>
+
+                    <form id="password" action="@controllers.user.routes.EditProfileController.updatePassword()" method="post">
+                        @textInput(profile("oldPassword"), "oldPassword", "Old password", "Your old password", "password")
+                        @textInput(profile("newPassword"), "newPassword", "New password", "Your new password", "password")
+                        @textInput(profile("confirmPassword"), "confirmPassword", "Confirm password", "Enter your new password again", "password")
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Update password</button>
+                            </div>
+                        </div>
+                        <hr>
+                    </form>
+                </div>
+
+                <div class="col-md-4">
+                    @errorPanel(passwords)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>Account settings</h2>
+                    <hr>
+
+                    <form action="@controllers.user.routes.EditProfileController.updateSettings()" method="post">
+                        <div class="well">
+                            <h3>Dashboard display name</h3>
+                            <p>This is the name displayed on your dashboard</p>
+
+                            <div class="form-group form-inline">
+                                @radioButton(displayname("displayName"), "displayName", "displayName1", "Full name", "full")
+                                @radioButton(displayname("displayName"), "displayName", "displayName2", "First name only", "short")
+                                @radioButton(displayname("displayName"), "displayName", "displayName3", "User name", "user")
+                            </div>
+
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-md-4">
+                    @errorPanel(displayname)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="panel panel-danger">
+                        <div class="panel-heading"><strong>Delete your account</strong></div>
+                        <div class="panel-body">
+                            <p class="text-danger">DANGER! This action <strong>can't</strong> be reversed</p>
+                            <p class="text-danger">You will be asked to enter your user name and password to confirm</p>
+
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete your account</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -36,44 +36,9 @@ trait DashboardCtrl extends FrontendController {
         account =>
           Ok(
             Dashboard(
-              account.get,
-              UserProfileForm.form.fill(UserProfile.fromAccount(account.get)),
-              NewPasswordForm.form.fill(NewPasswords("","",""))
+              account.get
             )
           )
       }
-  }
-
-  def updateProfile() : Action[AnyContent] = Authenticated.async {
-    implicit request =>
-      UserProfileForm.form.bindFromRequest.fold(
-        errors => {
-          sessionStoreConnector.getDataElement[UserAccount]("userInfo") map {
-            account =>
-              BadRequest(
-                Dashboard(
-                  account.get,
-                  errors,
-                  NewPasswordForm.form.fill(NewPasswords("","",""))
-                )
-              )
-          }
-        },
-        valid => {
-          accountConnector.updateProfile(valid) flatMap {
-            case OK =>
-              sessionStoreConnector.getDataElement[UserAccount]("userInfo") map {
-                account =>
-                  Ok(
-                    Dashboard(
-                      account.get,
-                      UserProfileForm.form.fill(UserProfile.fromAccount(account.get)),
-                      NewPasswordForm.form.fill(NewPasswords("","",""))
-                    )
-                  )
-              }
-          }
-        }
-      )
   }
 }

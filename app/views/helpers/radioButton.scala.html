@@ -1,0 +1,4 @@
+@(formItem : play.api.data.Field, name : String, id : String, label : String, value : String)
+
+<input type="radio" name="@name" id="@id" value="@value" @if(formItem.value.contains(value)){ checked } />
+<label class="cjww-radio" for="@id">@label</label>
