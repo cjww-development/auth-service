@@ -13,12 +13,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 package controllers
 
 import connectors.{AccountConnector, SessionStoreConnector}
-import controllers.traits.user.DashboardCtrl
-import models.accounts.{UserAccount, UserProfile}
+import controllers.traits.user.EditProfileCtrl
+import models.accounts.UserAccount
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import org.mockito.Mockito._
@@ -28,16 +27,16 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class DashboardControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
+class EditProfileControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
 
-  val mockSessionStore = mock[SessionStoreConnector]
   val mockAccountConnector = mock[AccountConnector]
+  val mockSessionStoreConnector = mock[SessionStoreConnector]
 
-  val testUser = UserAccount(Some("testID"), "testFirstName", "testLastName", "testUserName", "testEmail", "testPassword")
+  val testUser = UserAccount(Some("testUserId"),"testFirstName","testLastName","testUserName","testEmail","testPassword",None,None)
 
   class Setup {
-    class TestController extends DashboardCtrl {
-      val sessionStoreConnector = mockSessionStore
+    class TestController extends EditProfileCtrl {
+      val sessionStoreConnector = mockSessionStoreConnector
       val accountConnector = mockAccountConnector
     }
 
@@ -46,14 +45,10 @@ class DashboardControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
 
   "show" should {
     "return an OK" in new Setup {
-      when(mockSessionStore.getDataElement[UserAccount](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockSessionStoreConnector.getDataElement[UserAccount](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(testUser)))
 
-      val result = testController.show()(FakeRequest()
-        .withSession(
-          "cookieID" -> "sessionID",
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName"))
+      val result = testController.show()(FakeRequest().withSession("cookieID" -> "testUserId"))
       status(result) mustBe OK
     }
   }

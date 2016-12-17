@@ -74,7 +74,7 @@ trait UserRegistrationConnector extends FrontendConfiguration {
   def checkEmailAddress(email : String) : Future[Boolean] = {
     http.checkEmailAddress(s"$apiCall/check-email", email) map {
       resp =>
-        Logger.info(s"[UserRegistrationConnector] - [checkEmailAddress] Response bpdy ${resp.body}")
+        Logger.info(s"[UserRegistrationConnector] - [checkEmailAddress] Response body ${resp.body}")
         resp.body.toBoolean
     }
   }

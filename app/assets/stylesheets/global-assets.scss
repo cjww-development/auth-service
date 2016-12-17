@@ -23,7 +23,7 @@ body {
   padding-top: 50px;
 }
 
-//Jumbotron panels
+//Panels
 .cjww-jumbo {
   @extend .jumbotron;
   background-color: #124AA0;
@@ -66,11 +66,15 @@ body {
 
 .cjww-jumbo-background {
   @extend .cjww-jumbo;
-  background: url("/account-services/assets/images/background.jpg");
-  background-position: center;
+  background: url("/account-services/assets/images/background.jpg") fixed center no-repeat;
+  background-size: cover;
   height: auto;
   span {
     color: #000000;
+  }
+
+  p {
+    color: #FFFFFF;
   }
 }
 
@@ -103,6 +107,12 @@ body {
 
   .btn {
     color: #FFFFFF;
+  }
+}
+
+.well {
+  h3 {
+    margin-top: 0px;
   }
 }
 
@@ -231,6 +241,22 @@ svg {
   margin-top: 40px;
   margin-bottom: 10px;
   color: #000000;
+}
+
+.cjww-radio {
+  @extend .btn;
+  @extend .btn-lg;
+  @extend .btn-default;
+}
+
+[type='radio'] {
+  display: none;
+}
+
+[type='radio']:checked + label {
+  @extend .btn;
+  @extend .btn-lg;
+  @extend .btn-success;
 }
 
 //MISC

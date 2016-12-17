@@ -18,15 +18,16 @@ package forms
 import models.accounts.UserProfile
 import play.api.data.Form
 import play.api.data.Forms._
+import utils.validation.RegisterValidation._
 
 object UserProfileForm {
 
   val form = Form(
     mapping(
-      "firstName" -> nonEmptyText,
-      "lastName" -> nonEmptyText,
+      "firstName" -> firstNameChecker,
+      "lastName" -> lastNameChecker,
       "userName" -> nonEmptyText,
-      "email" -> nonEmptyText
+      "email" -> profileEmailChecker
     )(UserProfile.apply)(UserProfile.unapply)
   )
 }

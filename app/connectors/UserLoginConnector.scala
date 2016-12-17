@@ -43,7 +43,9 @@ trait UserLoginConnector extends FrontendConfiguration{
       resp =>
         Logger.info(s"[UserLoginConnector] [getUserAccountInformation] Response code from api call : ${resp.status} - ${resp.statusText}")
         JsonSecurity.decryptInto[UserAccount](resp.body) match {
-          case Some(account) => UserLoginSuccessResponse(account)
+          case Some(account) =>
+            Logger.debug(s"[UserLoginConnector] [getUserAccountInformation] Response code from api call : $account")
+            UserLoginSuccessResponse(account)
           case None => UserLoginFailedResponse
         }
     }

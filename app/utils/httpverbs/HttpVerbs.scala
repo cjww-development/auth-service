@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import play.api.Logger
 import config.FrontendConfiguration
-import models.accounts.UserProfile
+import models.accounts.{AccountSettings, PasswordSet, UserProfile}
 import play.api.libs.json.Format
 import play.api.libs.ws.{WSClient, WSResponse}
 import security.{Encryption, JsonSecurity}
@@ -83,5 +83,13 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
 
   def updateProfile(url : String, profile : UserProfile) : Future[WSResponse] = {
     post[UserProfile](url, profile)
+  }
+
+  def updatePassword(url : String, set : PasswordSet) : Future[WSResponse] = {
+    post[PasswordSet](url, set)
+  }
+
+  def updateSettings(url : String, settings: AccountSettings) : Future[WSResponse] = {
+    post[AccountSettings](url, settings)
   }
 }

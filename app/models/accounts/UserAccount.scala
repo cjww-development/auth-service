@@ -17,9 +17,18 @@ package models.accounts
 
 import java.util.UUID
 
-import play.api.libs.json.Json
+import org.joda.time.{DateTime, DateTimeZone}
+import play.api.libs.json._
 
-case class UserAccount(_id : Option[String], firstName : String, lastName : String, userName : String, email : String, password : String) {
+case class UserAccount(_id : Option[String],
+                       firstName : String,
+                       lastName : String,
+                       userName : String,
+                       email : String,
+                       password : String,
+                       settings : Option[Map[String, String]] = None,
+                       details : Option[Map[String, DateTime]] = None) {
+
   def sessionMap : Map[String, String] =
     Map(
       "cookieID" -> s"session-${UUID.randomUUID().toString}",
@@ -29,6 +38,18 @@ case class UserAccount(_id : Option[String], firstName : String, lastName : Stri
 }
 
 object UserAccount {
+
+  implicit val dateTimeRead: Reads[DateTime] =
+    (__ \ "$date").read[Long].map { dateTime =>
+      new DateTime(dateTime, DateTimeZone.UTC)
+    }
+
+  implicit val dateTimeWrite: Writes[DateTime] = new Writes[DateTime] {
+    def writes(dateTime: DateTime): JsValue = Json.obj(
+      "$date" -> dateTime.getMillis
+    )
+  }
+
   implicit val format = Json.format[UserAccount]
 }
 

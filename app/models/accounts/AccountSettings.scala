@@ -16,31 +16,22 @@
 package models.accounts
 
 import play.api.libs.json.Json
-import security.Encryption.sha512
 
-case class NewPasswords(oldPassword : String, newPassword : String, confirmPassword : String) {
-  def encrypt : NewPasswords =
-    copy(
-      oldPassword = sha512(oldPassword),
-      newPassword = sha512(newPassword),
-      confirmPassword = sha512(confirmPassword)
-    )
+case class AccountSettings(userId : String, settings : Map[String, String])
+
+object AccountSettings {
+  implicit val format = Json.format[AccountSettings]
 }
 
-object NewPasswords {
-  implicit val format = Json.format[NewPasswords]
-}
+case class DisplayName(displayName : String)
 
-case class PasswordSet(userId : String, previousPassword : String, newPassword : String)
+object DisplayName {
+  implicit val format = Json.format[DisplayName]
 
-object PasswordSet {
-  implicit val format = Json.format[PasswordSet]
-
-  def create(userId : String, passwords : NewPasswords) : PasswordSet = {
-    PasswordSet(
+  def toAccountSettings(userId : String, displayNameOption: DisplayName) : AccountSettings = {
+    AccountSettings(
       userId,
-      passwords.oldPassword,
-      passwords.newPassword
+      Map("displayName" -> displayNameOption.displayName)
     )
   }
 }

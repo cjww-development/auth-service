@@ -13,19 +13,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package forms
+package services
 
-import models.accounts.NewPasswords
-import play.api.data.Form
-import play.api.data.Forms._
-import utils.validation.RegisterValidation._
+import models.accounts.UserAccount
 
-object NewPasswordForm {
-  val form = Form(
-    mapping(
-      "oldPassword" -> oldPasswordCheck,
-      "newPassword" -> passwordCheck,
-      "confirmPassword" -> confirmPasswordCheck
-    )(NewPasswords.apply)(NewPasswords.unapply).verifying(profileXPasswordCheck)
-  )
+trait EditProfileService {
+  def getDisplayOption(account : Option[UserAccount]) : String = {
+    account.isDefined match {
+      case false => "full"
+      case true => account.get.settings.isDefined match {
+        case false => "full"
+        case true => account.get.settings.get("displayName")
+      }
+    }
+  }
 }

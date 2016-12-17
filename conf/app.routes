@@ -2,19 +2,22 @@
 # This file defines all application app.routes (Higher priority app.routes first)
 # ~~~~
 
-GET     /create-an-account          controllers.register.UserRegisterController.show
-POST    /create-an-account          controllers.register.UserRegisterController.submit
+GET     /create-an-account          controllers.register.UserRegisterController.show()
+POST    /create-an-account          controllers.register.UserRegisterController.submit()
 
 GET     /login                      controllers.login.LoginController.show(redirect : Option[String])
 POST    /login                      controllers.login.LoginController.submit
 
-GET     /where-do-you-want-to-go    controllers.redirect.RedirectController.chooseService
+GET     /where-do-you-want-to-go    controllers.redirect.RedirectController.chooseService()
 
-GET     /goodbye                    controllers.login.LoginController.signOut
+GET     /goodbye                    controllers.login.LoginController.signOut()
 
 GET     /dashboard                  controllers.user.DashboardController.show
+GET     /edit-your-profile          controllers.user.EditProfileController.show
 
-POST    /update-profile             controllers.user.DashboardController.updateProfile()
+POST    /update-profile             controllers.user.EditProfileController.updateProfile()
+POST    /update-password            controllers.user.EditProfileController.updatePassword()
+POST    /update-settings            controllers.user.EditProfileController.updateSettings()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

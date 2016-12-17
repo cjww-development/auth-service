@@ -17,7 +17,7 @@
 package utils.validation
 
 import connectors.UserRegistrationConnector
-import models.accounts.UserRegister
+import models.accounts.{NewPasswords, UserRegister}
 import play.api.Logger
 import play.api.data.Forms._
 import play.api.data.Mapping
@@ -89,6 +89,32 @@ object RegisterValidation {
     text().verifying(emailConstraint)
   }
 
+  def profileEmailChecker : Mapping[String] = {
+    val validEmail = """[A-Za-z0-9\-_.]{1,126}@[A-Za-z0-9\-_.]{1,126}""".r
+    val emailConstraint : Constraint[String] = Constraint("constraints.email")({
+      text =>
+        val error = text match {
+          case validEmail() => Nil
+          case "" => Seq(ValidationError("Please enter a valid email address"))
+          case _ => if(text.length > 254) Seq(ValidationError("This is not a valid email address")) else Nil
+        }
+        if(error.isEmpty) Valid else Invalid(error)
+    })
+    text().verifying(emailConstraint)
+  }
+
+  def oldPasswordCheck: Mapping[String] = {
+    val passwordCheckConstraint: Constraint[String] = Constraint("constraints.oldPassword")({
+      text =>
+        val error = text match {
+          case "" => Seq(ValidationError("You have not entered your old password"))
+          case _ => Nil
+        }
+        if(error.isEmpty) Valid else Invalid(error)
+    })
+    text().verifying(passwordCheckConstraint)
+  }
+
   def passwordCheck: Mapping[String] = {
     val passwordCheckConstraint: Constraint[String] = Constraint("constraints.password")({
       text =>
@@ -136,6 +162,21 @@ object RegisterValidation {
         } else if(urForm.password.isEmpty) {
           Invalid(Seq(ValidationError("You have not entered a password")))
         } else if(urForm.confirmPassword.isEmpty) {
+          Invalid(Seq(ValidationError("You have not confirmed your password")))
+        } else {
+          Invalid(Seq(ValidationError("The passwords you have entered do not match")))
+        }
+    })
+  }
+
+  def profileXPasswordCheck : Constraint[NewPasswords] = {
+    Constraint("constraints.password")({
+      pForm : NewPasswords =>
+        if(pForm.newPassword == pForm.confirmPassword) {
+          Valid
+        } else if(pForm.newPassword.isEmpty) {
+          Invalid(Seq(ValidationError("You have not entered a password")))
+        } else if(pForm.confirmPassword.isEmpty) {
           Invalid(Seq(ValidationError("You have not confirmed your password")))
         } else {
           Invalid(Seq(ValidationError("The passwords you have entered do not match")))
