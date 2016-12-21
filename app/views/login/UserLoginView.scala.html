@@ -5,35 +5,59 @@
 @main_template(title = "CJWW Account - Login"){
     <div class="top-block-single">
         <div class="container">
+
             <div class="row">
-                <div class="col-md-4 col-sm-4 col-xs-12">
-                    <div class="responsive-container">
-                        <div class="dummy"></div>
+                <div class="col-md-3"></div>
 
-                        <div class="img-container">
-                            <img src="@routes.Assets.versioned("images/logo.png")" width="100%" alt="">
-                        </div>
-                    </div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
 
-                    @errorPanel(login)
-                </div>
+                            <p class="text-center">
+                                <img src="@routes.Assets.versioned("images/logo.png")" width="50%" alt="">
+                            </p>
 
-                <div class="col-md-8 col-sm-8 col-xs-12" id="welcome">
-                    <div class="page-header">
-                        <h1 class="pageTitle">Already with us?<small> Log in now!</small></h1>
-                    </div>
-
-                    <form action="" method="post">
-                        @textInput(login("userName"), "userName", "User name", "User name", "text")
-
-                        @textInput(login("password"), "password", "Password", "Password", "password")
-                        <div class="form-group">
-                            <div class="input-group">
-                                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login</button>
+                            <div class="page-header">
+                                <h1 class="pageTitle text-center">Login here</h1>
                             </div>
+
+                            <div class="row">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-6">
+                                @errorPanel(login)
+                                </div>
+                                <div class="col-md-3"></div>
+                            </div>
+
+                            <form action="" method="post">
+                                @textInput(
+                                    login("userName"),
+                                    "userName",
+                                    "<span class=\"glyphicon glyphicon-user\" aria-hidden=\"true\"></span>",
+                                    "User name",
+                                    "text",
+                                    "input-group-addon"
+                                )
+
+                                @textInput(
+                                    login("password"),
+                                    "password",
+                                    "<span class=\"glyphicon glyphicon-lock\" aria-hidden=\"true\"></span>",
+                                    "Password",
+                                    "password",
+                                    "input-group-addon"
+                                )
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <button type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
+
+                <div class="col-md-3"></div>
             </div>
         </div>
     </div>

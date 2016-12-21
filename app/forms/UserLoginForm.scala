@@ -18,12 +18,13 @@ package forms
 import models.UserLogin
 import play.api.data.Form
 import play.api.data.Forms._
+import utils.validation.RegisterValidation._
 
 object UserLoginForm {
   val loginForm = Form(
     mapping(
-      "userName" -> nonEmptyText,
-      "password" -> nonEmptyText
+      "userName" -> userNameEntered,
+      "password" -> passwordCheck
     )(UserLogin.apply)(UserLogin.unapply)
   )
 }

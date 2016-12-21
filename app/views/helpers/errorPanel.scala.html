@@ -6,7 +6,9 @@
 
         <ul class="list-group">
         @for(error <- form.errors) {
-            <li class="list-group-item">@error.message</li>
+            @if(error.message != "") {
+                <a href="#@error.key" class="list-group-item">@error.message</a>
+            }
         }
         </ul>
     </div>

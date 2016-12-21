@@ -73,6 +73,18 @@ object RegisterValidation {
     text().verifying(userNameConstraint)
   }
 
+  def userNameEntered : Mapping[String] = {
+    val userNameConstraint : Constraint[String] = Constraint("constraints.userName")({
+      text =>
+        val error = text match {
+          case "" => Seq(ValidationError("You have not entered your user name"))
+          case _ => Nil
+        }
+        if(error.isEmpty) Valid else Invalid(error)
+    })
+    text.verifying(userNameConstraint)
+  }
+
   def emailChecker : Mapping[String] = {
     val validEmail = """[A-Za-z0-9\-_.]{1,126}@[A-Za-z0-9\-_.]{1,126}""".r
     val emailConstraint : Constraint[String] = Constraint("constraints.email")({
