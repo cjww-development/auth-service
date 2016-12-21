@@ -116,6 +116,15 @@ body {
   }
 }
 
+.error-panel {
+  border-left: 10px solid #C5282F;
+
+  p {
+    font-size: 17px;
+    padding-left: 1em;
+  }
+}
+
 //Development banner
 .dev-banner {
   @extend .alert;
@@ -232,8 +241,14 @@ svg {
 }
 
 //Inputs
-.input-group-addon {
-  min-width:150px;
+.cjww-input-group-addon {
+  @extend .input-group-addon;
+  min-width:100px;
+}
+
+.cjww-input-group-addon-oversized {
+  @extend .input-group-addon;
+  min-width: 150px;
 }
 
 .cjww-button {

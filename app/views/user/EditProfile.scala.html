@@ -24,10 +24,10 @@
                     <hr>
 
                     <form action="@controllers.user.routes.EditProfileController.updateProfile()" method="post">
-                        @textInput(profile("firstName"), "firstName", "First name", "Your first name", "text")
-                        @textInput(profile("lastName"), "lastName", "Last name", "Your last name", "text")
-                        @disabledTextInput(profile("userName"), "userName", "User name", "Your user name", "text")
-                        @textInput(profile("email"), "email", "Email", "Your email address", "text")
+                        @textInput(profile("firstName"), "firstName", "First name", "Your first name", "text", "cjww-input-group-addon-oversized")
+                        @textInput(profile("lastName"), "lastName", "Last name", "Your last name", "text", "cjww-input-group-addon-oversized")
+                        @disabledTextInput(profile("userName"), "userName", "User name", "Your user name", "text", "cjww-input-group-addon-oversized")
+                        @textInput(profile("email"), "email", "Email", "Your email address", "text", "cjww-input-group-addon-oversized")
 
                         <div class="alert alert-warning" role="alert"><strong>You will need to log out and log back in to see these changes</strong></div>
 
@@ -51,9 +51,9 @@
                     <hr>
 
                     <form id="password" action="@controllers.user.routes.EditProfileController.updatePassword()" method="post">
-                        @textInput(profile("oldPassword"), "oldPassword", "Old password", "Your old password", "password")
-                        @textInput(profile("newPassword"), "newPassword", "New password", "Your new password", "password")
-                        @textInput(profile("confirmPassword"), "confirmPassword", "Confirm password", "Enter your new password again", "password")
+                        @textInput(profile("oldPassword"), "oldPassword", "Old password", "Your old password", "password", "cjww-input-group-addon-oversized")
+                        @textInput(profile("newPassword"), "newPassword", "New password", "Your new password", "password", "cjww-input-group-addon-oversized")
+                        @textInput(profile("confirmPassword"), "confirmPassword", "Confirm password", "Enter your new password again", "password", "cjww-input-group-addon-oversized")
 
                         <div class="form-group">
                             <div class="input-group">
@@ -96,6 +96,15 @@
 
                 <div class="col-md-4">
                     @errorPanel(displayname)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="well">
+                        <h3>Edit your cover picture</h3>
+                        <p>This is the image displayed on your dashboard</p>
+                    </div>
                 </div>
             </div>
 

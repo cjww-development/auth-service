@@ -46,7 +46,14 @@ trait LoginCtrl extends FrontendController {
         valid =>
           userLogin.processLoginAttempt(valid) map {
             case Some(session) => Redirect(serviceDirector).withSession(session)
-            case None => Ok(UserLoginView(loginForm.fill(valid).withGlobalError("Your user name or password is incorrect")))
+            case None =>
+              Ok(
+                UserLoginView(
+                  loginForm.fill(valid)
+                    .withError("userName", "Your user name or password is incorrect")
+                    .withError("password", "")
+                )
+              )
           }
       )
   }
