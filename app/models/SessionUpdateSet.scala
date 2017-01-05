@@ -13,17 +13,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package models
 
-package controllers.register
+import play.api.libs.json.Json
 
-import javax.inject.Inject
+case class SessionUpdateSet(key : String, data : String)
 
-import connectors.UserRegistrationConnector
-import controllers.traits.register.UserRegisterCtrl
-import play.api.Configuration
-import play.api.i18n.MessagesApi
-
-class UserRegisterController @Inject() (val messagesApi: MessagesApi, configuration: Configuration) extends UserRegisterCtrl {
-  val userRegister = UserRegistrationConnector
-  val errorMessage = messagesApi("cjww.auth.error.generic")
+object SessionUpdateSet {
+  implicit val format = Json.format[SessionUpdateSet]
 }

@@ -16,9 +16,11 @@
 package connectors
 
 import config.{FrontendConfiguration, WSConfiguration}
-import models.accounts.{AccountSettings, PasswordSet, UserProfile}
+import models.accounts._
 import play.api.Logger
 import play.api.http.Status._
+import play.api.libs.json.{JsArray, JsObject}
+import security.JsonSecurity
 import utils.httpverbs.HttpVerbs
 
 import scala.concurrent.Future
@@ -32,6 +34,10 @@ sealed trait UpdatedSettingsResponse
 case object UpdatedSettingsSuccess extends UpdatedSettingsResponse
 case object UpdatedSettingsFailed extends UpdatedSettingsResponse
 
+sealed trait FeedEventResponse
+case object FeedEventSuccessResponse extends FeedEventResponse
+case object FeedEventFailedResponse extends FeedEventResponse
+
 object AccountConnector extends AccountConnector with WSConfiguration {
   val http = new HttpVerbs(getWSClient)
 }
@@ -39,6 +45,13 @@ object AccountConnector extends AccountConnector with WSConfiguration {
 trait AccountConnector extends FrontendConfiguration {
 
   val http : HttpVerbs
+
+  def getAccountData(userID : String) : Future[Option[UserAccount]] = {
+    http.getUser(s"$apiCall/get-account", userID) map {
+      resp =>
+        JsonSecurity.decryptInto[UserAccount](resp.body)
+    }
+  }
 
   def updateProfile(userProfile: UserProfile) : Future[Int] = {
     http.updateProfile(s"$apiCall/update-profile", userProfile) map {
@@ -63,6 +76,30 @@ trait AccountConnector extends FrontendConfiguration {
         case OK => UpdatedSettingsSuccess
         case INTERNAL_SERVER_ERROR => UpdatedSettingsFailed
       }
+    }
+  }
+
+  def createFeedItem(feedItem: FeedItem) : Future[FeedEventResponse] = {
+    http.createFeedItem(s"$apiCall/create-feed-item", feedItem) map {
+      resp => resp.status match {
+        case OK => FeedEventSuccessResponse
+        case INTERNAL_SERVER_ERROR => FeedEventFailedResponse
+      }
+    }
+  }
+
+  def getFeedItems(userId : String) : Future[Option[List[FeedItem]]] = {
+    http.getFeed(s"$apiCall/get-feed", userId) map {
+      resp =>
+        resp.status match {
+          case NOT_FOUND => None
+          case OK =>
+            Logger.debug(s"[AccountConnector] - [getFeedItems] - Body : ${resp.body}")
+            JsonSecurity.decryptInto[JsObject](resp.body) match {
+              case None => None
+              case Some(obj) => Some(obj.value("feed-array").as[JsArray].as[List[FeedItem]])
+            }
+        }
     }
   }
 }

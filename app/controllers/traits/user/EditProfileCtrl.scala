@@ -21,7 +21,7 @@ import controllers.user.routes
 import forms.{DisplayNameForm, NewPasswordForm, UserProfileForm}
 import models.accounts._
 import play.api.mvc.{Action, AnyContent}
-import services.EditProfileService
+import services.{EditProfileService, FeedService}
 import utils.application.FrontendController
 import views.html.user.EditProfile
 
@@ -32,6 +32,8 @@ trait EditProfileCtrl extends FrontendController with EditProfileService {
 
   val sessionStoreConnector : SessionStoreConnector
   val accountConnector : AccountConnector
+  val feedEventService : FeedService
+  val editProfileService : EditProfileService
 
   def show : Action[AnyContent] = Authenticated.async {
     implicit request =>
@@ -42,7 +44,7 @@ trait EditProfileCtrl extends FrontendController with EditProfileService {
               account,
               UserProfileForm.form.fill(UserProfile.fromAccount(account.get)),
               NewPasswordForm.form.fill(NewPasswords("","","")),
-              DisplayNameForm.form.fill(DisplayName(getDisplayOption(account)))
+              DisplayNameForm.form.fill(DisplayName(getDisplayOption(account), getDisplayNameColour(account)))
             )
           )
       }
@@ -59,14 +61,20 @@ trait EditProfileCtrl extends FrontendController with EditProfileService {
                   account,
                   errors,
                   NewPasswordForm.form.fill(NewPasswords("","","")),
-                  DisplayNameForm.form.fill(DisplayName(getDisplayOption(account)))
+                  DisplayNameForm.form.fill(DisplayName(getDisplayOption(account), getDisplayNameColour(account)))
                 )
               )
           }
         },
         valid => {
-          accountConnector.updateProfile(valid) map {
-            case OK => Redirect(routes.EditProfileController.show())
+          accountConnector.updateProfile(valid) flatMap {
+            case OK =>
+              for {
+                _ <- feedEventService.basicDetailsFeedEvent
+                _ <- editProfileService.updateSession("userInfo")
+              } yield {
+                Redirect(routes.EditProfileController.show())
+              }
           }
         }
       )
@@ -83,7 +91,7 @@ trait EditProfileCtrl extends FrontendController with EditProfileService {
                   account,
                   UserProfileForm.form.fill(UserProfile.fromAccount(account.get)),
                   errors,
-                  DisplayNameForm.form.fill(DisplayName(getDisplayOption(account)))
+                  DisplayNameForm.form.fill(DisplayName(getDisplayOption(account), getDisplayNameColour(account)))
                 )
               )
           }
@@ -92,14 +100,15 @@ trait EditProfileCtrl extends FrontendController with EditProfileService {
           sessionStoreConnector.getDataElement[UserAccount]("userInfo") flatMap {
             account =>
               accountConnector.updatePassword(PasswordSet.create(account.get._id.get, valid.encrypt)) map {
-                case PasswordUpdated => Redirect(s"${routes.EditProfileController.show().url}#password")
+                case PasswordUpdated => feedEventService.passwordUpdateFeedEvent
+                  Redirect(s"${routes.EditProfileController.show().url}#password")
                 case InvalidOldPassword =>
                   BadRequest(
                     EditProfile(
                       account,
                       UserProfileForm.form.fill(UserProfile.fromAccount(account.get)),
                       NewPasswordForm.form.fill(valid).withError("oldPassword", "Your old password is incorrect"),
-                      DisplayNameForm.form.fill(DisplayName(getDisplayOption(account)))
+                      DisplayNameForm.form.fill(DisplayName(getDisplayOption(account), getDisplayNameColour(account)))
                     )
                   )
               }
@@ -127,9 +136,13 @@ trait EditProfileCtrl extends FrontendController with EditProfileService {
         valid => {
           sessionStoreConnector.getDataElement[UserAccount]("userInfo") flatMap {
             account =>
-              accountConnector.updateSettings(DisplayName.toAccountSettings(account.get._id.get, valid)) map {
-                case UpdatedSettingsSuccess => Redirect(routes.EditProfileController.show())
-                case UpdatedSettingsFailed => InternalServerError
+              accountConnector.updateSettings(DisplayName.toAccountSettings(account.get._id.get, valid)) flatMap {
+                case UpdatedSettingsSuccess =>
+                  feedEventService.accountSettingsFeedEvent
+                  editProfileService.updateSession("userInfo") map {
+                    _ => Redirect(routes.EditProfileController.show())
+                  }
+                case UpdatedSettingsFailed => Future.successful(InternalServerError)
               }
           }
         }

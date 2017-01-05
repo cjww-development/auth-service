@@ -46,6 +46,7 @@ class ErrorHandler @Inject()
   }
   override def onServerError(request: RequestHeader, exception: Throwable) : Future[Result] = {
     Logger.error(s"[ErrorHandler] - [onServerError] - exception : $exception")
+    exception.printStackTrace()
     implicit val req = buildNewRequest[String](request, "s")
     Future.successful(InternalServerError(views.html.errors.ServerError()))
   }

@@ -1,0 +1,36 @@
+@import models.accounts.FeedItem
+@(feed : Option[List[FeedItem]])
+
+@image(source : String) = {
+    @source match {
+        case "auth-service" => {
+            @{"logo"}
+        }
+        case "deversity-frontend" => {
+            @{"Deversity_Black"}
+        }
+        case "diagnostics-frontend" => {
+            @{"Diag_Black"}
+        }
+    }
+}
+
+@if(feed.isDefined) {
+    @for((feedItem, count) <- feed.get.zipWithIndex) {
+        <div class="media">
+            <div class="media-left">
+                <img class="media-object" src="@routes.Assets.versioned(s"images/${image(feedItem.sourceDetail.service).toString.replace(" ", "")}.png")" width="100px" alt="">
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">@feedItem.eventDetail.title</h4>
+                @feedItem.eventDetail.description on
+                @feedItem.generated.dayOfWeek().getAsText
+                @feedItem.generated.dayOfMonth().get()
+                @feedItem.generated.monthOfYear().getAsText()
+            </div>
+        </div>
+        <hr>
+    }
+} else {
+    <p class="text-center">There is nothing to report at the moment</p>
+}

@@ -15,16 +15,52 @@
 // limitations under the License.
 package services
 
+import connectors.{AccountConnector, SessionStoreConnector}
+import models.SessionUpdateSet
 import models.accounts.UserAccount
+import play.api.mvc.Request
+import security.JsonSecurity
+
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
+object EditProfileService extends EditProfileService {
+  val accountConnector = AccountConnector
+  val sessionStoreConnector = SessionStoreConnector
+
+}
 
 trait EditProfileService {
-  def getDisplayOption(account : Option[UserAccount]) : String = {
+
+  val accountConnector : AccountConnector
+  val sessionStoreConnector : SessionStoreConnector
+
+  def getDisplayOption(account : Option[UserAccount]) : Option[String] = {
     account.isDefined match {
-      case false => "full"
+      case false => Some("full")
       case true => account.get.settings.isDefined match {
-        case false => "full"
-        case true => account.get.settings.get("displayName")
+        case false => Some("full")
+        case true => Some(account.get.settings.get("displayName"))
       }
+    }
+  }
+
+  def getDisplayNameColour(account: Option[UserAccount]) : Option[String] = {
+    account.isDefined match {
+      case false => Some("#FFFFFF")
+      case true => account.get.settings.isDefined match {
+        case false => Some("#FFFFFF")
+        case true => account.get.settings.get.get("displayNameColour")
+      }
+    }
+  }
+
+  def updateSession(key : String)(implicit request: Request[_]) : Future[Boolean] = {
+    for {
+      Some(user) <- accountConnector.getAccountData(request.session("_id"))
+      uwr <- sessionStoreConnector.updateSession(SessionUpdateSet(key, JsonSecurity.encryptModel[UserAccount](user).get))
+    } yield {
+      uwr
     }
   }
 }

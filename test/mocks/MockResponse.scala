@@ -33,6 +33,7 @@ trait MockResponse extends MockitoSugar{
 
   def mockWSResponseWithBody(data : String) : WSResponse = {
     val m = mock[WSResponse]
+    when(m.status).thenReturn(200)
     when(m.body).thenReturn(data)
     m
   }

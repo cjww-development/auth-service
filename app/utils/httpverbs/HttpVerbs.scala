@@ -20,7 +20,8 @@ import javax.inject.Inject
 
 import play.api.Logger
 import config.FrontendConfiguration
-import models.accounts.{AccountSettings, PasswordSet, UserProfile}
+import models.SessionUpdateSet
+import models.accounts.{AccountSettings, FeedItem, PasswordSet, UserProfile}
 import play.api.libs.json.Format
 import play.api.libs.ws.{WSClient, WSResponse}
 import security.{Encryption, JsonSecurity}
@@ -69,6 +70,10 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
     get[String](url, key, "sessionID" -> sessionID)
   }
 
+  def updateSession(url : String, sessionID : String, data : SessionUpdateSet)(implicit format : Format[SessionUpdateSet]) : Future[WSResponse] = {
+    post[SessionUpdateSet](url, data, "sessionID" -> sessionID)
+  }
+
   def destroySession(url : String, sessionId : String)(implicit format: Format[String]) : Future[WSResponse] = {
     get[String](url, sessionId)
   }
@@ -91,5 +96,17 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
 
   def updateSettings(url : String, settings: AccountSettings) : Future[WSResponse] = {
     post[AccountSettings](url, settings)
+  }
+
+  def createFeedItem(url : String, item : FeedItem) : Future[WSResponse] = {
+    post[FeedItem](url, item)
+  }
+
+  def getFeed(url : String, userId : String) : Future[WSResponse] = {
+    get[String](url, userId)
+  }
+
+  def getUser(url : String, userID : String) : Future[WSResponse] = {
+    get[String](url, userID)
   }
 }

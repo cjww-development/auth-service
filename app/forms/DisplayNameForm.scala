@@ -22,7 +22,8 @@ import play.api.data.Forms._
 object DisplayNameForm {
   val form = Form(
     mapping(
-      "displayName" -> text
+      "displayName" -> optional(text),
+      "displayNameColour" -> optional(text)
     )(DisplayName.apply)(DisplayName.unapply)
   )
 }

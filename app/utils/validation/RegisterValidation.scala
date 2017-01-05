@@ -18,7 +18,6 @@ package utils.validation
 
 import connectors.UserRegistrationConnector
 import models.accounts.{NewPasswords, UserRegister}
-import play.api.Logger
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}

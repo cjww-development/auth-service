@@ -16,6 +16,7 @@
 package connectors
 
 import mocks.MockResponse
+import models.SessionUpdateSet
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import utils.httpverbs.HttpVerbs
@@ -23,6 +24,7 @@ import play.api.test.Helpers._
 import org.mockito.Mockito._
 import org.mockito.Matchers
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import security.JsonSecurity
 
 import scala.concurrent.{Await, Future}
@@ -37,6 +39,8 @@ class SessionStoreConnectorSpec extends PlaySpec with OneAppPerSuite with Mockit
 
   val successResponse = mockWSResponse(statusCode = CREATED)
   val okResponse = mockWSResponse(statusCode = OK)
+
+  val iseResponse = mockWSResponse(statusCode = INTERNAL_SERVER_ERROR)
 
   val data = TestModel("string", 1)
   val getDataResponse = mockWSResponse(statusCode = CREATED, body = JsonSecurity.encryptModel[TestModel](data).get)
@@ -67,6 +71,32 @@ class SessionStoreConnectorSpec extends PlaySpec with OneAppPerSuite with Mockit
 
         val result = Await.result(TestConnector.destroySession("sessionID"), 5.seconds)
         result.status mustBe OK
+      }
+    }
+  }
+
+  "updateSession" should {
+    "return true" when {
+      "posting a session update set" in new Setup {
+        implicit val request = FakeRequest().withSession("cookieID" -> "testSessionID")
+
+        when(mockHttp.updateSession(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(okResponse))
+
+        val result = Await.result(TestConnector.updateSession(SessionUpdateSet("testKey","testData")), 5.seconds)
+        result mustBe true
+      }
+    }
+
+    "return false" when {
+      "posting a session update set" in new Setup {
+        implicit val request = FakeRequest().withSession("cookieID" -> "testSessionID")
+
+        when(mockHttp.updateSession(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(iseResponse))
+
+        val result = Await.result(TestConnector.updateSession(SessionUpdateSet("testKey","testData")), 5.seconds)
+        result mustBe false
       }
     }
   }

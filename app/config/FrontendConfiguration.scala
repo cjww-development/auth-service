@@ -21,17 +21,21 @@ import com.typesafe.config.ConfigFactory
 object FrontendConfiguration extends FrontendConfiguration
 
 trait FrontendConfiguration {
-  final val config = ConfigFactory.load
+  val config = ConfigFactory.load
 
-  final val env = config.getString("cjww.environment")
+  val env = config.getString("cjww.environment")
 
-  final val apiCall = config.getString(s"$env.routes.rest-api")
-  final val sessionStore = config.getString(s"$env.routes.session-store")
+  val apiCall = config.getString(s"$env.routes.rest-api")
+  val sessionStore = config.getString(s"$env.routes.session-store")
 
-  final val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  final val deversityFrontend = s"deversity-frontend"
-  final val hubFrontend = s"hub-frontend"
+  val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
+  val deversityFrontend = s"deversity-frontend"
+  val hubFrontend = s"hub-frontend"
 
+  val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
 
-  final val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
+  //FeedServiceConfig
+  val APPLICATION_NAME = config.getString("appName")
+  val EDIT_PROFILE = "edit-profile"
+  val TITLE = "Your profile has been updated"
 }
