@@ -85,6 +85,16 @@
                                 @radioButton(displayname("displayName"), "displayName", "displayName3", "User name", "user")
                             </div>
 
+                            <p>This the text colour of your display name</p>
+
+                            <div class="form-group">
+                                <label class="btn btn-primary" for="displayNameColour">
+                                    <span class="glyphicon glyphicon-tint" aria-hidden="true"></span>
+                                    Choose colour
+                                    <input id="displayNameColour" type="color" name="displayNameColour">
+                                </label>
+                            </div>
+
                             <div class="form-group">
                                 <div class="input-group">
                                     <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save</button>
@@ -96,15 +106,6 @@
 
                 <div class="col-md-4">
                     @errorPanel(displayname)
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="well">
-                        <h3>Edit your cover picture</h3>
-                        <p>This is the image displayed on your dashboard</p>
-                    </div>
                 </div>
             </div>
 
@@ -127,4 +128,9 @@
             </div>
         </div>
     </div>
+
+    <script>
+        console.log("@displayname("displayNameColour").value.get");
+        document.getElementById("displayNameColour").value = "@{displayname("displayNameColour").value.get}";
+    </script>
 }

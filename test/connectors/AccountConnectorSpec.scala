@@ -16,12 +16,15 @@
 package connectors
 
 import mocks.MockResponse
-import models.accounts.{AccountSettings, PasswordSet, UserProfile}
+import models.accounts._
+import org.joda.time.DateTime
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import org.mockito.Mockito._
 import org.mockito.Matchers
+import play.api.libs.json.JsObject
 import play.api.test.Helpers._
+import security.JsonSecurity
 import utils.httpverbs.HttpVerbs
 
 import scala.concurrent.{Await, Future}
@@ -31,15 +34,36 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
 
   val mockHttp = mock[HttpVerbs]
 
-  val successResponse = mockWSResponse(OK)
+  val testData =
+    """{"feed-array":[{"_id":"testID","userId":"testUserID","sourceDetail":{"service":"test-service","location":"test-location"},"eventDetail":{"title":"aaa","description":"bbb"},"generated":{"$date":1482937533812}}]}"""
 
   val testProfile = UserProfile("testFirstName","testLastName","testUserName","test@email.com")
   val testPassSet = PasswordSet("testUserId","testOldPassword","testNewPassword")
   val testAccSettings = AccountSettings("testUserId", Map("displayName" -> "testValue"))
 
+  val successResponse = mockWSResponse(OK)
+  val iseResponse = mockWSResponse(INTERNAL_SERVER_ERROR)
+  val notFoundResponse = mockWSResponse(NOT_FOUND)
+  val responseWithBody = mockWSResponseWithBody(JsonSecurity.encryptModel(testUserDetails).get)
+
+  val successResponseWB = mockWSResponse(OK, "invalidBody")
+  val successResponseWBValid = mockWSResponseWithBody(JsonSecurity.encryptModel(testData).get)
+
   class Setup {
     object TestConnector extends AccountConnector {
       val http = mockHttp
+    }
+  }
+
+  "getAccount" should {
+    "return an optional user account" when {
+      "given a userID" in new Setup {
+        when(mockHttp.getUser(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(responseWithBody))
+
+        val result = Await.result(TestConnector.getAccountData("testID"), 5.seconds)
+        result.get._id mustBe Some("testID")
+      }
     }
   }
 
@@ -75,6 +99,48 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
 
         val result = Await.result(TestConnector.updateSettings(testAccSettings), 5.seconds)
         result mustBe UpdatedSettingsSuccess
+      }
+    }
+  }
+
+  "createFeedItem" should {
+    "return a FeedEventSuccessResponse" when {
+      "a feed item is logged and saved" in new Setup {
+        when(mockHttp.createFeedItem(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(successResponse))
+
+        val result = Await.result(TestConnector.createFeedItem(FeedItem("",SourceDetail("",""), EventDetail("",""), DateTime.now())), 5.seconds)
+        result mustBe FeedEventSuccessResponse
+      }
+    }
+
+    "return a FeedEventFailedResponse" when {
+      "a feed item is not logged and saved" in new Setup {
+        when(mockHttp.createFeedItem(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(iseResponse))
+
+        val result = Await.result(TestConnector.createFeedItem(FeedItem("",SourceDetail("",""), EventDetail("",""), DateTime.now())), 5.seconds)
+        result mustBe FeedEventFailedResponse
+      }
+    }
+  }
+
+  "getFeedItems" should {
+    "return an None" when {
+      "given a userID" in new Setup {
+        when(mockHttp.getFeed(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(notFoundResponse))
+
+        val result = Await.result(TestConnector.getFeedItems("testID"), 5.seconds)
+        result mustBe None
+      }
+
+      "the response body cannot be decrypted" in new Setup {
+        when(mockHttp.getFeed(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(successResponseWB))
+
+        val result = Await.result(TestConnector.getFeedItems("testID"), 5.seconds)
+        result mustBe None
       }
     }
   }

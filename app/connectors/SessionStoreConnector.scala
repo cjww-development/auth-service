@@ -17,12 +17,14 @@
 package connectors
 
 import config.{FrontendConfiguration, WSConfiguration}
+import models.SessionUpdateSet
 import play.api.Logger
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Request
 import security.JsonSecurity
 import utils.httpverbs.HttpVerbs
+import play.api.http.Status._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -53,6 +55,15 @@ trait SessionStoreConnector extends FrontendConfiguration {
     }
   }
   // $COVERAGE-ON$
+
+  def updateSession(updateSet : SessionUpdateSet)(implicit format : Format[SessionUpdateSet], request: Request[_]) : Future[Boolean] = {
+    http.updateSession(s"$sessionStore/update-session", request.session("cookieID"), updateSet) map {
+      _.status match {
+        case OK => true
+        case INTERNAL_SERVER_ERROR => false
+      }
+    }
+  }
 
   def destroySession(sessionId : String) : Future[WSResponse] = {
     http.destroySession(s"$sessionStore/destroy", sessionId) map {

@@ -18,7 +18,8 @@ package controllers
 
 import connectors.{AccountConnector, SessionStoreConnector}
 import controllers.traits.user.DashboardCtrl
-import models.accounts.{UserAccount, UserProfile}
+import models.accounts._
+import org.joda.time.DateTime
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import org.mockito.Mockito._
@@ -49,9 +50,13 @@ class DashboardControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
       when(mockSessionStore.getDataElement[UserAccount](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(testUser)))
 
+      when(mockAccountConnector.getFeedItems(Matchers.any()))
+        .thenReturn(Future.successful(None))
+
       val result = testController.show()(FakeRequest()
         .withSession(
           "cookieID" -> "sessionID",
+          "_id" -> "testUserID",
           "firstName" -> "testFirstName",
           "lastName" -> "testLastName"))
       status(result) mustBe OK

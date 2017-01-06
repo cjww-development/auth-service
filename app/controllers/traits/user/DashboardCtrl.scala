@@ -17,8 +17,8 @@ package controllers.traits.user
 
 import config.Authenticated
 import connectors.{AccountConnector, SessionStoreConnector}
-import forms.{NewPasswordForm, UserProfileForm}
-import models.accounts.{NewPasswords, UserAccount, UserProfile}
+import models.accounts.UserAccount
+import play.api.Logger
 import play.api.mvc.{Action, AnyContent}
 import utils.application.FrontendController
 import views.html.user.Dashboard
@@ -32,13 +32,11 @@ trait DashboardCtrl extends FrontendController {
 
   def show : Action[AnyContent] = Authenticated.async {
     implicit request =>
-      sessionStoreConnector.getDataElement[UserAccount]("userInfo") map {
-        account =>
-          Ok(
-            Dashboard(
-              account.get
-            )
-          )
+      for {
+        account <- sessionStoreConnector.getDataElement[UserAccount]("userInfo")
+        feed <- accountConnector.getFeedItems(request.session("_id"))
+      } yield {
+        Ok(Dashboard(account.get, feed))
       }
   }
 }

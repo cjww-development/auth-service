@@ -21,8 +21,11 @@ import connectors.{AccountConnector, SessionStoreConnector}
 import controllers.traits.user.EditProfileCtrl
 import play.api.Configuration
 import play.api.i18n.MessagesApi
+import services.{EditProfileService, FeedService}
 
 class EditProfileController @Inject()(val messagesApi: MessagesApi, configuration: Configuration) extends EditProfileCtrl {
   val sessionStoreConnector = SessionStoreConnector
   val accountConnector = AccountConnector
+  val feedEventService = FeedService
+  val editProfileService = EditProfileService
 }

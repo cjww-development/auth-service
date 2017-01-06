@@ -17,7 +17,7 @@
 
 package utils.application
 
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Controller
 import utils.url.UrlParser
 
 trait FrontendController extends Controller with UrlParser

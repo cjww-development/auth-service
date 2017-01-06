@@ -23,7 +23,8 @@ object AccountSettings {
   implicit val format = Json.format[AccountSettings]
 }
 
-case class DisplayName(displayName : String)
+case class DisplayName(displayName : Option[String],
+                       displayNameColour : Option[String])
 
 object DisplayName {
   implicit val format = Json.format[DisplayName]
@@ -31,7 +32,10 @@ object DisplayName {
   def toAccountSettings(userId : String, displayNameOption: DisplayName) : AccountSettings = {
     AccountSettings(
       userId,
-      Map("displayName" -> displayNameOption.displayName)
+      Map(
+        "displayName" -> displayNameOption.displayName.getOrElse("full"),
+        "displayNameColour" -> displayNameOption.displayNameColour.getOrElse("#FFFFFF")
+      )
     )
   }
 }
