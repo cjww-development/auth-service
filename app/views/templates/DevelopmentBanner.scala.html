@@ -12,7 +12,7 @@
     }
 }
 
-@if(!devPhase.isEmpty) {
+@if(devPhase != "live") {
     <div class="alert dev-banner alert-dismissible @devPhase.replace(" ","-")-border" role="alert">
         <div class="container">
             <div class="row">

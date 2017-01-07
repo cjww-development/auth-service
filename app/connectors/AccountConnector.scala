@@ -94,7 +94,6 @@ trait AccountConnector extends FrontendConfiguration {
         resp.status match {
           case NOT_FOUND => None
           case OK =>
-            Logger.debug(s"[AccountConnector] - [getFeedItems] - Body : ${resp.body}")
             JsonSecurity.decryptInto[JsObject](resp.body) match {
               case None => None
               case Some(obj) => Some(obj.value("feed-array").as[JsArray].as[List[FeedItem]])

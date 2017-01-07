@@ -23,6 +23,11 @@ body {
   padding-top: 50px;
 }
 
+.navbar-with-border {
+  @extend .navbar;
+  border-bottom: solid 5px #0A5A95;
+}
+
 //Panels
 .cjww-jumbo {
   @extend .jumbotron;
