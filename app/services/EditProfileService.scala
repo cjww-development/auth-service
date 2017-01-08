@@ -60,7 +60,10 @@ trait EditProfileService {
       case false => Some("/account-services/assets/images/background.jpg")
       case true => account.get.settings.isDefined match {
         case false => Some("/account-services/assets/images/background.jpg")
-        case true => account.get.settings.get.get("displayImageURL")
+        case true => account.get.settings.get.get("displayImageURL") match {
+          case None => Some("/account-services/assets/images/background.jpg")
+          case _ => account.get.settings.get.get("displayImageURL")
+        }
       }
     }
   }
