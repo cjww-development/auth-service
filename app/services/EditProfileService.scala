@@ -55,6 +55,16 @@ trait EditProfileService {
     }
   }
 
+  def getDisplayImageURL(account: Option[UserAccount]) : Option[String] = {
+    account.isDefined match {
+      case false => None
+      case true => account.get.settings.isDefined match {
+        case false => None
+        case true => account.get.settings.get.get("displayImageURL")
+      }
+    }
+  }
+
   def updateSession(key : String)(implicit request: Request[_]) : Future[Boolean] = {
     for {
       Some(user) <- accountConnector.getAccountData(request.session("_id"))

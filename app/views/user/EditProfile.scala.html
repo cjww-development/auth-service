@@ -1,9 +1,9 @@
 @import models.accounts.UserAccount
 @import models.accounts.UserProfile
 @import models.accounts.NewPasswords
+@import models.accounts.DashboardDisplay
 
-@import models.accounts.DisplayName
-@(userInformation : Option[UserAccount], profile : Form[UserProfile], passwords : Form[NewPasswords], displayname : Form[DisplayName])(implicit request : Request[_])
+@(userInformation : Option[UserAccount], profile : Form[UserProfile], passwords : Form[NewPasswords], displayname : Form[DashboardDisplay])(implicit request : Request[_])
 
 @import views.html.helpers.{textInput, disabledTextInput, errorPanel, radioButton}
 
@@ -74,9 +74,12 @@
 
                     <form action="@controllers.user.routes.EditProfileController.updateSettings()" method="post">
                         <div class="well">
-                            <h3>Dashboard display name</h3>
-                            <p>This is the name displayed on your dashboard</p>
+                            <h3>Dashboard settings</h3>
 
+                            <p>This is your dashboard image (paste the url to your image here)</p>
+                            @textInput(displayname("displayImageURL"), "displayImageURL", "Image URL", "The URL to the image your would like on your dashboard", "text", "cjww-input-group-addon-oversized")
+
+                            <p>This is the name displayed on your dashboard</p>
                             <div class="form-group form-inline">
                                 @radioButton(displayname("displayName"), "displayName", "displayName1", "Full name", "full")
                                 @radioButton(displayname("displayName"), "displayName", "displayName2", "First name only", "short")
@@ -84,7 +87,6 @@
                             </div>
 
                             <p>This the text colour of your display name</p>
-
                             <div class="form-group">
                                 <label class="btn btn-primary" for="displayNameColour">
                                     <span class="glyphicon glyphicon-tint" aria-hidden="true"></span>

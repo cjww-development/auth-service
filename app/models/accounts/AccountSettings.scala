@@ -23,18 +23,20 @@ object AccountSettings {
   implicit val format = Json.format[AccountSettings]
 }
 
-case class DisplayName(displayName : Option[String],
-                       displayNameColour : Option[String])
+case class DashboardDisplay(displayName : Option[String],
+                            displayNameColour : Option[String],
+                            displayImageURL : Option[String])
 
-object DisplayName {
-  implicit val format = Json.format[DisplayName]
+object DashboardDisplay {
+  implicit val format = Json.format[DashboardDisplay]
 
-  def toAccountSettings(userId : String, displayNameOption: DisplayName) : AccountSettings = {
+  def toAccountSettings(userId : String, displayNameOption: DashboardDisplay) : AccountSettings = {
     AccountSettings(
       userId,
       Map(
         "displayName" -> displayNameOption.displayName.getOrElse("full"),
-        "displayNameColour" -> displayNameOption.displayNameColour.getOrElse("#FFFFFF")
+        "displayNameColour" -> displayNameOption.displayNameColour.getOrElse("#FFFFFF"),
+        "displayImageURL" -> displayNameOption.displayImageURL.getOrElse("/account-services/assets/images/background.jpg")
       )
     )
   }
