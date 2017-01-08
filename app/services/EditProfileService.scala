@@ -57,9 +57,9 @@ trait EditProfileService {
 
   def getDisplayImageURL(account: Option[UserAccount]) : Option[String] = {
     account.isDefined match {
-      case false => None
+      case false => Some("/account-services/assets/images/background.jpg")
       case true => account.get.settings.isDefined match {
-        case false => None
+        case false => Some("/account-services/assets/images/background.jpg")
         case true => account.get.settings.get.get("displayImageURL")
       }
     }
