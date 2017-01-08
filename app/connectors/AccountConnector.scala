@@ -39,7 +39,7 @@ case object FeedEventSuccessResponse extends FeedEventResponse
 case object FeedEventFailedResponse extends FeedEventResponse
 
 object AccountConnector extends AccountConnector with WSConfiguration {
-  val http = new HttpVerbs(getWSClient)
+  val http = new HttpVerbs()
 }
 
 trait AccountConnector extends FrontendConfiguration {
@@ -47,14 +47,14 @@ trait AccountConnector extends FrontendConfiguration {
   val http : HttpVerbs
 
   def getAccountData(userID : String) : Future[Option[UserAccount]] = {
-    http.getUser(s"$apiCall/get-account", userID) map {
+    http.get[String](s"$apiCall/get-account", userID) map {
       resp =>
         JsonSecurity.decryptInto[UserAccount](resp.body)
     }
   }
 
   def updateProfile(userProfile: UserProfile) : Future[Int] = {
-    http.updateProfile(s"$apiCall/update-profile", userProfile) map {
+    http.post[UserProfile](s"$apiCall/update-profile", userProfile) map {
       resp =>
         Logger.info(s"[AccountConnector] - [updateProfile] Response from API Call ${resp.status} - ${resp.statusText}")
         resp.status
@@ -62,7 +62,7 @@ trait AccountConnector extends FrontendConfiguration {
   }
 
   def updatePassword(passwordSet: PasswordSet) : Future[UpdatedPasswordResponse] = {
-    http.updatePassword(s"$apiCall/update-password", passwordSet) map {
+    http.post[PasswordSet](s"$apiCall/update-password", passwordSet) map {
       _.status match {
         case CONFLICT => InvalidOldPassword
         case OK => PasswordUpdated
@@ -71,7 +71,7 @@ trait AccountConnector extends FrontendConfiguration {
   }
 
   def updateSettings(settings: AccountSettings) : Future[UpdatedSettingsResponse] = {
-    http.updateSettings(s"$apiCall/update-settings", settings) map {
+    http.post[AccountSettings](s"$apiCall/update-settings", settings) map {
       _.status match {
         case OK => UpdatedSettingsSuccess
         case INTERNAL_SERVER_ERROR => UpdatedSettingsFailed
@@ -80,7 +80,7 @@ trait AccountConnector extends FrontendConfiguration {
   }
 
   def createFeedItem(feedItem: FeedItem) : Future[FeedEventResponse] = {
-    http.createFeedItem(s"$apiCall/create-feed-item", feedItem) map {
+    http.post[FeedItem](s"$apiCall/create-feed-item", feedItem) map {
       resp => resp.status match {
         case OK => FeedEventSuccessResponse
         case INTERNAL_SERVER_ERROR => FeedEventFailedResponse
@@ -89,7 +89,7 @@ trait AccountConnector extends FrontendConfiguration {
   }
 
   def getFeedItems(userId : String) : Future[Option[List[FeedItem]]] = {
-    http.getFeed(s"$apiCall/get-feed", userId) map {
+    http.get[String](s"$apiCall/get-feed", userId) map {
       resp =>
         resp.status match {
           case NOT_FOUND => None

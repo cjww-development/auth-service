@@ -49,7 +49,7 @@ class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with Mo
 
   "createNewIndividualUser" should {
     "return a UserRegisterSuccessResponse" in new Setup {
-      when(mockHttp.postUser[UserRegister](Matchers.any(), Matchers.any())(Matchers.any()))
+      when(mockHttp.post[UserRegister](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(successResponse))
 
       val result = TestConnector.createNewIndividualUser(testNewUser)
@@ -58,7 +58,7 @@ class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with Mo
     }
 
     "return a UserRegisterClientErrorResponse" in new Setup {
-      when(mockHttp.postUser[UserRegister](Matchers.any(), Matchers.any())(Matchers.any()))
+      when(mockHttp.post[UserRegister](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(clientResponse))
 
       val result = TestConnector.createNewIndividualUser(testNewUser)
@@ -67,7 +67,7 @@ class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with Mo
     }
 
     "return a UserRegisterServerErrorResponse" in new Setup {
-      when(mockHttp.postUser[UserRegister](Matchers.any(), Matchers.any())(Matchers.any()))
+      when(mockHttp.post[UserRegister](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(serverResponse))
 
       val result = TestConnector.createNewIndividualUser(testNewUser)
@@ -76,7 +76,7 @@ class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with Mo
     }
 
     "return a UserRegisterErrorResponse" in new Setup {
-      when(mockHttp.postUser[UserRegister](Matchers.any(), Matchers.any())(Matchers.any()))
+      when(mockHttp.post[UserRegister](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(errorResponse))
 
       val result = TestConnector.createNewIndividualUser(testNewUser)
@@ -88,7 +88,7 @@ class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with Mo
   "checkUserName" should {
     "return true" when {
       "the given user name is in use" in new Setup {
-        when(mockHttp.checkUserName(Matchers.any(), Matchers.any())(Matchers.any()))
+        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(trueResponse))
 
         val result = Await.result(TestConnector.checkUserName("testUserName"), 5.seconds)
@@ -98,7 +98,7 @@ class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with Mo
 
     "return false" when {
       "the given user name is not in use" in new Setup {
-        when(mockHttp.checkUserName(Matchers.any(), Matchers.any())(Matchers.any()))
+        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(falseResponse))
 
         val result = Await.result(TestConnector.checkUserName("testUserName"), 5.seconds)
@@ -110,7 +110,7 @@ class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with Mo
   "checkEmailAddress" should {
     "return true" when {
       "the given email address is in use" in new Setup {
-        when(mockHttp.checkEmailAddress(Matchers.any(), Matchers.any())(Matchers.any()))
+        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(trueResponse))
 
         val result = Await.result(TestConnector.checkEmailAddress("test@email.com"), 5.seconds)
@@ -120,7 +120,7 @@ class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with Mo
 
     "return false" when {
       "the given email address is not in use" in new Setup {
-        when(mockHttp.checkEmailAddress(Matchers.any(), Matchers.any())(Matchers.any()))
+        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(falseResponse))
 
         val result = Await.result(TestConnector.checkEmailAddress("test@email.com"), 5.seconds)

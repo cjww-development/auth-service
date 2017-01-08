@@ -43,7 +43,7 @@ class UserLoginConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSu
   "getUserAccountInformation" should {
     "return an optional set of user details" when {
       "given a valid set of credentials" in new Setup {
-        when(mockHttp.getUserDetails[UserLogin](Matchers.any(), Matchers.any())(Matchers.any()))
+        when(mockHttp.get[UserLogin](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(successResponse))
 
         val result = TestConnector.getUserAccountInformation(testUserCredentials)
@@ -55,7 +55,7 @@ class UserLoginConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSu
 
     "return none" when {
       "the users credentials cannot be validated" in new Setup {
-        when(mockHttp.getUserDetails[UserLogin](Matchers.any(), Matchers.any())(Matchers.any()))
+        when(mockHttp.get[UserLogin](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(unauthorisedResponse))
 
         val result = TestConnector.getUserAccountInformation(testUserCredentials)

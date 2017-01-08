@@ -31,7 +31,7 @@ case class UserRegisterServerErrorResponse(status : Int) extends UserRegisterRes
 case class UserRegisterErrorResponse(status : Int) extends UserRegisterResponse
 
 object UserRegistrationConnector extends UserRegistrationConnector with WSConfiguration {
-  val http = new HttpVerbs(getWSClient)
+  val http = new HttpVerbs()
 }
 
 trait UserRegistrationConnector extends FrontendConfiguration {
@@ -55,7 +55,7 @@ trait UserRegistrationConnector extends FrontendConfiguration {
   }
 
   def createNewIndividualUser(userDetails : UserRegister) : Future[UserRegisterResponse] = {
-    http.postUser[UserRegister](s"$apiCall/create-new-user", userDetails) map {
+    http.post[UserRegister](s"$apiCall/create-new-user", userDetails) map {
       resp =>
         Logger.info(s"[UserRegistrationConnector] [createIndividualUser] Response code from API Call : ${resp.status} - ${resp.statusText}")
         processStatusCode(resp.status)
@@ -63,7 +63,7 @@ trait UserRegistrationConnector extends FrontendConfiguration {
   }
 
   def checkUserName(username : String) : Future[Boolean] = {
-    http.checkUserName(s"$apiCall/check-user-name", username) map {
+    http.get[String](s"$apiCall/check-user-name", username) map {
       resp =>
         Logger.info(s"[UserRegistrationConnector] - [checkUserName] Response body : ${resp.body}")
         resp.body.toBoolean
@@ -71,7 +71,7 @@ trait UserRegistrationConnector extends FrontendConfiguration {
   }
 
   def checkEmailAddress(email : String) : Future[Boolean] = {
-    http.checkEmailAddress(s"$apiCall/check-email", email) map {
+    http.get[String](s"$apiCall/check-email", email) map {
       resp =>
         Logger.info(s"[UserRegistrationConnector] - [checkEmailAddress] Response body ${resp.body}")
         resp.body.toBoolean

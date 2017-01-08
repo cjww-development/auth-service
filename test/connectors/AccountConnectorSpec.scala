@@ -58,7 +58,7 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
   "getAccount" should {
     "return an optional user account" when {
       "given a userID" in new Setup {
-        when(mockHttp.getUser(Matchers.any(), Matchers.any()))
+        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(responseWithBody))
 
         val result = Await.result(TestConnector.getAccountData("testID"), 5.seconds)
@@ -70,7 +70,7 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
   "updateProfile" should {
     "return the http response status code" when {
       "given a set of user profile information" in new Setup {
-        when(mockHttp.updateProfile(Matchers.any(), Matchers.any()))
+        when(mockHttp.post[UserProfile](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(successResponse))
 
         val result = Await.result(TestConnector.updateProfile(testProfile), 5.seconds)
@@ -82,7 +82,7 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
   "updatePassword" should {
     "return the http response status code" when {
       "given a PasswordSet" in new Setup {
-        when(mockHttp.updatePassword(Matchers.any(), Matchers.any()))
+        when(mockHttp.post[PasswordSet](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(successResponse))
 
         val result = Await.result(TestConnector.updatePassword(testPassSet), 5.seconds)
@@ -94,7 +94,7 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
   "updateSettings" should {
     "return the http response status code" when {
       "given a set of AccSettings" in new Setup {
-        when(mockHttp.updateSettings(Matchers.any(), Matchers.any()))
+        when(mockHttp.post[AccountSettings](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(successResponse))
 
         val result = Await.result(TestConnector.updateSettings(testAccSettings), 5.seconds)
@@ -106,7 +106,7 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
   "createFeedItem" should {
     "return a FeedEventSuccessResponse" when {
       "a feed item is logged and saved" in new Setup {
-        when(mockHttp.createFeedItem(Matchers.any(), Matchers.any()))
+        when(mockHttp.post[FeedItem](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(successResponse))
 
         val result = Await.result(TestConnector.createFeedItem(FeedItem("",SourceDetail("",""), EventDetail("",""), DateTime.now())), 5.seconds)
@@ -116,7 +116,7 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
 
     "return a FeedEventFailedResponse" when {
       "a feed item is not logged and saved" in new Setup {
-        when(mockHttp.createFeedItem(Matchers.any(), Matchers.any()))
+        when(mockHttp.post[FeedItem](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(iseResponse))
 
         val result = Await.result(TestConnector.createFeedItem(FeedItem("",SourceDetail("",""), EventDetail("",""), DateTime.now())), 5.seconds)
@@ -128,7 +128,7 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
   "getFeedItems" should {
     "return an None" when {
       "given a userID" in new Setup {
-        when(mockHttp.getFeed(Matchers.any(), Matchers.any()))
+        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(notFoundResponse))
 
         val result = Await.result(TestConnector.getFeedItems("testID"), 5.seconds)
@@ -136,7 +136,7 @@ class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSuga
       }
 
       "the response body cannot be decrypted" in new Setup {
-        when(mockHttp.getFeed(Matchers.any(), Matchers.any()))
+        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(successResponseWB))
 
         val result = Await.result(TestConnector.getFeedItems("testID"), 5.seconds)
