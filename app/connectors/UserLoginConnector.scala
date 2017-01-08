@@ -31,7 +31,7 @@ case object UserLoginFailedResponse extends UserLoginResponse
 case object UserLoginException extends UserLoginResponse
 
 object UserLoginConnector extends UserLoginConnector with WSConfiguration {
-  val http = new HttpVerbs(getWSClient)
+  val http = new HttpVerbs()
 }
 
 trait UserLoginConnector extends FrontendConfiguration{
@@ -39,7 +39,7 @@ trait UserLoginConnector extends FrontendConfiguration{
   val http : HttpVerbs
 
   def getUserAccountInformation(loginDetails : UserLogin) : Future[UserLoginResponse] = {
-    http.getUserDetails[UserLogin](s"$apiCall/individual-user-login", loginDetails) map {
+    http.get[UserLogin](s"$apiCall/individual-user-login", loginDetails) map {
       resp =>
         Logger.info(s"[UserLoginConnector] [getUserAccountInformation] Response code from api call : ${resp.status} - ${resp.statusText}")
         JsonSecurity.decryptInto[UserAccount](resp.body) match {

@@ -20,17 +20,15 @@ import javax.inject.Inject
 
 import play.api.Logger
 import config.FrontendConfiguration
-import models.SessionUpdateSet
-import models.accounts.{AccountSettings, FeedItem, PasswordSet, UserProfile}
 import play.api.libs.json.Format
 import play.api.libs.ws.{WSClient, WSResponse}
 import security.{Encryption, JsonSecurity}
 
 import scala.concurrent.Future
 
-class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendConfiguration {
+class HttpVerbs @Inject()(implicit http : WSClient) extends JsonSecurity with FrontendConfiguration {
 
-  private def post[T](url: String, data: T, additionalHeaders : (String, String) = "" -> "")(implicit format: Format[T]): Future[WSResponse] = {
+  def post[T](url: String, data: T, additionalHeaders : (String, String) = "" -> "")(implicit format: Format[T]): Future[WSResponse] = {
     Logger.info(s"[HttpPost] [post] Url call : $url")
     val body = encryptModel[T](data).get
     http.url(s"$url")
@@ -43,7 +41,7 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
       .post(body)
   }
 
-  private def get[T](url: String, data: T, additionalHeaders : (String, String) = "" -> "")(implicit format: Format[T]): Future[WSResponse] = {
+  def get[T](url: String, data: T, additionalHeaders : (String, String) = "" -> "")(implicit format: Format[T]): Future[WSResponse] = {
     Logger.info(s"[HttPost] [get] Url call : $url")
     val body = encryptModel[T](data).get
     http.url(s"$url")
@@ -52,61 +50,5 @@ class HttpVerbs @Inject()(http : WSClient) extends JsonSecurity with FrontendCon
         additionalHeaders
       )
       .withBody(body).get()
-  }
-
-  def postUser[T](url: String, data: T)(implicit format: Format[T]): Future[WSResponse] = {
-    post[T](url, data)
-  }
-
-  def getUserDetails[T](url: String, data: T)(implicit format: Format[T]): Future[WSResponse] = {
-    get[T](url, data)
-  }
-
-  def cache[T](url : String, sessionID : String, data : T)(implicit format: Format[T]) : Future[WSResponse] = {
-    post[T](url, data, "sessionID" -> sessionID)
-  }
-
-  def getDataEntry(url : String, sessionID : String, key : String)(implicit format: Format[String]) : Future[WSResponse] = {
-    get[String](url, key, "sessionID" -> sessionID)
-  }
-
-  def updateSession(url : String, sessionID : String, data : SessionUpdateSet)(implicit format : Format[SessionUpdateSet]) : Future[WSResponse] = {
-    post[SessionUpdateSet](url, data, "sessionID" -> sessionID)
-  }
-
-  def destroySession(url : String, sessionId : String)(implicit format: Format[String]) : Future[WSResponse] = {
-    get[String](url, sessionId)
-  }
-
-  def checkUserName(url : String, username : String)(implicit format: Format[String]) : Future[WSResponse] = {
-    get[String](url, username)
-  }
-
-  def checkEmailAddress(url : String, email : String)(implicit format: Format[String]) : Future[WSResponse] = {
-    get[String](url, email)
-  }
-
-  def updateProfile(url : String, profile : UserProfile) : Future[WSResponse] = {
-    post[UserProfile](url, profile)
-  }
-
-  def updatePassword(url : String, set : PasswordSet) : Future[WSResponse] = {
-    post[PasswordSet](url, set)
-  }
-
-  def updateSettings(url : String, settings: AccountSettings) : Future[WSResponse] = {
-    post[AccountSettings](url, settings)
-  }
-
-  def createFeedItem(url : String, item : FeedItem) : Future[WSResponse] = {
-    post[FeedItem](url, item)
-  }
-
-  def getFeed(url : String, userId : String) : Future[WSResponse] = {
-    get[String](url, userId)
-  }
-
-  def getUser(url : String, userID : String) : Future[WSResponse] = {
-    get[String](url, userID)
   }
 }

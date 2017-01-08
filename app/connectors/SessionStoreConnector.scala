@@ -30,7 +30,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object SessionStoreConnector extends SessionStoreConnector with WSConfiguration {
-  val http = new HttpVerbs(getWSClient)
+  val http = new HttpVerbs()
 }
 
 trait SessionStoreConnector extends FrontendConfiguration {
@@ -38,7 +38,7 @@ trait SessionStoreConnector extends FrontendConfiguration {
   val http : HttpVerbs
 
   def cache[T](sessionId : String, data : T)(implicit format: Format[T]) : Future[WSResponse] = {
-    http.cache[T](s"$sessionStore/cache", sessionId, data) map {
+    http.post[T](s"$sessionStore/cache", data, "sessionID" -> sessionId) map {
       resp =>
         Logger.info(s"[SessionStoreController] - [cache] Response from API Call ${resp.status} - ${resp.statusText}")
         resp
@@ -48,7 +48,7 @@ trait SessionStoreConnector extends FrontendConfiguration {
   //TODO Test this [getDataElement]
   // $COVERAGE-OFF$
   def getDataElement[T](key : String)(implicit format : Format[T], request: Request[_]) : Future[Option[T]] = {
-    http.getDataEntry(s"$sessionStore/get-data-element", request.session("cookieID"), key) map {
+    http.get[String](s"$sessionStore/get-data-element", key, "sessionID" -> request.session("cookieID")) map {
       data =>
         Logger.info(s"[SessionStoreController] - [getDataElement] Response from API Call ${data.status} - ${data.statusText}")
         JsonSecurity.decryptInto[T](data.body)
@@ -57,7 +57,7 @@ trait SessionStoreConnector extends FrontendConfiguration {
   // $COVERAGE-ON$
 
   def updateSession(updateSet : SessionUpdateSet)(implicit format : Format[SessionUpdateSet], request: Request[_]) : Future[Boolean] = {
-    http.updateSession(s"$sessionStore/update-session", request.session("cookieID"), updateSet) map {
+    http.post[SessionUpdateSet](s"$sessionStore/update-session", updateSet, "sessionID" -> request.session("cookieID")) map {
       _.status match {
         case OK => true
         case INTERNAL_SERVER_ERROR => false
@@ -66,7 +66,7 @@ trait SessionStoreConnector extends FrontendConfiguration {
   }
 
   def destroySession(sessionId : String) : Future[WSResponse] = {
-    http.destroySession(s"$sessionStore/destroy", sessionId) map {
+    http.get[String](s"$sessionStore/destroy", sessionId) map {
       resp =>
         Logger.info(s"[SessionStoreController] - [destroySession] Response from API Call ${resp.status} - ${resp.statusText}")
         resp

@@ -51,5 +51,5 @@ trait WSConfiguration {
   private val ahcConfig = ahcBuilder.build()
   private val wsClient = new AhcWSClient(ahcConfig)
 
-  def getWSClient : AhcWSClient = wsClient
+  implicit def getWSClient : AhcWSClient = wsClient
 }

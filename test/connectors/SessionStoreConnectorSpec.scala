@@ -54,7 +54,7 @@ class SessionStoreConnectorSpec extends PlaySpec with OneAppPerSuite with Mockit
   "cache" should {
     "return CREATED" when {
       "posting a session data to mongo" in new Setup {
-        when(mockHttp.cache[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
+        when(mockHttp.post[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(successResponse))
 
         val result = Await.result(TestConnector.cache("sessionID","testData"), 5.seconds)
@@ -66,7 +66,7 @@ class SessionStoreConnectorSpec extends PlaySpec with OneAppPerSuite with Mockit
   "destroySession" should {
     "return OK" when {
       "getting with session id" in new Setup {
-        when(mockHttp.destroySession(Matchers.any(), Matchers.any())(Matchers.any()))
+        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(okResponse))
 
         val result = Await.result(TestConnector.destroySession("sessionID"), 5.seconds)
@@ -80,7 +80,7 @@ class SessionStoreConnectorSpec extends PlaySpec with OneAppPerSuite with Mockit
       "posting a session update set" in new Setup {
         implicit val request = FakeRequest().withSession("cookieID" -> "testSessionID")
 
-        when(mockHttp.updateSession(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
+        when(mockHttp.post[SessionUpdateSet](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(okResponse))
 
         val result = Await.result(TestConnector.updateSession(SessionUpdateSet("testKey","testData")), 5.seconds)
@@ -92,7 +92,7 @@ class SessionStoreConnectorSpec extends PlaySpec with OneAppPerSuite with Mockit
       "posting a session update set" in new Setup {
         implicit val request = FakeRequest().withSession("cookieID" -> "testSessionID")
 
-        when(mockHttp.updateSession(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
+        when(mockHttp.post[SessionUpdateSet](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(iseResponse))
 
         val result = Await.result(TestConnector.updateSession(SessionUpdateSet("testKey","testData")), 5.seconds)
