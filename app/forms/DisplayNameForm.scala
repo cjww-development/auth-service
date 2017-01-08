@@ -15,7 +15,7 @@
 // limitations under the License.
 package forms
 
-import models.accounts.DisplayName
+import models.accounts.DashboardDisplay
 import play.api.data.Form
 import play.api.data.Forms._
 
@@ -23,7 +23,8 @@ object DisplayNameForm {
   val form = Form(
     mapping(
       "displayName" -> optional(text),
-      "displayNameColour" -> optional(text)
-    )(DisplayName.apply)(DisplayName.unapply)
+      "displayNameColour" -> optional(text),
+      "displayImageURL" -> optional(text)
+    )(DashboardDisplay.apply)(DashboardDisplay.unapply)
   )
 }

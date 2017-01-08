@@ -44,7 +44,7 @@ trait EditProfileCtrl extends FrontendController with EditProfileService {
               account,
               UserProfileForm.form.fill(UserProfile.fromAccount(account.get)),
               NewPasswordForm.form.fill(NewPasswords("","","")),
-              DisplayNameForm.form.fill(DisplayName(getDisplayOption(account), getDisplayNameColour(account)))
+              DisplayNameForm.form.fill(DashboardDisplay(getDisplayOption(account), getDisplayNameColour(account), getDisplayImageURL(account)))
             )
           )
       }
@@ -61,7 +61,7 @@ trait EditProfileCtrl extends FrontendController with EditProfileService {
                   account,
                   errors,
                   NewPasswordForm.form.fill(NewPasswords("","","")),
-                  DisplayNameForm.form.fill(DisplayName(getDisplayOption(account), getDisplayNameColour(account)))
+                  DisplayNameForm.form.fill(DashboardDisplay(getDisplayOption(account), getDisplayNameColour(account), getDisplayImageURL(account)))
                 )
               )
           }
@@ -91,7 +91,7 @@ trait EditProfileCtrl extends FrontendController with EditProfileService {
                   account,
                   UserProfileForm.form.fill(UserProfile.fromAccount(account.get)),
                   errors,
-                  DisplayNameForm.form.fill(DisplayName(getDisplayOption(account), getDisplayNameColour(account)))
+                  DisplayNameForm.form.fill(DashboardDisplay(getDisplayOption(account), getDisplayNameColour(account), getDisplayImageURL(account)))
                 )
               )
           }
@@ -108,7 +108,7 @@ trait EditProfileCtrl extends FrontendController with EditProfileService {
                       account,
                       UserProfileForm.form.fill(UserProfile.fromAccount(account.get)),
                       NewPasswordForm.form.fill(valid).withError("oldPassword", "Your old password is incorrect"),
-                      DisplayNameForm.form.fill(DisplayName(getDisplayOption(account), getDisplayNameColour(account)))
+                      DisplayNameForm.form.fill(DashboardDisplay(getDisplayOption(account), getDisplayNameColour(account), getDisplayImageURL(account)))
                     )
                   )
               }
@@ -136,7 +136,7 @@ trait EditProfileCtrl extends FrontendController with EditProfileService {
         valid => {
           sessionStoreConnector.getDataElement[UserAccount]("userInfo") flatMap {
             account =>
-              accountConnector.updateSettings(DisplayName.toAccountSettings(account.get._id.get, valid)) flatMap {
+              accountConnector.updateSettings(DashboardDisplay.toAccountSettings(account.get._id.get, valid)) flatMap {
                 case UpdatedSettingsSuccess =>
                   feedEventService.accountSettingsFeedEvent
                   editProfileService.updateSession("userInfo") map {

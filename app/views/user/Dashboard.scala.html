@@ -4,6 +4,7 @@
 
 @import controllers.user.{routes => userRoutes}
 @import views.html.helpers.feedItem
+@import services.EditProfileService.getDisplayImageURL
 
 @colourSwitcher(random : Int) = {
     @random match {
@@ -53,7 +54,7 @@
 }
 
 @main_template(title = "CJWW Account - dashboard") {
-    <div class="cjww-jumbo-background">
+    <div class="cjww-jumbo-background" style="background: url('@{getDisplayImageURL(Some(userInformation))}') fixed center no-repeat;">
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
