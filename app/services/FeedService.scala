@@ -22,6 +22,8 @@ import models.accounts.{EventDetail, FeedItem, SourceDetail}
 import org.joda.time.DateTime
 import play.api.mvc.Request
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import scala.concurrent.Future
 
 object FeedService extends FeedService {
@@ -54,5 +56,18 @@ trait FeedService extends FrontendConfiguration {
   def accountSettingsFeedEvent(implicit request: Request[_]) : Future[FeedEventResponse] = {
     val feedEvent = buildFeedItem("edit-profile","You updated your account settings")
     accountConnector.createFeedItem(feedEvent)
+  }
+
+  def processRetrievedList(implicit request: Request[_]) : Future[Option[List[FeedItem]]] = {
+    accountConnector.getFeedItems(request.session("_id")) map {
+      feed =>
+        feed.isDefined match {
+          case false => None
+          case true => feed.get.isEmpty match {
+            case true => None
+            case false => feed
+          }
+        }
+    }
   }
 }

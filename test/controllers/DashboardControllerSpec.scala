@@ -26,20 +26,21 @@ import org.mockito.Mockito._
 import org.mockito.Matchers
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.FeedService
 
 import scala.concurrent.Future
 
 class DashboardControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
 
   val mockSessionStore = mock[SessionStoreConnector]
-  val mockAccountConnector = mock[AccountConnector]
+  val mockFeedService = mock[FeedService]
 
   val testUser = UserAccount(Some("testID"), "testFirstName", "testLastName", "testUserName", "testEmail", "testPassword")
 
   class Setup {
     class TestController extends DashboardCtrl {
       val sessionStoreConnector = mockSessionStore
-      val accountConnector = mockAccountConnector
+      val feedService = mockFeedService
     }
 
     val testController = new TestController
@@ -50,7 +51,7 @@ class DashboardControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
       when(mockSessionStore.getDataElement[UserAccount](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(testUser)))
 
-      when(mockAccountConnector.getFeedItems(Matchers.any()))
+      when(mockFeedService.processRetrievedList(Matchers.any()))
         .thenReturn(Future.successful(None))
 
       val result = testController.show()(FakeRequest()

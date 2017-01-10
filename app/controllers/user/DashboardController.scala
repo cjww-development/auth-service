@@ -21,8 +21,10 @@ import connectors.{AccountConnector, SessionStoreConnector}
 import controllers.traits.user.DashboardCtrl
 import play.api.Configuration
 import play.api.i18n.MessagesApi
+import services.FeedService
 
 class DashboardController @Inject() (val messagesApi: MessagesApi, configuration: Configuration) extends DashboardCtrl {
   val sessionStoreConnector = SessionStoreConnector
   val accountConnector = AccountConnector
+  val feedService = FeedService
 }
