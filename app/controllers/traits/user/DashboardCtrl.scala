@@ -16,10 +16,10 @@
 package controllers.traits.user
 
 import config.Authenticated
-import connectors.{AccountConnector, SessionStoreConnector}
+import connectors.SessionStoreConnector
 import models.accounts.UserAccount
-import play.api.Logger
 import play.api.mvc.{Action, AnyContent}
+import services.FeedService
 import utils.application.FrontendController
 import views.html.user.Dashboard
 
@@ -28,13 +28,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait DashboardCtrl extends FrontendController {
 
   val sessionStoreConnector : SessionStoreConnector
-  val accountConnector : AccountConnector
+  val feedService : FeedService
 
   def show : Action[AnyContent] = Authenticated.async {
     implicit request =>
       for {
         account <- sessionStoreConnector.getDataElement[UserAccount]("userInfo")
-        feed <- accountConnector.getFeedItems(request.session("_id"))
+        feed <- feedService.processRetrievedList
       } yield {
         Ok(Dashboard(account.get, feed))
       }
