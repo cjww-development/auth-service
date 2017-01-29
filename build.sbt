@@ -16,11 +16,9 @@ PlayKeys.devSettings := Seq("play.server.http.port" -> "8602")
 
 libraryDependencies ++= Seq(
   cache,
-  "com.typesafe.play" %% "play-ws" % "2.5.4",
+  "com.typesafe.play" %% "play-ws" % "2.5.12",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
-  "org.mockito" % "mockito-core" % "1.8.5",
-  "org.reactivemongo" %% "reactivemongo" % "0.11.14",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14"
+  "org.mockito" % "mockito-core" % "2.2.29"
 )
 
 lazy val scoverageSettings = {

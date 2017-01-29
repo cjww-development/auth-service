@@ -1,11 +1,8 @@
-@import models.accounts.UserAccount
-@import models.accounts.UserProfile
-@import models.accounts.NewPasswords
-@import models.accounts.DashboardDisplay
+@import models.accounts.{BasicDetails, DashboardDisplay, NewPasswords, UserProfile}
+@import models.auth.AuthContext
+@(profile : Form[UserProfile], passwords : Form[NewPasswords], displayname : Form[DashboardDisplay], basicDetails : BasicDetails)(implicit request : Request[_], authContext : Option[AuthContext])
 
-@(userInformation : Option[UserAccount], profile : Form[UserProfile], passwords : Form[NewPasswords], displayname : Form[DashboardDisplay])(implicit request : Request[_])
-
-@import views.html.helpers.{textInput, disabledTextInput, errorPanel, radioButton}
+@import views.html.helpers.{disabledTextInput, errorPanel, radioButton, textInput}
 
 @main_template(title = "CJWW Account - dashboard") {
     <div class="top-block-single">
@@ -13,7 +10,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                        <h1>@userInformation.get.firstName @userInformation.get.lastName's <small>profile</small></h1>
+                        <h1>@basicDetails.firstName @basicDetails.lastName's <small>profile</small></h1>
                     </div>
                 </div>
             </div>

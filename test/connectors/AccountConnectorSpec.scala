@@ -13,135 +13,226 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package connectors
 
-import mocks.MockResponse
+import config.FrontendConfiguration
+import mocks.CJWWSpec
 import models.accounts._
 import org.joda.time.DateTime
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import utils.security.DataSecurity
 import org.mockito.Mockito._
-import org.mockito.Matchers
-import play.api.libs.json.JsObject
+import org.mockito.ArgumentMatchers
 import play.api.test.Helpers._
-import security.JsonSecurity
-import utils.httpverbs.HttpVerbs
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
-class AccountConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with MockResponse {
+class AccountConnectorSpec extends CJWWSpec {
 
-  val mockHttp = mock[HttpVerbs]
+  val successResp = mockWSResponseWithBody(DataSecurity.encryptData(testContext).get)
+  val okResp = mockWSResponse(OK)
+  val insResp = mockWSResponse(INTERNAL_SERVER_ERROR)
+  val conflictResp = mockWSResponse(CONFLICT)
 
-  val testData =
-    """{"feed-array":[{"_id":"testID","userId":"testUserID","sourceDetail":{"service":"test-service","location":"test-location"},"eventDetail":{"title":"aaa","description":"bbb"},"generated":{"$date":1482937533812}}]}"""
+  val successListResp = mockWSResponseWithBody(testEncFeedList)
+  val failedListResp = mockWSResponseWithBody("INVALID_PAYLOAD")
 
-  val testProfile = UserProfile("testFirstName","testLastName","testUserName","test@email.com")
-  val testPassSet = PasswordSet("testUserId","testOldPassword","testNewPassword")
-  val testAccSettings = AccountSettings("testUserId", Map("displayName" -> "testValue"))
+  val mockConfig : FrontendConfiguration = mock[FrontendConfiguration]
 
-  val successResponse = mockWSResponse(OK)
-  val iseResponse = mockWSResponse(INTERNAL_SERVER_ERROR)
-  val notFoundResponse = mockWSResponse(NOT_FOUND)
-  val responseWithBody = mockWSResponseWithBody(JsonSecurity.encryptModel(testUserDetails).get)
+  val testConnector = new AccountConnector(mockHttpVerbs, mockConfig)
 
-  val successResponseWB = mockWSResponse(OK, "invalidBody")
-  val successResponseWBValid = mockWSResponseWithBody(JsonSecurity.encryptModel(testData).get)
+  "getContext" should {
+    "return some context" in {
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(successResp))
 
-  class Setup {
-    object TestConnector extends AccountConnector {
-      val http = mockHttp
-    }
-  }
-
-  "getAccount" should {
-    "return an optional user account" when {
-      "given a userID" in new Setup {
-        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(responseWithBody))
-
-        val result = Await.result(TestConnector.getAccountData("testID"), 5.seconds)
-        result.get._id mustBe Some("testID")
-      }
+      val result = await(testConnector.getContext("context-1234567890"))
+      result mustBe Some(testContext)
     }
   }
 
   "updateProfile" should {
-    "return the http response status code" when {
-      "given a set of user profile information" in new Setup {
-        when(mockHttp.post[UserProfile](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(successResponse))
+    "return an OK" in {
 
-        val result = Await.result(TestConnector.updateProfile(testProfile), 5.seconds)
-        result mustBe OK
-      }
+      val testUserProfile =
+        UserProfile(
+          "testFirstName",
+          "testLastName",
+          "testUserName",
+          "test@email.com"
+        )
+
+      when(mockHttpVerbs.post(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(okResp))
+
+      val result = await(testConnector.updateProfile(testUserProfile))
+      result mustBe OK
     }
   }
 
   "updatePassword" should {
-    "return the http response status code" when {
-      "given a PasswordSet" in new Setup {
-        when(mockHttp.post[PasswordSet](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(successResponse))
 
-        val result = Await.result(TestConnector.updatePassword(testPassSet), 5.seconds)
-        result mustBe PasswordUpdated
-      }
+    val testPasswordSet = PasswordSet("user-1234567890", "testPass", "testPassNew")
+
+    "return an UpdatedSettingsSuccess" in {
+      when(mockHttpVerbs.post(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(okResp))
+
+      val result = await(testConnector.updatePassword(testPasswordSet))
+      result mustBe PasswordUpdated
+    }
+
+    "return an UpdatedSettingsFailed" in {
+      when(mockHttpVerbs.post(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(conflictResp))
+
+      val result = await(testConnector.updatePassword(testPasswordSet))
+      result mustBe InvalidOldPassword
     }
   }
 
   "updateSettings" should {
-    "return the http response status code" when {
-      "given a set of AccSettings" in new Setup {
-        when(mockHttp.post[AccountSettings](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(successResponse))
 
-        val result = Await.result(TestConnector.updateSettings(testAccSettings), 5.seconds)
-        result mustBe UpdatedSettingsSuccess
-      }
+    val testAccountSettings =
+      AccountSettings(
+        "user-1234567890",
+        Map(
+          "displayName" -> "user",
+          "displayNameColour" -> "#124AAO",
+          "displayImageURL" -> "test/link"
+        )
+      )
+
+    "return an UpdatedSettingsSuccess" in {
+      when(mockHttpVerbs.post(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(okResp))
+
+      val result = await(testConnector.updateSettings(testAccountSettings))
+      result mustBe UpdatedSettingsSuccess
+    }
+
+    "return an UpdatedSettingsFailed" in {
+      when(mockHttpVerbs.post(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(insResp))
+
+      val result = await(testConnector.updateSettings(testAccountSettings))
+      result mustBe UpdatedSettingsFailed
     }
   }
 
   "createFeedItem" should {
-    "return a FeedEventSuccessResponse" when {
-      "a feed item is logged and saved" in new Setup {
-        when(mockHttp.post[FeedItem](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(successResponse))
 
-        val result = Await.result(TestConnector.createFeedItem(FeedItem("",SourceDetail("",""), EventDetail("",""), DateTime.now())), 5.seconds)
-        result mustBe FeedEventSuccessResponse
-      }
+    val testFeedItem =
+      FeedItem(
+        "user-1234567890",
+        SourceDetail(
+          "testService",
+          "testLocation"
+        ),
+        EventDetail(
+          "testTitle",
+          "testDescription"
+        ),
+        DateTime.now()
+      )
+
+    "return a FeedEventSuccessResponse" in {
+      when(mockHttpVerbs.post(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(okResp))
+
+      val result = await(testConnector.createFeedItem(testFeedItem))
+      result mustBe FeedEventSuccessResponse
     }
 
-    "return a FeedEventFailedResponse" when {
-      "a feed item is not logged and saved" in new Setup {
-        when(mockHttp.post[FeedItem](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(iseResponse))
+    "return a FeedEventSuccessFailed" in {
+      when(mockHttpVerbs.post(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(insResp))
 
-        val result = Await.result(TestConnector.createFeedItem(FeedItem("",SourceDetail("",""), EventDetail("",""), DateTime.now())), 5.seconds)
-        result mustBe FeedEventFailedResponse
-      }
+      val result = await(testConnector.createFeedItem(testFeedItem))
+      result mustBe FeedEventFailedResponse
     }
   }
 
   "getFeedItems" should {
-    "return an None" when {
-      "given a userID" in new Setup {
-        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(notFoundResponse))
+    "return none if the list can't be decrypted" in {
+      when(mockHttpVerbs.get[String](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(failedListResp))
 
-        val result = Await.result(TestConnector.getFeedItems("testID"), 5.seconds)
-        result mustBe None
-      }
+      val result = await(testConnector.getFeedItems("user-1234567890"))
+      result mustBe None
+    }
 
-      "the response body cannot be decrypted" in new Setup {
-        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(successResponseWB))
+    "return some list of feed items if the body can be decrypted" in {
+      when(mockHttpVerbs.get[String](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(successListResp))
 
-        val result = Await.result(TestConnector.getFeedItems("testID"), 5.seconds)
-        result mustBe None
-      }
+      val result = await(testConnector.getFeedItems("user-1234567890"))
+      result.getClass mustBe classOf[Some[List[FeedItem]]]
+    }
+  }
+
+  "getBasicDetails" should {
+
+    val successBasicDetails = mockWSResponseWithBody(DataSecurity.encryptData[BasicDetails](testBasicDetails).get)
+    val failedBasicDetails = mockWSResponseWithBody("INVALID_PAYLOAD")
+
+    "return some basic details" in {
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(successBasicDetails))
+
+      val result = await(testConnector.getBasicDetails)
+      result mustBe Some(testBasicDetails)
+    }
+
+    "return none" in {
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(failedBasicDetails))
+
+      val result = await(testConnector.getBasicDetails)
+      result mustBe None
+    }
+  }
+
+  "getEnrolments" should {
+
+    val successEnrolments = mockWSResponseWithBody(DataSecurity.encryptData[Enrolments](testEnrolments).get)
+    val failedEnrolments = mockWSResponseWithBody("INVALID_PAYLOAD")
+
+    "return some enrolments" in {
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(successEnrolments))
+
+      val result = await(testConnector.getEnrolments)
+      result mustBe Some(testEnrolments)
+    }
+
+    "return none" in {
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(failedEnrolments))
+
+      val result = await(testConnector.getEnrolments)
+      result mustBe None
+    }
+  }
+
+  "getSettings" should {
+    val successSettings = mockWSResponseWithBody(DataSecurity.encryptData[Settings](testSettings).get)
+    val failedSettings = mockWSResponseWithBody("INVALID_PAYLOAD")
+
+    "return some settings" in {
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(successSettings))
+
+      val result = await(testConnector.getSettings)
+      result mustBe Some(testSettings)
+    }
+
+    "return none" in {
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(failedSettings))
+
+      val result = await(testConnector.getSettings)
+      result mustBe None
     }
   }
 }

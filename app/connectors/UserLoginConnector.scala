@@ -15,36 +15,39 @@
 // limitations under the License.
 package connectors
 
-import config.{FrontendConfiguration, WSConfiguration}
+import com.google.inject.{Inject, Singleton}
+import config.FrontendConfiguration
 import models.UserLogin
-import models.accounts.UserAccount
+import models.auth.AuthContextDetails
 import play.api.Logger
-import security.JsonSecurity
 import utils.httpverbs.HttpVerbs
+import utils.security.DataSecurity
+import play.api.http.Status.{OK, FORBIDDEN}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 sealed trait UserLoginResponse
-case class UserLoginSuccessResponse(account : UserAccount) extends UserLoginResponse
+case class  UserLoginSuccessResponse(contextDetail : AuthContextDetails) extends UserLoginResponse
 case object UserLoginFailedResponse extends UserLoginResponse
 case object UserLoginException extends UserLoginResponse
 
-object UserLoginConnector extends UserLoginConnector with WSConfiguration {
-  val http = new HttpVerbs()
-}
+@Singleton
+class UserLoginConnector @Inject()(http: HttpVerbs, config : FrontendConfiguration) {
 
-trait UserLoginConnector extends FrontendConfiguration{
-
-  val http : HttpVerbs
-
-  def getUserAccountInformation(loginDetails : UserLogin) : Future[UserLoginResponse] = {
-    http.get[UserLogin](s"$apiCall/individual-user-login", loginDetails) map {
+  def getUser(loginDetails : UserLogin) : Future[UserLoginResponse] = {
+    val enc = DataSecurity.encryptData[UserLogin](loginDetails).get
+    http.getUrl(s"${config.authMicroservice}/login?enc=$enc") map {
       resp =>
-        Logger.info(s"[UserLoginConnector] [getUserAccountInformation] Response code from api call : ${resp.status} - ${resp.statusText}")
-        JsonSecurity.decryptInto[UserAccount](resp.body) match {
-          case Some(account) => UserLoginSuccessResponse(account)
-          case None => UserLoginFailedResponse
+        Logger.info(s"[UserLoginConnector] [getUser] Response code from api call : ${resp.status} - ${resp.statusText}")
+        resp.status match {
+          case OK =>
+            DataSecurity.decryptInto[AuthContextDetails](resp.body) match {
+              case Some(context) => UserLoginSuccessResponse(context)
+              case None => UserLoginFailedResponse
+            }
+          case FORBIDDEN => UserLoginFailedResponse
+          case _ => UserLoginException
         }
     }
   }

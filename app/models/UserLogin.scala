@@ -16,9 +16,9 @@
 package models
 
 import play.api.libs.json.Json
-import security.Encryption.sha512
+import utils.security.Encryption.sha512
 
-case class UserLogin(userName : String, password : String) {
+case class UserLogin(username : String, password : String) {
   def encryptPassword : UserLogin = this.copy(password = sha512(password))
 }
 

@@ -13,22 +13,14 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package config
 
-import controllers.login.routes
-import play.api.Logger
-import play.api.mvc._
-import play.api.mvc.Results._
+import auth.{Actions, AuthActions}
+import com.google.inject.AbstractModule
 
-import scala.concurrent.Future
-
-object Authenticated extends ActionBuilder[Request] {
-  override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
-    request.session.get("cookieID") match {
-      case None =>
-        Logger.warn("[Authenticated] No valid session detected redirecting to login")
-        Future.successful(Redirect(routes.LoginController.show(request.getQueryString("redirect"))))
-      case cookieID => block(request)
-    }
+class InjectionModule extends AbstractModule {
+  override def configure() : Unit = {
+    bind(classOf[AuthActions]).to(classOf[Actions])
   }
 }

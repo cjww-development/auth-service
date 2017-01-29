@@ -16,16 +16,17 @@
 
 package config
 
+import com.google.inject.Singleton
 import com.typesafe.config.ConfigFactory
 
-object FrontendConfiguration extends FrontendConfiguration
-
-trait FrontendConfiguration {
+@Singleton
+class FrontendConfiguration {
   val config = ConfigFactory.load
 
   val env = config.getString("cjww.environment")
 
-  val apiCall = config.getString(s"$env.routes.rest-api")
+  val authMicroservice = config.getString(s"$env.routes.auth-microservice")
+  val accountsMicroservice = config.getString(s"$env.routes.accounts-microservice")
   val sessionStore = config.getString(s"$env.routes.session-store")
 
   val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")

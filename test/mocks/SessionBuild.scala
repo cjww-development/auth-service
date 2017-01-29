@@ -14,22 +14,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package forms
+package mocks
 
-import models.accounts.UserRegister
-import play.api.data.Form
-import play.api.data.Forms._
-import utils.validation.RegisterValidation._
+import play.api.test.FakeRequest
 
-object UserRegisterForm{
-  val RegisterUserForm = Form(
-    mapping(
-      "firstName" -> firstNameChecker,
-      "lastName" -> lastNameChecker,
-      "userName" -> userNameChecker,
-      "email" -> emailChecker,
-      "password" -> passwordCheck,
-      "confirmPassword" -> confirmPasswordCheck
-    )(UserRegister.apply)(UserRegister.unapply).verifying(xPasswordCheck)
-  )
+trait SessionBuild {
+
+  def appendSession(request : FakeRequest[_]) : FakeRequest[_] = {
+    request.withSession(
+      "cookieId"  -> s"session-0987654321",
+      "contextId" -> s"context-1234567890",
+      "firstName" -> "firstName",
+      "lastName"  -> "lastName"
+    )
+  }
+
+  def buildRequestWithSession: FakeRequest[_] = {
+    FakeRequest().withSession(
+      "cookieId"  -> s"session-0987654321",
+      "contextId" -> s"context-1234567890",
+      "firstName" -> "firstName",
+      "lastName"  -> "lastName"
+    )
+  }
 }

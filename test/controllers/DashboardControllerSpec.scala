@@ -16,51 +16,61 @@
 
 package controllers
 
+import auth.{Actions, AuthActions, AuthenticatedAction, UnauthenticatedAction}
 import connectors.{AccountConnector, SessionStoreConnector}
-import controllers.traits.user.DashboardCtrl
+import controllers.user.DashboardController
+import mocks.CJWWSpec
 import models.accounts._
-import org.joda.time.DateTime
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import models.auth.AuthContext
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import org.mockito.Matchers
+import play.api.Configuration
+import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.api.inject.Injector
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.FeedService
+import utils.httpverbs.HttpVerbs
 
 import scala.concurrent.Future
 
-class DashboardControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
-
-  val mockSessionStore = mock[SessionStoreConnector]
-  val mockFeedService = mock[FeedService]
+class DashboardControllerSpec extends CJWWSpec {
 
   val testUser = UserAccount(Some("testID"), "testFirstName", "testLastName", "testUserName", "testEmail", "testPassword")
 
-  class Setup {
-    class TestController extends DashboardCtrl {
-      val sessionStoreConnector = mockSessionStore
-      val feedService = mockFeedService
-    }
+  val messagesApi: MessagesApi = mock[MessagesApi]
+  val configuration : Configuration = mock[Configuration]
+  val sessionStoreConnector : SessionStoreConnector = mock[SessionStoreConnector]
+  val accountConnector : AccountConnector = mock[AccountConnector]
+  val feedService : FeedService = mock[FeedService]
+  val http : HttpVerbs = mock[HttpVerbs]
 
-    val testController = new TestController
-  }
+  val testController = new DashboardController(messagesApi,configuration,sessionStoreConnector,accountConnector,feedService,http, actions)
 
   "show" should {
-    "return an OK" in new Setup {
-      when(mockSessionStore.getDataElement[UserAccount](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(testUser)))
+    "return an OK" in {
+      val request = FakeRequest()
+        .withSession(
+          "cookieId"  -> s"session-0987654321",
+          "contextId" -> s"context-1234567890",
+          "firstName" -> "firstName",
+          "lastName"  -> "lastName"
+        )
 
-      when(mockFeedService.processRetrievedList(Matchers.any()))
+      when(accountConnector.getBasicDetails(ArgumentMatchers.any[AuthContext]()))
+        .thenReturn(Future.successful(Some(testBasicDetails)))
+
+      when(accountConnector.getSettings(ArgumentMatchers.any[AuthContext]()))
+        .thenReturn(Future.successful(Some(testSettings)))
+
+      when(feedService.processRetrievedList(ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
 
-      val result = testController.show()(FakeRequest()
-        .withSession(
-          "cookieID" -> "sessionID",
-          "_id" -> "testUserID",
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName"))
-      status(result) mustBe OK
+      showWithAuthorisedUser(testController.show,accountConnector,http,testContext) {
+        result =>
+          status(result) mustBe OK
+      }
     }
   }
 }

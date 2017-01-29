@@ -13,91 +13,85 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package connectors
 
-import mocks.MockResponse
+import config.FrontendConfiguration
+import mocks.CJWWSpec
 import models.SessionUpdateSet
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import utils.httpverbs.HttpVerbs
-import play.api.test.Helpers._
 import org.mockito.Mockito._
-import org.mockito.Matchers
-import play.api.libs.json.Json
+import org.mockito.ArgumentMatchers
 import play.api.test.FakeRequest
-import security.JsonSecurity
+import play.api.test.Helpers._
+import utils.security.DataSecurity
+import play.api.test.FakeApplication
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
-class SessionStoreConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with MockResponse {
+class SessionStoreConnectorSpec extends CJWWSpec {
 
-  case class TestModel(string : String, int : Int)
-  implicit val format = Json.format[TestModel]
+  val mockFrontendConfig = mock[FrontendConfiguration]
 
-  val mockHttp = mock[HttpVerbs]
+  val testConnector = new SessionStoreConnector(mockHttpVerbs, mockFrontendConfig)
 
-  val successResponse = mockWSResponse(statusCode = CREATED)
-  val okResponse = mockWSResponse(statusCode = OK)
+  val testResponse = mockWSResponse(OK)
+  val insResp = mockWSResponse(INTERNAL_SERVER_ERROR)
+  val testRespBody = mockWSResponseWithBody(DataSecurity.encryptData[String]("testData").get)
 
-  val iseResponse = mockWSResponse(statusCode = INTERNAL_SERVER_ERROR)
-
-  val data = TestModel("string", 1)
-  val getDataResponse = mockWSResponse(statusCode = CREATED, body = JsonSecurity.encryptModel[TestModel](data).get)
-
-  class Setup {
-    object TestConnector extends SessionStoreConnector {
-      val http = mockHttp
-    }
-  }
+  val testSessionUpdate = SessionUpdateSet("testKey","testData")
 
   "cache" should {
-    "return CREATED" when {
-      "posting a session data to mongo" in new Setup {
-        when(mockHttp.post[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(successResponse))
+    "return a WSResponse" in {
+      when(mockHttpVerbs.post(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(testResponse))
 
-        val result = Await.result(TestConnector.cache("sessionID","testData"), 5.seconds)
-        result.status mustBe CREATED
-      }
+      val result = await(testConnector.cache[String]("user-1234567890","testData"))
+      result mustBe testResponse
     }
   }
 
-  "destroySession" should {
-    "return OK" when {
-      "getting with session id" in new Setup {
-        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(okResponse))
+  "getDataElement" should {
+    "return an optional string" in {
+      implicit val request = FakeRequest().withSession("cookieId" -> "session-1234567890")
 
-        val result = Await.result(TestConnector.destroySession("sessionID"), 5.seconds)
-        result.status mustBe OK
-      }
+      when(mockHttpVerbs.get[String](ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(testRespBody))
+
+      val result = await(testConnector.getDataElement[String]("testKey"))
+      result mustBe Some("testData")
     }
   }
 
   "updateSession" should {
-    "return true" when {
-      "posting a session update set" in new Setup {
-        implicit val request = FakeRequest().withSession("cookieID" -> "testSessionID")
+    "return a true" in {
+      implicit val request = FakeRequest().withSession("cookieId" -> "session-1234567890")
 
-        when(mockHttp.post[SessionUpdateSet](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(okResponse))
+      when(mockHttpVerbs.post(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(testResponse))
 
-        val result = Await.result(TestConnector.updateSession(SessionUpdateSet("testKey","testData")), 5.seconds)
-        result mustBe true
-      }
+      val result = await(testConnector.updateSession(testSessionUpdate))
+      result mustBe true
     }
 
-    "return false" when {
-      "posting a session update set" in new Setup {
-        implicit val request = FakeRequest().withSession("cookieID" -> "testSessionID")
+    "return a false" in {
 
-        when(mockHttp.post[SessionUpdateSet](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(iseResponse))
+      implicit val request = FakeRequest().withSession("cookieId" -> "session-1234567890")
 
-        val result = Await.result(TestConnector.updateSession(SessionUpdateSet("testKey","testData")), 5.seconds)
-        result mustBe false
-      }
+      when(mockHttpVerbs.post(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(insResp))
+
+      val result = await(testConnector.updateSession(testSessionUpdate))
+      result mustBe false
+    }
+  }
+
+  "destroySession" should {
+    "return a WSResponse" in {
+      when(mockHttpVerbs.get[String](ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(testResponse))
+
+      val result = await(testConnector.destroySession("session-1234567890"))
+      result mustBe testResponse
     }
   }
 }

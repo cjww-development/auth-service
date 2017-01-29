@@ -17,13 +17,62 @@ package controllers.login
 
 import javax.inject.Inject
 
+import auth.{Actions, AuthActions}
+import com.google.inject.Singleton
 import connectors.SessionStoreConnector
-import controllers.traits.login.LoginCtrl
-import play.api.Configuration
+import forms.UserLoginForm
+import models.UserLogin
 import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent}
+import play.api.{Configuration, Logger}
 import services.LoginService
+import utils.application.FrontendController
+import utils.httpverbs.HttpVerbs
+import views.html.login.UserLoginView
 
-class LoginController @Inject()(val messagesApi: MessagesApi, configuration: Configuration) extends LoginCtrl {
-  val userLogin = LoginService
-  val sessionStoreConnector = SessionStoreConnector
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+@Singleton
+class LoginController@Inject()(messagesApi: MessagesApi,
+                               configuration: Configuration,
+                               userLogin : LoginService,
+                               sessionStoreConnector: SessionStoreConnector,
+                               http : HttpVerbs,
+                               actions: AuthActions) extends FrontendController {
+
+  def show(redirect : Option[String]) : Action[AnyContent] = actions.unauthenticatedAction.async {
+    implicit user =>
+      implicit request =>
+        Future.successful(Ok(UserLoginView(UserLoginForm.loginForm.fill(UserLogin.empty))))
+  }
+
+  def submit : Action[AnyContent] = actions.unauthenticatedAction.async {
+    implicit user =>
+      implicit request =>
+        UserLoginForm.loginForm.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(UserLoginView(errors))),
+          valid =>
+            userLogin.processLoginAttempt(valid) map {
+              case Some(session) => Redirect(urlParser.serviceDirector).withSession(session)
+              case None =>
+                Ok(
+                  UserLoginView(
+                    UserLoginForm.loginForm.fill(valid)
+                      .withError("userName", "Your user name or password is incorrect")
+                      .withError("password", "")
+                  )
+                )
+            }
+        )
+  }
+
+  def signOut : Action[AnyContent] = Action.async {
+    implicit request =>
+      sessionStoreConnector.destroySession(request.session("cookieId")) map {
+        resp =>
+          Logger.info(s"[LoginController] - [signOut] : Response from session store - ${resp.status} : ${resp.statusText}")
+          Redirect(routes.LoginController.show(None)).withNewSession
+      }
+  }
 }

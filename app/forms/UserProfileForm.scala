@@ -21,7 +21,6 @@ import play.api.data.Forms._
 import utils.validation.RegisterValidation._
 
 object UserProfileForm {
-
   val form = Form(
     mapping(
       "firstName" -> firstNameChecker,

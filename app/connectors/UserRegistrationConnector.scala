@@ -16,10 +16,13 @@
 
 package connectors
 
-import config.{FrontendConfiguration, WSConfiguration}
+import com.google.inject.{Inject, Singleton}
+import config.FrontendConfiguration
 import models.accounts.UserRegister
 import play.api.Logger
+import play.api.http.Status._
 import utils.httpverbs.HttpVerbs
+import utils.security.DataSecurity
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -30,15 +33,10 @@ case class UserRegisterClientErrorResponse(status : Int) extends UserRegisterRes
 case class UserRegisterServerErrorResponse(status : Int) extends UserRegisterResponse
 case class UserRegisterErrorResponse(status : Int) extends UserRegisterResponse
 
-object UserRegistrationConnector extends UserRegistrationConnector with WSConfiguration {
-  val http = new HttpVerbs()
-}
+@Singleton
+class UserRegistrationConnector @Inject()(http : HttpVerbs, config : FrontendConfiguration) {
 
-trait UserRegistrationConnector extends FrontendConfiguration {
-
-  val http : HttpVerbs
-
-  protected def processStatusCode(statusCode : Int) : UserRegisterResponse = {
+  private[connectors] def processStatusCode(statusCode : Int) : UserRegisterResponse = {
     class Contains(r : Range) {
       def unapply(i : Int) : Boolean = r contains i
     }
@@ -55,7 +53,7 @@ trait UserRegistrationConnector extends FrontendConfiguration {
   }
 
   def createNewIndividualUser(userDetails : UserRegister) : Future[UserRegisterResponse] = {
-    http.post[UserRegister](s"$apiCall/create-new-user", userDetails) map {
+    http.post[UserRegister](s"${config.authMicroservice}/create-new-user", userDetails) map {
       resp =>
         Logger.info(s"[UserRegistrationConnector] [createIndividualUser] Response code from API Call : ${resp.status} - ${resp.statusText}")
         processStatusCode(resp.status)
@@ -63,18 +61,22 @@ trait UserRegistrationConnector extends FrontendConfiguration {
   }
 
   def checkUserName(username : String) : Future[Boolean] = {
-    http.get[String](s"$apiCall/check-user-name", username) map {
-      resp =>
-        Logger.info(s"[UserRegistrationConnector] - [checkUserName] Response body : ${resp.body}")
-        resp.body.toBoolean
+    val encUsername = DataSecurity.encryptData[String](username).get
+    http.getUrl(s"${config.authMicroservice}/validate-user-name/$encUsername") map {
+      _.status match {
+        case OK => false
+        case CONFLICT => true
+      }
     }
   }
 
   def checkEmailAddress(email : String) : Future[Boolean] = {
-    http.get[String](s"$apiCall/check-email", email) map {
-      resp =>
-        Logger.info(s"[UserRegistrationConnector] - [checkEmailAddress] Response body ${resp.body}")
-        resp.body.toBoolean
+    val encEmailAddress = DataSecurity.encryptData[String](email).get
+    http.getUrl(s"${config.authMicroservice}/validate-email/$encEmailAddress") map {
+      _.status match {
+        case OK => false
+        case CONFLICT => true
+      }
     }
   }
 }

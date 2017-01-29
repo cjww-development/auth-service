@@ -15,20 +15,20 @@
 // limitations under the License.
 package utils.url
 
+import com.google.inject.{Inject, Singleton}
 import config.FrontendConfiguration
 import play.api.Logger
 import play.api.mvc.Request
 
-object UrlParser extends UrlParser
-
-trait UrlParser extends FrontendConfiguration {
+@Singleton
+class UrlParser @Inject()(config : FrontendConfiguration) {
 
   def serviceDirector(implicit request: Request[_]) : String = {
     Logger.info(s"[UrlParse] - [serviceDirector] ${request.getQueryString("redirect").getOrElse("Redirecting to service selector")}")
     request.getQueryString("redirect") match {
-      case Some("diagnostics") => diagnosticsFrontend
-      case Some("deversity") => deversityFrontend
-      case Some("hub") => hubFrontend
+      case Some("diagnostics") => config.diagnosticsFrontend
+      case Some("deversity") => config.deversityFrontend
+      case Some("hub") => config.hubFrontend
       case _ => controllers.redirect.routes.RedirectController.chooseService().url
     }
   }

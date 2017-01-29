@@ -14,10 +14,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package utils.application
 
+import auth.Actions
+import config.FrontendConfiguration
+import models.auth.AuthContext
 import play.api.mvc.Controller
 import utils.url.UrlParser
 
-trait FrontendController extends Controller with UrlParser
+trait FrontendController extends Controller {
+
+  val urlParser = new UrlParser(new FrontendConfiguration)
+
+  implicit def optionUser(implicit user : AuthContext) : Option[AuthContext] = Some(user)
+}

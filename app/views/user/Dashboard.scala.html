@@ -1,10 +1,12 @@
-@import models.accounts.{UserAccount, FeedItem}
-
-@(userInformation : UserAccount, feed : Option[List[FeedItem]])(implicit request : Request[_])
+@import models.accounts.BasicDetails
+@import models.accounts.FeedItem
+@import models.accounts.Settings
+@import models.auth.AuthContext
+@(feed : Option[List[FeedItem]], basicDetails : BasicDetails, settings : Option[Settings])(implicit request : Request[_], authContext : Option[AuthContext])
 
 @import controllers.user.{routes => userRoutes}
+@import services.EditProfileService.{getDisplayImageURL, getDisplayNameColour, getDisplayOption}
 @import views.html.helpers.feedItem
-@import services.EditProfileService.getDisplayImageURL
 
 @colourSwitcher(random : Int) = {
     @random match {
@@ -29,32 +31,20 @@
 @displayNameSelector(option : String) = {
     @option match {
         case "full" => {
-            @userInformation.firstName @userInformation.lastName
+            @basicDetails.firstName @basicDetails.lastName
         }
         case "short" => {
-            @userInformation.firstName
+            @basicDetails.firstName
         }
 
         case "user" => {
-            @userInformation.userName
+            @basicDetails.userName
         }
-    }
-}
-
-@displayNameColour(account: UserAccount) = {
-    @if(account.settings.isDefined) {
-        @if(account.settings.get.get("displayNameColour").isDefined) {
-            @account.settings.get.get("displayNameColour")
-        } else {
-            #FFFFFF
-        }
-    } else {
-        #FFFFFF
     }
 }
 
 @main_template(title = "CJWW Account - dashboard") {
-    <div class="cjww-jumbo-background" style="background: url('@{getDisplayImageURL(Some(userInformation))}') fixed center no-repeat;">
+    <div class="cjww-jumbo-background" style="background: url('@{getDisplayImageURL(settings)}') fixed center no-repeat;">
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
@@ -73,15 +63,15 @@
 
             <div class="row">
                 <div class="col-md-11">
-                    <h1 id="main-title" class="page-title" style="color: @displayNameColour(userInformation)">Welcome
-                        @if(userInformation.settings.isDefined){
-                            @if(userInformation.settings.get.get("displayName").isDefined) {
-                                @displayNameSelector(userInformation.settings.get("displayName"))
+                    <h1 id="main-title" class="page-title" style="color: @getDisplayNameColour(settings)">Welcome
+                        @if(settings.isDefined){
+                            @if(settings.get.displayName.isDefined) {
+                                @displayNameSelector(getDisplayOption(settings).get)
                             } else {
-                                @userInformation.firstName @userInformation.lastName
+                                @basicDetails.firstName @basicDetails.lastName
                             }
                         } else {
-                            @userInformation.firstName @userInformation.lastName
+                            @basicDetails.firstName @basicDetails.lastName
                         }
                     </h1>
                 </div>

@@ -16,18 +16,12 @@
 
 package utils.validation
 
-import connectors.UserRegistrationConnector
 import models.accounts.{NewPasswords, UserRegister}
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
-
 object RegisterValidation {
-
-  val userRegisterConnector = UserRegistrationConnector
 
   def firstNameChecker : Mapping[String] = {
     val validfirstname = """(^\\w[A-Za-z]{0,29}\\b)""".r
@@ -60,12 +54,9 @@ object RegisterValidation {
   def userNameChecker : Mapping[String] = {
     val userNameConstraint: Constraint[String] = Constraint("constraints.userName")({
       text =>
-        val beingUsed = Await.result(userRegisterConnector.checkUserName(text), 5.minute)
-        val error = (text, beingUsed) match {
-          case (_, false) => Nil
-          case (_, true) => Seq(ValidationError("This user name is already being used"))
-          case ("", _) => Seq(ValidationError("You have not entered your user name"))
-          case (_, _) => if (text.length > 20) Seq(ValidationError("The user name you have entered is too long")) else Nil
+        val error = text match {
+          case "" => Seq(ValidationError("You need to enter a user name"))
+          case _ => Nil
         }
         if (error.isEmpty) Valid else Invalid(error)
     })
@@ -88,12 +79,10 @@ object RegisterValidation {
     val validEmail = """[A-Za-z0-9\-_.]{1,126}@[A-Za-z0-9\-_.]{1,126}""".r
     val emailConstraint : Constraint[String] = Constraint("constraints.email")({
       text =>
-        val inUse = Await.result(userRegisterConnector.checkEmailAddress(text), 5.minute)
-        val error = (text, inUse) match {
-          case (validEmail(), false) => Nil
-          case (validEmail(), true) => Seq(ValidationError("This email address has already been registered"))
-          case ("", _) => Seq(ValidationError("Please enter a valid email address"))
-          case (_,_) => if(text.length > 254) Seq(ValidationError("This is not a valid email address")) else Nil
+        val error = text match {
+          case validEmail() => Nil
+          case "" => Seq(ValidationError("Please enter a valid email address"))
+          case _ => if(text.length > 254) Seq(ValidationError("This is not a valid email address")) else Nil
         }
         if(error.isEmpty) Valid else Invalid(error)
     })

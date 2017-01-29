@@ -17,7 +17,7 @@
 package models.accounts
 
 import play.api.libs.json.Json
-import security.Encryption.sha512
+import utils.security.Encryption.sha512
 
 case class UserRegister(firstName: String,
                         lastName: String,

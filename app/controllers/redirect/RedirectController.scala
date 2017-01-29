@@ -17,8 +17,21 @@ package controllers.redirect
 
 import javax.inject.Inject
 
-import controllers.traits.redirect.RedirectCtrl
-import play.api.Configuration
-import play.api.i18n.MessagesApi
+import auth.{Actions, AuthActions}
+import com.google.inject.Singleton
+import config.FrontendConfiguration
+import play.api.mvc.{Action, AnyContent}
+import utils.application.FrontendController
+import views.html.redirect.ServiceSelector
 
-class RedirectController  @Inject()(val messagesApi: MessagesApi, configuration: Configuration) extends RedirectCtrl
+import scala.concurrent.Future
+
+@Singleton
+class RedirectController @Inject()(implicit configuration: FrontendConfiguration, actions : AuthActions) extends FrontendController {
+
+  def chooseService : Action[AnyContent] = actions.authorisedFor.async {
+    implicit user =>
+      implicit request =>
+        Future.successful(Ok(ServiceSelector()))
+  }
+}

@@ -17,21 +17,16 @@
 
 package services
 
+import com.google.inject.{Inject, Singleton}
 import connectors.{UserRegisterResponse, UserRegistrationConnector}
 import models.accounts.UserRegister
 import play.api.Logger
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-object RegisterService extends RegisterService {
-  val userRegistration = UserRegistrationConnector
-}
-
-trait RegisterService {
-
-  val userRegistration : UserRegistrationConnector
-
+@Singleton
+class RegisterService @Inject()(userRegistration : UserRegistrationConnector) {
   def registerIndividual(user : UserRegister) : Future[UserRegisterResponse] = {
     userRegistration.createNewIndividualUser(user) map {
       resp => Logger.info(s"[UserRegistrationConnector] [registerIndividual] response is $resp")

@@ -13,56 +13,43 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package connectors
 
-import mocks.MockResponse
+import config.FrontendConfiguration
+import mocks.CJWWSpec
 import models.UserLogin
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import models.auth.{AuthContext, AuthContextDetails}
 import org.mockito.Mockito._
-import org.mockito.Matchers
-import utils.httpverbs.HttpVerbs
-import play.api.test.Helpers._
+import org.mockito.ArgumentMatchers
+import utils.security.DataSecurity
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
-class UserLoginConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with MockResponse {
+class UserLoginConnectorSpec extends CJWWSpec {
 
-  val mockHttp = mock[HttpVerbs]
+  val mockFrontendConfig = mock[FrontendConfiguration]
 
-  val successResponse = mockWSResponse(statusCode = OK, body = encryptedUserDetails.get)
-  val unauthorisedResponse = mockWSResponse(statusCode = FORBIDDEN, body = "Unauthorised")
+  val testConnector = new UserLoginConnector(mockHttpVerbs, mockFrontendConfig)
 
-  class Setup {
-    object TestConnector extends UserLoginConnector {
-      val http = mockHttp
-    }
-  }
+  val successResponse = mockWSResponseWithBody(DataSecurity.encryptData[AuthContextDetails](testContextDetails).get)
+  val failedResponse = mockWSResponseWithBody("INVALID_PAYLOAD")
 
-  "getUserAccountInformation" should {
-    "return an optional set of user details" when {
-      "given a valid set of credentials" in new Setup {
-        when(mockHttp.get[UserLogin](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(successResponse))
+  "getUser" should {
+    "return a UserLoginSuccessResponse" in {
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(successResponse))
 
-        val result = TestConnector.getUserAccountInformation(testUserCredentials)
-        val userDetails = Await.result(result, 5.seconds)
-
-        userDetails mustBe UserLoginSuccessResponse(testUserDetails)
-      }
+      val result = await(testConnector.getUser(UserLogin("testUserName","testPass")))
+      result mustBe UserLoginSuccessResponse(testContextDetails)
     }
 
-    "return none" when {
-      "the users credentials cannot be validated" in new Setup {
-        when(mockHttp.get[UserLogin](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(unauthorisedResponse))
+    "return a UserLoginFailedResponse" in {
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(failedResponse))
 
-        val result = TestConnector.getUserAccountInformation(testUserCredentials)
-        val userDetails = Await.result(result, 5.seconds)
-
-        userDetails mustBe UserLoginFailedResponse
-      }
+      val result = await(testConnector.getUser(UserLogin("testUserName","testPass")))
+      result mustBe UserLoginFailedResponse
     }
   }
 }

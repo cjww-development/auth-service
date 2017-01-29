@@ -27,15 +27,7 @@ case class UserAccount(_id : Option[String],
                        email : String,
                        password : String,
                        settings : Option[Map[String, String]] = None,
-                       details : Option[Map[String, DateTime]] = None) {
-
-  def sessionMap : Map[String, String] =
-    Map(
-      "cookieID" -> s"session-${UUID.randomUUID().toString}",
-      "_id" -> _id.get,
-      "firstName" -> firstName,
-      "lastName" -> lastName)
-}
+                       details : Option[Map[String, DateTime]] = None)
 
 object UserAccount {
 
@@ -58,7 +50,7 @@ case class UserProfile(firstName : String, lastName : String, userName : String,
 object UserProfile {
   implicit val format = Json.format[UserProfile]
 
-  def fromAccount(account: UserAccount) : UserProfile = {
+  def fromAccount(account: BasicDetails) : UserProfile = {
     UserProfile(
       account.firstName,
       account.lastName,

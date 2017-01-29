@@ -16,59 +16,92 @@
 
 package services
 
-import connectors.{AccountConnector, FeedEventSuccessResponse}
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import config.FrontendConfiguration
+import connectors.{AccountConnector, FeedEventFailedResponse, FeedEventSuccessResponse}
+import mocks.CJWWSpec
 import org.mockito.Mockito._
-import org.mockito.Matchers
-import play.api.test.FakeRequest
+import org.mockito.ArgumentMatchers
 
 import scala.concurrent.Future
-import scala.concurrent.Await
-import scala.concurrent.duration._
 
-class FeedServiceSpec extends PlaySpec with MockitoSugar with OneAppPerSuite {
+class FeedServiceSpec extends CJWWSpec {
 
-  val mockAccountConnector : AccountConnector = mock[AccountConnector]
+  val mockAccountConnector = mock[AccountConnector]
+  val mockFrontendConfig = mock[FrontendConfiguration]
 
-  class Setup {
-    object TestService extends FeedService {
-      val accountConnector : AccountConnector = mockAccountConnector
+  val testService = new FeedService(mockAccountConnector, mockFrontendConfig)
+
+  "buildFeedItem" should {
+    "return a populated feed item" in {
+      val result = testService.buildFeedItem("testLocation", "testDescription")
+
+      result.userId mustBe "user-766543"
+      result.sourceDetail.location mustBe "testLocation"
+      result.eventDetail.description mustBe "testDescription"
     }
-
-    implicit val request = FakeRequest().withSession("_id" -> "testUserId")
   }
 
   "basicDetailsFeedEvent" should {
-    "return a FeedEventResponse" in new Setup {
-      when(mockAccountConnector.createFeedItem(Matchers.any()))
+    "return a FeedEventSuccessResponse" in {
+      when(mockAccountConnector.createFeedItem(ArgumentMatchers.any()))
         .thenReturn(Future.successful(FeedEventSuccessResponse))
 
-      val result = Await.result(TestService.basicDetailsFeedEvent, 5.seconds)
-
+      val result = await(testService.basicDetailsFeedEvent)
       result mustBe FeedEventSuccessResponse
+    }
+
+    "return a FeedEventFailedResponse" in {
+      when(mockAccountConnector.createFeedItem(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(FeedEventFailedResponse))
+
+      val result = await(testService.basicDetailsFeedEvent)
+      result mustBe FeedEventFailedResponse
     }
   }
 
   "passwordUpdateFeedEvent" should {
-    "return a FeedEventResponse" in new Setup {
-      when(mockAccountConnector.createFeedItem(Matchers.any()))
+    "return a FeedEventSuccessResponse" in {
+      when(mockAccountConnector.createFeedItem(ArgumentMatchers.any()))
         .thenReturn(Future.successful(FeedEventSuccessResponse))
 
-      val result = Await.result(TestService.passwordUpdateFeedEvent, 5.seconds)
-
+      val result = await(testService.passwordUpdateFeedEvent)
       result mustBe FeedEventSuccessResponse
+    }
+
+    "return a FeedEventFailedResponse" in {
+      when(mockAccountConnector.createFeedItem(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(FeedEventFailedResponse))
+
+      val result = await(testService.passwordUpdateFeedEvent)
+      result mustBe FeedEventFailedResponse
     }
   }
 
   "accountSettingsFeedEvent" should {
-    "return a FeedEventResponse" in new Setup {
-      when(mockAccountConnector.createFeedItem(Matchers.any()))
+    "return a FeedEventSuccessResponse" in {
+      when(mockAccountConnector.createFeedItem(ArgumentMatchers.any()))
         .thenReturn(Future.successful(FeedEventSuccessResponse))
 
-      val result = Await.result(TestService.accountSettingsFeedEvent, 5.seconds)
-
+      val result = await(testService.accountSettingsFeedEvent)
       result mustBe FeedEventSuccessResponse
+    }
+
+    "return a FeedEventFailedResponse" in {
+      when(mockAccountConnector.createFeedItem(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(FeedEventFailedResponse))
+
+      val result = await(testService.accountSettingsFeedEvent)
+      result mustBe FeedEventFailedResponse
+    }
+  }
+
+  "processRetrievedList" should {
+    "return an optional feed event list" in {
+      when(mockAccountConnector.getFeedItems(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(None))
+
+      val result = await(testService.processRetrievedList("user-1234567890"))
+      result mustBe None
     }
   }
 }

@@ -1,8 +1,8 @@
 @import models.accounts.UserRegister
 @(register: Form[UserRegister])(implicit request: Request[_])
 
-@import views.html.helpers._
 @import controllers.register.{routes => registerRoutes}
+@import views.html.helpers._
 
 @main_template(title = "CJWW Account - Register"){
     <div class="top-block-single">

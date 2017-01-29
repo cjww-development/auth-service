@@ -16,50 +16,45 @@
 
 package services
 
+import com.google.inject.{Inject, Singleton}
 import config.FrontendConfiguration
 import connectors.{AccountConnector, FeedEventResponse}
 import models.accounts.{EventDetail, FeedItem, SourceDetail}
+import models.auth.AuthContext
 import org.joda.time.DateTime
-import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import scala.concurrent.Future
 
-object FeedService extends FeedService {
-  val accountConnector = AccountConnector
-}
+@Singleton
+class FeedService @Inject()(accountConnector: AccountConnector, config : FrontendConfiguration) {
 
-trait FeedService extends FrontendConfiguration {
-
-  val accountConnector : AccountConnector
-
-  private def buildFeedItem(location : String, desc : String)(implicit request: Request[_]) : FeedItem = {
+  private[services] def buildFeedItem(location : String, desc : String)(implicit authContext : AuthContext) : FeedItem = {
     FeedItem(
-      request.session("_id"),
-      SourceDetail(APPLICATION_NAME, location),
-      EventDetail(TITLE, desc),
+      authContext.user.userId,
+      SourceDetail(config.APPLICATION_NAME, location),
+      EventDetail(config.TITLE, desc),
       DateTime.now
     )
   }
 
-  def basicDetailsFeedEvent(implicit request: Request[_]) : Future[FeedEventResponse] = {
+  def basicDetailsFeedEvent(implicit authContext: AuthContext) : Future[FeedEventResponse] = {
     val feedEvent = buildFeedItem("edit-profile","You updated your basic details")
     accountConnector.createFeedItem(feedEvent)
   }
 
-  def passwordUpdateFeedEvent(implicit request: Request[_]) : Future[FeedEventResponse] = {
+  def passwordUpdateFeedEvent(implicit authContext: AuthContext) : Future[FeedEventResponse] = {
     val feedEvent = buildFeedItem("edit-profile","You changed your password")
     accountConnector.createFeedItem(feedEvent)
   }
 
-  def accountSettingsFeedEvent(implicit request: Request[_]) : Future[FeedEventResponse] = {
+  def accountSettingsFeedEvent(implicit authContext: AuthContext) : Future[FeedEventResponse] = {
     val feedEvent = buildFeedItem("edit-profile","You updated your account settings")
     accountConnector.createFeedItem(feedEvent)
   }
 
-  def processRetrievedList(implicit request: Request[_]) : Future[Option[List[FeedItem]]] = {
-    accountConnector.getFeedItems(request.session("_id")) map {
+  def processRetrievedList(userId : String) : Future[Option[List[FeedItem]]] = {
+    accountConnector.getFeedItems(userId) map {
       feed =>
         feed.isDefined match {
           case false => None

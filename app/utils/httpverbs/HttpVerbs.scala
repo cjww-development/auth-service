@@ -16,24 +16,36 @@
 
 package utils.httpverbs
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import play.api.Logger
+import akka.actor.ActorSystem
 import config.FrontendConfiguration
+import play.api.Logger
+import play.api.inject.ApplicationLifecycle
 import play.api.libs.json.Format
 import play.api.libs.ws.{WSClient, WSResponse}
-import security.{Encryption, JsonSecurity}
+import utils.security.{DataSecurity, Encryption}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class HttpVerbs @Inject()(implicit http : WSClient) extends JsonSecurity with FrontendConfiguration {
+@Singleton
+class HttpVerbs @Inject()(http : WSClient, applicationLifecycle: ApplicationLifecycle, frontendConfiguration: FrontendConfiguration)
+  extends DataSecurity {
+
+  applicationLifecycle.addStopHook {
+    () => Future {
+      ActorSystem().terminate()
+      http.close()
+    }
+  }
 
   def post[T](url: String, data: T, additionalHeaders : (String, String) = "" -> "")(implicit format: Format[T]): Future[WSResponse] = {
     Logger.info(s"[HttpPost] [post] Url call : $url")
-    val body = encryptModel[T](data).get
+    val body = encryptData[T](data).get
     http.url(s"$url")
       .withHeaders(
-        "appID" -> Encryption.sha512(APPLICATION_ID),
+        "appID" -> Encryption.sha512(frontendConfiguration.APPLICATION_ID),
         "Content-Type" -> "text/plain",
         additionalHeaders
       )
@@ -43,12 +55,17 @@ class HttpVerbs @Inject()(implicit http : WSClient) extends JsonSecurity with Fr
 
   def get[T](url: String, data: T, additionalHeaders : (String, String) = "" -> "")(implicit format: Format[T]): Future[WSResponse] = {
     Logger.info(s"[HttPost] [get] Url call : $url")
-    val body = encryptModel[T](data).get
+    val body = encryptData[T](data).get
     http.url(s"$url")
       .withHeaders(
-        "appID" -> Encryption.sha512(APPLICATION_ID),
+        "appID" -> Encryption.sha512(frontendConfiguration.APPLICATION_ID),
         additionalHeaders
       )
       .withBody(body).get()
+  }
+
+  def getUrl(url : String) : Future[WSResponse] = {
+    Logger.info(s"[HttpVerbs] - [getUrl] : Url call : $url")
+    http.url(url).withHeaders("appID" -> Encryption.sha512(frontendConfiguration.APPLICATION_ID)).get()
   }
 }

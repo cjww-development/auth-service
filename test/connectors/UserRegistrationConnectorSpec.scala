@@ -13,119 +13,142 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package connectors
 
-import mocks.MockResponse
+import config.FrontendConfiguration
+import mocks.CJWWSpec
 import models.accounts.UserRegister
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import org.mockito.Mockito._
-import org.mockito.Matchers
-import utils.httpverbs.HttpVerbs
 import play.api.test.Helpers._
+import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
-class UserRegistrationConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with MockResponse {
+class UserRegistrationConnectorSpec extends CJWWSpec {
 
-  val mockHttp = mock[HttpVerbs]
+  val mockFrontendConfig = mock[FrontendConfiguration]
 
-  val successResponse = mockWSResponse(statusCode = CREATED)
-  val clientResponse = mockWSResponse(statusCode = BAD_REQUEST)
-  val serverResponse = mockWSResponse(statusCode = INTERNAL_SERVER_ERROR)
-  val errorResponse = mockWSResponse(statusCode = 700)
+  val testConnector = new UserRegistrationConnector(mockHttpVerbs, mockFrontendConfig)
 
-  val trueResponse = mockWSResponseWithBody("true")
-  val falseResponse = mockWSResponseWithBody("false")
+  val ERROR_CODE = 700
 
-  val testNewUser = UserRegister("testFirstName","testLastName","testUserName","testEmail","testPassword","testPassword")
+  "processStatusCode" should {
+    "return a UserRegisterSuccessResponse" in {
+      val result = testConnector.processStatusCode(OK)
+      result mustBe UserRegisterSuccessResponse(OK)
+    }
 
-  class Setup {
-    object TestConnector extends UserRegistrationConnector {
-      val http = mockHttp
+    "return a UserRegisterClientErrorResponse" in {
+      val result = testConnector.processStatusCode(BAD_REQUEST)
+      result mustBe UserRegisterClientErrorResponse(BAD_REQUEST)
+    }
+
+    "return a UserRegisterServerErrorResponse" in {
+      val result = testConnector.processStatusCode(INTERNAL_SERVER_ERROR)
+      result mustBe UserRegisterServerErrorResponse(INTERNAL_SERVER_ERROR)
+    }
+
+    "return a UserRegisterErrorResponse" in {
+      val result = testConnector.processStatusCode(ERROR_CODE)
+      result mustBe UserRegisterErrorResponse(ERROR_CODE)
     }
   }
 
   "createNewIndividualUser" should {
-    "return a UserRegisterSuccessResponse" in new Setup {
-      when(mockHttp.post[UserRegister](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(successResponse))
 
-      val result = TestConnector.createNewIndividualUser(testNewUser)
+    val testUserRegister =
+      UserRegister(
+        "testFirstName",
+        "testLastName",
+        "testUserName",
+        "test@email.com",
+        "testPass",
+        "testPass"
+      )
 
-      Await.result(result, 5.seconds) mustBe UserRegisterSuccessResponse(CREATED)
+    "return a UserRegisterSuccessResponse" in {
+      val okResp = mockWSResponse(OK)
+
+      when(mockHttpVerbs.post(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(okResp))
+
+      val result = await(testConnector.createNewIndividualUser(testUserRegister))
+      result mustBe UserRegisterSuccessResponse(OK)
     }
 
-    "return a UserRegisterClientErrorResponse" in new Setup {
-      when(mockHttp.post[UserRegister](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(clientResponse))
+    "return a UserRegisterClientErrorResponse" in {
+      val badRequestResp = mockWSResponse(BAD_REQUEST)
 
-      val result = TestConnector.createNewIndividualUser(testNewUser)
+      when(mockHttpVerbs.post(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(badRequestResp))
 
-      Await.result(result, 5.seconds) mustBe UserRegisterClientErrorResponse(BAD_REQUEST)
+      val result = await(testConnector.createNewIndividualUser(testUserRegister))
+      result mustBe UserRegisterClientErrorResponse(BAD_REQUEST)
     }
 
-    "return a UserRegisterServerErrorResponse" in new Setup {
-      when(mockHttp.post[UserRegister](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(serverResponse))
+    "return a UserRegisterServerErrorResponse" in {
+      val insResp = mockWSResponse(INTERNAL_SERVER_ERROR)
 
-      val result = TestConnector.createNewIndividualUser(testNewUser)
+      when(mockHttpVerbs.post(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(insResp))
 
-      Await.result(result, 5.seconds) mustBe UserRegisterServerErrorResponse(INTERNAL_SERVER_ERROR)
+      val result = await(testConnector.createNewIndividualUser(testUserRegister))
+      result mustBe UserRegisterServerErrorResponse(INTERNAL_SERVER_ERROR)
     }
 
-    "return a UserRegisterErrorResponse" in new Setup {
-      when(mockHttp.post[UserRegister](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(errorResponse))
+    "return a UserRegisterErrorResponse" in {
+      val errorResp = mockWSResponse(ERROR_CODE)
 
-      val result = TestConnector.createNewIndividualUser(testNewUser)
+      when(mockHttpVerbs.post(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(errorResp))
 
-      Await.result(result, 5.seconds) mustBe UserRegisterErrorResponse(700)
+      val result = await(testConnector.createNewIndividualUser(testUserRegister))
+      result mustBe UserRegisterErrorResponse(ERROR_CODE)
     }
   }
 
   "checkUserName" should {
-    "return true" when {
-      "the given user name is in use" in new Setup {
-        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(trueResponse))
+    "return false" in {
+      val okResp = mockWSResponse(OK)
 
-        val result = Await.result(TestConnector.checkUserName("testUserName"), 5.seconds)
-        result mustBe true
-      }
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(okResp))
+
+      val result = await(testConnector.checkUserName("testUserName"))
+      result mustBe false
     }
 
-    "return false" when {
-      "the given user name is not in use" in new Setup {
-        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(falseResponse))
+    "return true" in {
+      val conflictResp = mockWSResponse(CONFLICT)
 
-        val result = Await.result(TestConnector.checkUserName("testUserName"), 5.seconds)
-        result mustBe false
-      }
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(conflictResp))
+
+      val result = await(testConnector.checkUserName("testUserName"))
+      result mustBe true
     }
   }
 
   "checkEmailAddress" should {
-    "return true" when {
-      "the given email address is in use" in new Setup {
-        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(trueResponse))
+    "return false" in {
+      val okResp = mockWSResponse(OK)
 
-        val result = Await.result(TestConnector.checkEmailAddress("test@email.com"), 5.seconds)
-        result mustBe true
-      }
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(okResp))
+
+      val result = await(testConnector.checkEmailAddress("testUserName"))
+      result mustBe false
     }
 
-    "return false" when {
-      "the given email address is not in use" in new Setup {
-        when(mockHttp.get[String](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(falseResponse))
+    "return true" in {
+      val conflictResp = mockWSResponse(CONFLICT)
 
-        val result = Await.result(TestConnector.checkEmailAddress("test@email.com"), 5.seconds)
-        result mustBe false
-      }
+      when(mockHttpVerbs.getUrl(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(conflictResp))
+
+      val result = await(testConnector.checkEmailAddress("testUserName"))
+      result mustBe true
     }
   }
 }

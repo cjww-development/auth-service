@@ -50,4 +50,9 @@ class ErrorHandler @Inject()
     implicit val req = buildNewRequest[String](request, "s")
     Future.successful(InternalServerError(views.html.errors.ServerError()))
   }
+
+  def maintenanceMode(implicit request : Request[_]) : Future[Result] = {
+    Logger.warn(s"[ErrorHandler] - [maintenanceMode] : MAINTENANCE MODE IS ENABLED; ROUTING TO MAINTENANCE PAGE")
+    Future.successful(ServiceUnavailable(views.html.errors.MaintenancePage()))
+  }
 }

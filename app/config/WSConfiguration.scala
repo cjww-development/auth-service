@@ -22,9 +22,10 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import org.asynchttpclient.AsyncHttpClientConfig
-import play.api.{Configuration, Environment, Mode}
 import play.api.libs.ws.WSConfigParser
 import play.api.libs.ws.ahc.{AhcConfigBuilder, AhcWSClient, AhcWSClientConfig}
+import play.api.{Configuration, Environment, Mode}
+import play.inject.ApplicationLifecycle
 
 trait WSConfiguration {
   private implicit val system = ActorSystem()

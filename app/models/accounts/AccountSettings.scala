@@ -15,6 +15,7 @@
 // limitations under the License.
 package models.accounts
 
+import org.joda.time.DateTime
 import play.api.libs.json.Json
 
 case class AccountSettings(userId : String, settings : Map[String, String])
@@ -40,4 +41,14 @@ object DashboardDisplay {
       )
     )
   }
+}
+
+case class BasicDetails(firstName : String,
+                        lastName : String,
+                        userName : String,
+                        email : String,
+                        metadata : Option[Map[String, DateTime]])
+
+object BasicDetails {
+  implicit val format = Json.format[BasicDetails]
 }

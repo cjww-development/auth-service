@@ -14,31 +14,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package security
+package utils.security
 
-import java.util
 import java.security.MessageDigest
+import java.util
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
-import play.api.libs.json.{Format, JsValue, Json}
 import com.typesafe.config.ConfigFactory
 import org.apache.commons.codec.binary.Base64
 import play.api.Logger
+import play.api.libs.json.{Format, JsValue, Json}
 
 import scala.util.Try
 
-object JsonSecurity extends JsonSecurity
+object DataSecurity extends DataSecurity
 
-trait JsonSecurity extends JsonCommon {
+trait DataSecurity extends DataCommon {
 
-  def encryptModel[T](data : T)(implicit format: Format[T]) : Option[String] = {
+  def encryptData[T](data : T)(implicit format: Format[T]) : Option[String] = {
     def scramble(json : JsValue) : Option[String] = {
       val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
       cipher.init(Cipher.ENCRYPT_MODE, keyToSpec)
       Some(Base64.encodeBase64String(cipher.doFinal(json.toString.getBytes("UTF-8"))))
     }
-
     scramble(Json.toJson(data))
   }
 
@@ -57,7 +56,7 @@ trait JsonSecurity extends JsonCommon {
   }
 }
 
-trait JsonCommon {
+trait DataCommon {
   private val KEY = ConfigFactory.load.getString("cjww.auth.key")
   private val SALT = ConfigFactory.load.getString("cjww.auth.payload")
   private val LENGTH = 16

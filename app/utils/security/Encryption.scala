@@ -13,21 +13,32 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package security
 
-import org.scalatestplus.play.PlaySpec
+package utils.security
 
-class EncryptionSpec extends PlaySpec {
+import java.security.MessageDigest
 
-  class Setup {
-    object TestSec extends Encryption
-  }
+object Encryption extends Encryption
 
-  "sha512" should {
-    "return a string exactly 128 chars long and isnt equal to what was input" in new Setup {
-      val result = TestSec.sha512("testString")
-      assert(result.length == 128)
-      assert(result != "testString")
+trait Encryption {
+  def sha512(plainpassword: String) : String = {
+    val sha512 = MessageDigest.getInstance("SHA-512")
+    val passbytes : Array[Byte] = plainpassword getBytes()
+    val passhash : Array[Byte] = sha512.digest(passbytes)
+
+    var result = ""
+
+    def loopArray(increment: Int) : String = {
+      if(increment >= passhash.length - 1) {
+        val b = passhash(increment)
+        result ++= "%02x".format(b).toString
+        result
+      } else {
+        val b = passhash(increment)
+        result ++= "%02x".format(b).toString
+        loopArray(increment + 1)
+      }
     }
+    loopArray(0)
   }
 }

@@ -15,65 +15,30 @@
 // limitations under the License.
 package services
 
-import connectors.{AccountConnector, SessionStoreConnector}
-import models.SessionUpdateSet
-import models.accounts.UserAccount
-import play.api.mvc.Request
-import security.JsonSecurity
+import models.accounts.Settings
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-
-object EditProfileService extends EditProfileService {
-  val accountConnector = AccountConnector
-  val sessionStoreConnector = SessionStoreConnector
-
-}
+object EditProfileService extends EditProfileService
 
 trait EditProfileService {
 
-  val accountConnector : AccountConnector
-  val sessionStoreConnector : SessionStoreConnector
-
-  def getDisplayOption(account : Option[UserAccount]) : Option[String] = {
-    account.isDefined match {
+  def getDisplayOption(settings : Option[Settings]) : Option[String] = {
+    settings.isDefined match {
       case false => Some("full")
-      case true => account.get.settings.isDefined match {
-        case false => Some("full")
-        case true => Some(account.get.settings.get("displayName"))
-      }
+      case true => settings.get.displayName
     }
   }
 
-  def getDisplayNameColour(account: Option[UserAccount]) : Option[String] = {
-    account.isDefined match {
+  def getDisplayNameColour(settings: Option[Settings]) : Option[String] = {
+    settings.isDefined match {
       case false => Some("#FFFFFF")
-      case true => account.get.settings.isDefined match {
-        case false => Some("#FFFFFF")
-        case true => account.get.settings.get.get("displayNameColour")
-      }
+      case true => settings.get.displayNameColour
     }
   }
 
-  def getDisplayImageURL(account: Option[UserAccount]) : Option[String] = {
-    account.isDefined match {
+  def getDisplayImageURL(settings: Option[Settings]) : Option[String] = {
+    settings.isDefined match {
       case false => Some("/account-services/assets/images/background.jpg")
-      case true => account.get.settings.isDefined match {
-        case false => Some("/account-services/assets/images/background.jpg")
-        case true => account.get.settings.get.get("displayImageURL") match {
-          case None => Some("/account-services/assets/images/background.jpg")
-          case _ => account.get.settings.get.get("displayImageURL")
-        }
-      }
-    }
-  }
-
-  def updateSession(key : String)(implicit request: Request[_]) : Future[Boolean] = {
-    for {
-      Some(user) <- accountConnector.getAccountData(request.session("_id"))
-      uwr <- sessionStoreConnector.updateSession(SessionUpdateSet(key, JsonSecurity.encryptModel[UserAccount](user).get))
-    } yield {
-      uwr
+      case true => settings.get.displayImageURL
     }
   }
 }

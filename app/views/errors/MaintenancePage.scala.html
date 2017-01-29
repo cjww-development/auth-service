@@ -1,5 +1,4 @@
-
-@(error_message : String)(implicit request: Request[_])
+@()(implicit request: Request[_])
 
 @main_template(title = "There was a problem") {
     <div class="top-block-single">
@@ -17,10 +16,10 @@
 
                 <div class="col-md-8 col-sm-8 col-xs-12" id="welcome">
                     <div class="page-header">
-                        <h1 class="pageTitle">Oops...</h1>
+                        <h1 class="pageTitle">We will be back soon!</h1>
                     </div>
 
-                    <p>@error_message</p>
+                    <p>Please try again later</p>
                 </div>
             </div>
         </div>

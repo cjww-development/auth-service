@@ -13,58 +13,49 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package services
 
-import connectors.{SessionStoreConnector, UserLoginConnector, UserLoginFailedResponse, UserLoginSuccessResponse}
-import mocks.MockResponse
-import org.scalatest.mock.MockitoSugar
-import org.mockito.Mockito._
-import org.mockito.Matchers
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import connectors.{UserLoginFailedResponse, UserLoginSuccessResponse}
+import mocks.CJWWSpec
+import models.UserLogin
+import models.auth.AuthContextDetails
 import play.api.mvc.Session
-import play.api.test.Helpers._
+import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers
+import play.api.test.Helpers.OK
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
-class LoginServiceSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with MockResponse {
+class LoginServiceSpec extends CJWWSpec {
 
-  val mockConnector = mock[UserLoginConnector]
-  val mockSessionStoreConnector = mock[SessionStoreConnector]
-
-  final val testSession = Session(testUserDetails.sessionMap)
-
-  val successResponse = mockWSResponse(statusCode = CREATED)
-
-  class Setup {
-    object TestService extends LoginService {
-      val userLogin = mockConnector
-      val sessionStoreConnector = mockSessionStoreConnector
-    }
-  }
+  val testService = new LoginService(mockUserLoginConnector, mockSessionStoreConnector)
 
   "processLoginAttempt" should {
-    "return a tuple containing a session and an optional string" when {
-      "given valid credentials" in new Setup {
-        when(mockConnector.getUserAccountInformation(Matchers.any()))
-          .thenReturn(Future.successful(UserLoginSuccessResponse(testUserDetails)))
 
-        when(mockSessionStoreConnector.cache(Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(successResponse))
+    val testCredentials = UserLogin("testUserName","testPass")
+    val testResp = mockWSResponse(OK)
+    val testSession = Session(testContextDetails.sessionMap)
 
-        val result = Await.result(TestService.processLoginAttempt(testUserCredentials), 5.seconds)
-        result.get("_id") mustBe "testID"
-      }
+    "return no session if the user can't be validated" in {
+      when(mockUserLoginConnector.getUser(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(UserLoginFailedResponse))
+
+      val result = await(testService.processLoginAttempt(testCredentials))
+      result mustBe None
     }
 
-    "return none" when {
-      "given invalid credentials" in new Setup {
-        when(mockConnector.getUserAccountInformation(Matchers.any()))
-          .thenReturn(Future.successful(UserLoginFailedResponse))
+    "return a populated session if the user can be successfully validated" in {
+      when(mockUserLoginConnector.getUser(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(UserLoginSuccessResponse(testContextDetails)))
 
-        val result = Await.result(TestService.processLoginAttempt(testUserCredentials), 5.seconds)
-        result mustBe None
-      }
+      when(mockSessionStoreConnector.cache[String](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(testResp))
+
+      val result = await(testService.processLoginAttempt(testCredentials))
+      result.get("contextId") mustBe "context-1234567890"
+      result.get("firstName") mustBe "testFirstName"
+      result.get("lastName") mustBe "testLastName"
     }
   }
 }

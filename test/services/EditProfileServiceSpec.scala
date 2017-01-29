@@ -16,146 +16,44 @@
 
 package services
 
-import connectors.{AccountConnector, SessionStoreConnector}
-import models.SessionUpdateSet
-import models.accounts.UserAccount
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import org.mockito.Mockito._
-import org.mockito.Matchers
-import play.api.test.FakeRequest
-import security.JsonSecurity
+import mocks.MockModels
+import org.scalatestplus.play.PlaySpec
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
-
-class EditProfileServiceSpec extends PlaySpec with MockitoSugar with OneAppPerSuite {
-
-  val mockAccountConnector = mock[AccountConnector]
-  val mockSessionStoreConnector = mock[SessionStoreConnector]
-
-  class Setup {
-    object TestService extends EditProfileService {
-      val accountConnector = mockAccountConnector
-      val sessionStoreConnector = mockSessionStoreConnector
-    }
-
-    val userAccountWithSettings =
-      UserAccount(
-        Some("testUserId"),
-        "testFirstName",
-        "testLastName",
-        "testUserName",
-        "testEmail",
-        "testPassword",
-        Some(
-          Map(
-            "displayName" -> "user",
-            "displayNameColour" -> "#124AA0"
-          )
-        ),
-        None)
-
-    val userAccountWithoutSettings =
-      UserAccount(
-        Some("testUserId"),
-        "testFirstName",
-        "testLastName",
-        "testUserName",
-        "testEmail",
-        "testPassword",
-        None,
-        None
-      )
-
-    val sessionUpdateSet =
-      SessionUpdateSet(
-        "userInfo",
-        JsonSecurity.encryptModel(userAccountWithSettings).get
-      )
-  }
+class EditProfileServiceSpec extends PlaySpec with MockModels {
 
   "getDisplayOption" should {
-    "return full" when {
-      "no settings map is defined" in new Setup {
-        val result = TestService.getDisplayOption(Some(userAccountWithoutSettings))
-        result mustBe Some("full")
-      }
-
-      "the account is not defined" in new Setup {
-        val result = TestService.getDisplayOption(None)
-        result mustBe Some("full")
-      }
+    "return full" in {
+      val result = EditProfileService.getDisplayOption(None)
+      result mustBe Some("full")
     }
 
-    "return user" in new Setup {
-      val result = TestService.getDisplayOption(Some(userAccountWithSettings))
+    "return testOption" in {
+      val result = EditProfileService.getDisplayOption(Some(testSettings))
       result mustBe Some("user")
     }
   }
 
   "getDisplayNameColour" should {
-    "return White" when {
-      "no account is defined" in new Setup {
-        val result = TestService.getDisplayNameColour(None)
-        result mustBe Some("#FFFFFF")
-      }
-
-      "no settings map is defined" in new Setup {
-        val result = TestService.getDisplayNameColour(Some(userAccountWithoutSettings))
-        result mustBe Some("#FFFFFF")
-      }
+    "return white" in {
+      val result = EditProfileService.getDisplayNameColour(None)
+      result mustBe Some("#FFFFFF")
     }
 
-    "return a shade of blue" when {
-      "the user has edited their profile and chosen a colour" in new Setup {
-        val result = TestService.getDisplayNameColour(Some(userAccountWithSettings))
-        result mustBe Some("#124AA0")
-      }
+    "return testColour" in {
+      val result = EditProfileService.getDisplayNameColour(Some(testSettings))
+      result mustBe Some("#124AAO")
     }
   }
 
-  "updateSession" should {
-    "return true" when {
-      "the users session has been updated" in new Setup {
-
-        implicit val request =
-          FakeRequest()
-            .withSession(
-              "_id" -> "testUserID",
-              "cookieID" -> "testCookieID"
-            )
-
-        when(mockAccountConnector.getAccountData(Matchers.eq("testUserID")))
-          .thenReturn(Future.successful(Some(userAccountWithSettings)))
-
-        when(mockSessionStoreConnector.updateSession(Matchers.eq(sessionUpdateSet))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(true))
-
-        val result = Await.result(TestService.updateSession("userInfo"), 5.seconds)
-        result mustBe true
-      }
+  "getDisplayImageURL" should {
+    "return /account-services/assets/images/background.jpg" in {
+      val result = EditProfileService.getDisplayImageURL(None)
+      result mustBe Some("/account-services/assets/images/background.jpg")
     }
 
-    "return false" when {
-      "the users session has not been updated" in new Setup {
-
-        implicit val request =
-          FakeRequest()
-            .withSession(
-              "_id" -> "testUserID",
-              "cookieID" -> "testCookieID"
-            )
-
-        when(mockAccountConnector.getAccountData(Matchers.eq("testUserID")))
-          .thenReturn(Future.successful(Some(userAccountWithSettings)))
-
-        when(mockSessionStoreConnector.updateSession(Matchers.eq(sessionUpdateSet))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(false))
-
-        val result = Await.result(TestService.updateSession("userInfo"), 5.seconds)
-        result mustBe false
-      }
+    "return testLink" in {
+      val result = EditProfileService.getDisplayImageURL(Some(testSettings))
+      result mustBe Some("/test/Link")
     }
   }
 }

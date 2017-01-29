@@ -14,22 +14,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package forms
+package models
 
-import models.accounts.UserRegister
-import play.api.data.Form
-import play.api.data.Forms._
-import utils.validation.RegisterValidation._
+import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.{JsSuccess, Json}
 
-object UserRegisterForm{
-  val RegisterUserForm = Form(
-    mapping(
-      "firstName" -> firstNameChecker,
-      "lastName" -> lastNameChecker,
-      "userName" -> userNameChecker,
-      "email" -> emailChecker,
-      "password" -> passwordCheck,
-      "confirmPassword" -> confirmPasswordCheck
-    )(UserRegister.apply)(UserRegister.unapply).verifying(xPasswordCheck)
-  )
+class SessionUpdateSetSpec extends PlaySpec {
+
+  val testModel = SessionUpdateSet("testKey", "testData")
+
+  val testJson =
+    Json.parse("""
+                 |{
+                 |   "key" : "testKey",
+                 |   "data" : "testData"
+                 |}
+               """.stripMargin)
+
+  "SessionUpdateSet" should {
+    "read from JSON" in {
+      Json.fromJson[SessionUpdateSet](testJson) mustBe JsSuccess(testModel)
+    }
+
+    "write to JSON" in {
+      Json.toJson[SessionUpdateSet](testModel) mustBe testJson
+    }
+  }
 }

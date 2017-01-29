@@ -13,36 +13,28 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package services
 
-import connectors.{SessionStoreConnector, UserLoginConnector, UserLoginFailedResponse, UserLoginSuccessResponse}
+import com.google.inject.{Inject, Singleton}
+import connectors._
 import models.UserLogin
-import models.accounts.UserAccount
-import play.api.Logger
 import play.api.mvc.Session
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-object LoginService extends LoginService {
-  val userLogin = UserLoginConnector
-  val sessionStoreConnector = SessionStoreConnector
-}
-
-trait LoginService {
-
-  val userLogin : UserLoginConnector
-
-  val sessionStoreConnector : SessionStoreConnector
+@Singleton
+class LoginService @Inject()(userLogin: UserLoginConnector, sessionStoreConnector: SessionStoreConnector) {
 
   def processLoginAttempt(credentials : UserLogin) : Future[Option[Session]] = {
-    userLogin.getUserAccountInformation(credentials.encryptPassword) flatMap {
-      case UserLoginSuccessResponse(user) =>
-        val session = Session(user.sessionMap)
-        sessionStoreConnector.cache[UserAccount](session("cookieID"), user).map {
+    userLogin.getUser(credentials.encryptPassword) flatMap {
+      case UserLoginSuccessResponse(context) =>
+        val session = Session(context.sessionMap)
+        sessionStoreConnector.cache[String](session("cookieId"), context.contextId).map {
           _ => Some(session)
         }
-      case UserLoginFailedResponse => Future.successful(None)
+      case UserLoginFailedResponse | UserLoginException => Future.successful(None)
     }
   }
 }

@@ -16,7 +16,7 @@
 package models.accounts
 
 import play.api.libs.json.Json
-import security.Encryption.sha512
+import utils.security.Encryption.sha512
 
 case class NewPasswords(oldPassword : String, newPassword : String, confirmPassword : String) {
   def encrypt : NewPasswords =

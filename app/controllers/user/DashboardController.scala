@@ -17,14 +17,35 @@ package controllers.user
 
 import javax.inject.Inject
 
+import auth.{Actions, AuthActions}
 import connectors.{AccountConnector, SessionStoreConnector}
-import controllers.traits.user.DashboardCtrl
 import play.api.Configuration
 import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent}
 import services.FeedService
+import utils.application.FrontendController
+import utils.httpverbs.HttpVerbs
+import views.html.user.Dashboard
 
-class DashboardController @Inject() (val messagesApi: MessagesApi, configuration: Configuration) extends DashboardCtrl {
-  val sessionStoreConnector = SessionStoreConnector
-  val accountConnector = AccountConnector
-  val feedService = FeedService
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class DashboardController @Inject() (messagesApi: MessagesApi,
+                                     configuration: Configuration,
+                                     sessionStoreConnector: SessionStoreConnector,
+                                     accountConnector: AccountConnector,
+                                     feedService: FeedService,
+                                     http : HttpVerbs,
+                                     actions : AuthActions) extends FrontendController {
+
+  def show : Action[AnyContent] = actions.authorisedFor.async {
+    implicit user =>
+      implicit request =>
+        for {
+          Some(basicDetails) <- accountConnector.getBasicDetails
+          settings <- accountConnector.getSettings
+          feed <- feedService.processRetrievedList(user.user.userId)
+        } yield {
+          Ok(Dashboard(feed, basicDetails, settings))
+        }
+  }
 }

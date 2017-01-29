@@ -13,31 +13,44 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package models
 
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.{JsSuccess, Json}
 
 class UserLoginSpec extends PlaySpec {
 
-  val testData =
-    UserLogin(
-      "testUserName",
-      "testPassword"
-    )
+  val testModel = UserLogin("testUserName", "testPass")
+
+  val testJson =
+    Json.parse("""
+                 |{
+                 |   "username" : "testUserName",
+                 |   "password" : "testPass"
+                 |}
+               """.stripMargin)
 
   "UserLogin" should {
-    "encrypt the password AND should not equal testPassword" in {
-      val result = testData.encryptPassword
-
-      assert(result.password != "testPassword")
-      assert(result.password.length == 128)
+    "read from JSON" in {
+      Json.fromJson[UserLogin](testJson) mustBe JsSuccess(testModel)
     }
 
-    "return an empty UserLogin model" in {
-      val result = UserLogin.empty
+    "write to JSON" in {
+      Json.toJson[UserLogin](testModel) mustBe testJson
+    }
 
-      assert(result.userName == "")
-      assert(result.password == "")
+    "return an empty UserLogin" in {
+      val result = UserLogin.empty
+      result.username mustBe ""
+      result.password mustBe ""
+    }
+
+    "return a model with a encrypted password" in {
+      val result = testModel.encryptPassword
+      result.username mustBe "testUserName"
+      assert(result.password != "testPass")
+      result.password.length mustBe 128
     }
   }
 }

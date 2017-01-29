@@ -14,31 +14,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package security
+package auth
 
-import java.security.MessageDigest
+import models.auth.AuthContext
+import play.api.mvc.{Action, AnyContent, Request, Result}
 
-object Encryption extends Encryption
+import scala.concurrent.Future
 
-trait Encryption {
-  def sha512(plainpassword: String) : String = {
-    val sha512 = MessageDigest.getInstance("SHA-512")
-    val passbytes : Array[Byte] = plainpassword getBytes()
-    val passhash : Array[Byte] = sha512.digest(passbytes)
+trait AuthenticatedAction {
+  def async(body: (AuthContext => (Request[AnyContent]) => Future[Result])) : Action[AnyContent]
+}
 
-    var result = ""
-
-    def loopArray(increment: Int) : String = {
-      if(increment >= passhash.length - 1) {
-        val b = passhash(increment)
-        result ++= "%02x".format(b).toString
-        result
-      } else {
-        val b = passhash(increment)
-        result ++= "%02x".format(b).toString
-        loopArray(increment + 1)
-      }
-    }
-    loopArray(0)
-  }
+trait UnauthenticatedAction {
+  def async(body : (Option[AuthContext] => (Request[AnyContent]) => Future[Result])) : Action[AnyContent]
 }

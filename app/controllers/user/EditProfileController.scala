@@ -17,15 +17,151 @@ package controllers.user
 
 import javax.inject.Inject
 
-import connectors.{AccountConnector, SessionStoreConnector}
-import controllers.traits.user.EditProfileCtrl
+import auth.{Actions, AuthActions}
+import connectors._
+import forms.{DisplayNameForm, NewPasswordForm, UserProfileForm}
+import models.accounts.{DashboardDisplay, NewPasswords, PasswordSet, UserProfile}
 import play.api.Configuration
 import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent}
 import services.{EditProfileService, FeedService}
+import utils.application.FrontendController
+import utils.httpverbs.HttpVerbs
+import views.html.user.EditProfile
 
-class EditProfileController @Inject()(val messagesApi: MessagesApi, configuration: Configuration) extends EditProfileCtrl {
-  val sessionStoreConnector = SessionStoreConnector
-  val accountConnector = AccountConnector
-  val feedEventService = FeedService
-  val editProfileService = EditProfileService
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+class EditProfileController @Inject()(messagesApi: MessagesApi,
+                                      configuration: Configuration,
+                                      sessionStoreConnector: SessionStoreConnector,
+                                      accountConnector: AccountConnector,
+                                      feedEventService : FeedService,
+                                      http : HttpVerbs,
+                                      actions : AuthActions) extends FrontendController with EditProfileService {
+
+  def show : Action[AnyContent] = actions.authorisedFor.async {
+    implicit user =>
+      implicit request =>
+        for {
+          Some(basicDetails) <- accountConnector.getBasicDetails
+          settings <- accountConnector.getSettings
+        } yield {
+          Ok(
+            EditProfile(
+              UserProfileForm.form.fill(UserProfile.fromAccount(basicDetails)),
+              NewPasswordForm.form.fill(NewPasswords("","","")),
+              DisplayNameForm.form.fill(DashboardDisplay(getDisplayOption(settings),getDisplayNameColour(settings),getDisplayImageURL(settings))),
+              basicDetails
+            )
+          )
+        }
+  }
+
+  def updateProfile() : Action[AnyContent] = actions.authorisedFor.async {
+    implicit user =>
+      implicit request =>
+        UserProfileForm.form.bindFromRequest.fold(
+          errors => {
+            for {
+              Some(basicDetails) <- accountConnector.getBasicDetails
+              settings <- accountConnector.getSettings
+            } yield {
+              BadRequest(
+                EditProfile(
+                  errors,
+                  NewPasswordForm.form.fill(NewPasswords("","","")),
+                  DisplayNameForm.form.fill(DashboardDisplay(getDisplayOption(settings), getDisplayNameColour(settings), getDisplayImageURL(settings))),
+                  basicDetails
+                )
+              )
+            }
+          },
+          valid => {
+            accountConnector.updateProfile(valid) flatMap {
+              case OK =>
+                for {
+                  _ <- feedEventService.basicDetailsFeedEvent
+                } yield {
+                  Redirect(routes.EditProfileController.show())
+                }
+            }
+          }
+        )
+  }
+
+  def updatePassword() : Action[AnyContent] = actions.authorisedFor.async {
+    implicit user =>
+      implicit request =>
+        NewPasswordForm.form.bindFromRequest.fold(
+          errors => {
+            for {
+              Some(basicDetails) <- accountConnector.getBasicDetails
+              settings <- accountConnector.getSettings
+            } yield {
+              BadRequest(
+                EditProfile(
+                  UserProfileForm.form.fill(UserProfile.fromAccount(basicDetails)),
+                  errors,
+                  DisplayNameForm.form.fill(DashboardDisplay(getDisplayOption(settings), getDisplayNameColour(settings), getDisplayImageURL(settings))),
+                  basicDetails
+                )
+              )
+            }
+          },
+          valid => {
+            accountConnector.updatePassword(PasswordSet.create(user.user.userId, valid.encrypt)) flatMap {
+              case PasswordUpdated => feedEventService.passwordUpdateFeedEvent map {
+                _ => Redirect(s"${routes.EditProfileController.show().url}#password")
+              }
+              case InvalidOldPassword =>
+                accountConnector.getBasicDetails flatMap {
+                  basicDetails =>
+                    accountConnector.getSettings map {
+                      settings =>
+                        BadRequest(
+                          EditProfile(
+                            UserProfileForm.form.fill(UserProfile.fromAccount(basicDetails.get)),
+                            NewPasswordForm.form.fill(valid).withError("oldPassword", "Your old password is incorrect"),
+                            DisplayNameForm.form.fill(DashboardDisplay(getDisplayOption(settings), getDisplayNameColour(settings), getDisplayImageURL(settings))),
+                            basicDetails.get
+                          )
+                        )
+                    }
+                }
+            }
+          }
+        )
+  }
+
+  def updateSettings() : Action[AnyContent] = actions.authorisedFor.async {
+    implicit user =>
+      implicit request =>
+        DisplayNameForm.form.bindFromRequest.fold(
+          errors => {
+            for {
+              Some(basicDetails) <- accountConnector.getBasicDetails
+              settings <- accountConnector.getSettings
+            } yield {
+              BadRequest(
+                EditProfile(
+                  UserProfileForm.form.fill(UserProfile.fromAccount(basicDetails)),
+                  NewPasswordForm.form.fill(NewPasswords("","","")),
+                  errors,
+                  basicDetails
+                )
+              )
+            }
+          },
+          valid => {
+            accountConnector.updateSettings(DashboardDisplay.toAccountSettings(user.user.userId, valid)) flatMap {
+              case UpdatedSettingsSuccess =>
+                feedEventService.accountSettingsFeedEvent map {
+                  _ => Redirect(routes.EditProfileController.show())
+                }
+              case UpdatedSettingsFailed => Future.successful(InternalServerError)
+            }
+          }
+        )
+  }
 }

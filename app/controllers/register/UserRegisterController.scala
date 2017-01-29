@@ -18,12 +18,50 @@ package controllers.register
 
 import javax.inject.Inject
 
-import connectors.UserRegistrationConnector
-import controllers.traits.register.UserRegisterCtrl
+import auth.{Actions, AuthActions}
+import com.google.inject.Singleton
+import connectors._
+import forms.UserRegisterForm
+import models.accounts.UserRegister
 import play.api.Configuration
 import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent}
+import utils.application.FrontendController
+import utils.httpverbs.HttpVerbs
+import views.html.error_template
+import views.html.register.{RegisterSuccess, UserRegisterView}
 
-class UserRegisterController @Inject() (val messagesApi: MessagesApi, configuration: Configuration) extends UserRegisterCtrl {
-  val userRegister = UserRegistrationConnector
-  val errorMessage = messagesApi("cjww.auth.error.generic")
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+@Singleton
+class UserRegisterController @Inject()(messagesApi: MessagesApi,
+                                       configuration: Configuration,
+                                       userRegister : UserRegistrationConnector,
+                                       http : HttpVerbs,
+                                       actions: AuthActions) extends FrontendController {
+
+  def show : Action[AnyContent] = actions.unauthenticatedAction.async {
+    implicit potentialUser =>
+      implicit request =>
+        Future.successful(Ok(UserRegisterView(UserRegisterForm.RegisterUserForm.fill(UserRegister.empty))))
+  }
+
+  def submit : Action[AnyContent] = actions.unauthenticatedAction.async {
+    implicit potentialUser =>
+      implicit request =>
+        UserRegisterForm.RegisterUserForm.bindFromRequest.fold(
+          errors => {
+            Future.successful(BadRequest(UserRegisterView(errors)))
+          },
+          newUser => {
+            userRegister.createNewIndividualUser(newUser.encryptPasswords) map {
+              case UserRegisterSuccessResponse(_) => Ok(RegisterSuccess("individual"))
+              case UserRegisterClientErrorResponse(_) => BadRequest(error_template(messagesApi("cjww.auth.error.generic")))
+              case UserRegisterServerErrorResponse(_) => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
+              case UserRegisterErrorResponse(_) => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
+            }
+          }
+        )
+  }
 }

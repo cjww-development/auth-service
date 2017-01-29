@@ -13,20 +13,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package controllers.traits.redirect
 
-import config.FrontendConfiguration
+package controllers
+
+import com.google.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
-import utils.application.FrontendController
-import views.html.redirect.ServiceSelector
+import utils.application.{ErrorHandler, FrontendController}
 
-import scala.concurrent.Future
+@Singleton
+class MaintenanceController @Inject()(errorHandler: ErrorHandler) extends FrontendController{
 
-trait RedirectCtrl extends FrontendController {
-
-  def chooseService : Action[AnyContent] = Action.async {
+  def show() : Action[AnyContent] = Action.async {
     implicit request =>
-      implicit val config = FrontendConfiguration
-      Future.successful(Ok(ServiceSelector()))
+      errorHandler.maintenanceMode
   }
 }

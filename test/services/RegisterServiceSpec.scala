@@ -13,68 +13,40 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package services
 
-import connectors._
+import connectors.UserRegisterSuccessResponse
+import mocks.CJWWSpec
 import models.accounts.UserRegister
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import org.mockito.Mockito._
-import org.mockito.Matchers
-import play.api.test.Helpers._
+import org.mockito.ArgumentMatchers
+import play.api.test.Helpers.OK
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
-class RegisterServiceSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
+class RegisterServiceSpec extends CJWWSpec {
 
-  val mockConnector = mock[UserRegistrationConnector]
-
-  val testData = UserRegister("testFirstName","testLastName","testUserName","test@email.com","testPassword","testPassword")
-
-  class Setup {
-    object TestService extends RegisterService {
-      val userRegistration = mockConnector
-    }
-  }
-
-  "RegisterService" should {
-    "use the correct UserRegistrationConnector" in {
-      RegisterService.userRegistration mustBe UserRegistrationConnector
-    }
-  }
+  val testService = new RegisterService(mockUserRegisterConnector)
 
   "registerIndividual" should {
-    "return a UserRegisterSuccessResponse" in new Setup {
-      when(mockConnector.createNewIndividualUser(Matchers.eq(testData)))
-        .thenReturn(Future.successful(UserRegisterSuccessResponse(CREATED)))
 
-      val result = TestService.registerIndividual(testData)
-      Await.result(result, 5.seconds) mustBe UserRegisterSuccessResponse(CREATED)
-    }
+    val testUserRegister =
+      UserRegister(
+        "testFirstName",
+        "testLastName",
+        "testUserName",
+        "test@email.com",
+        "testPass",
+        "testPass"
+      )
 
-    "return a UserRegisterClientErrorResponse" in new Setup {
-      when(mockConnector.createNewIndividualUser(Matchers.eq(testData)))
-        .thenReturn(Future.successful(UserRegisterClientErrorResponse(BAD_REQUEST)))
+    "return a UserRegisterResponse" in {
+      when(mockUserRegisterConnector.createNewIndividualUser(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(UserRegisterSuccessResponse(OK)))
 
-      val result = TestService.registerIndividual(testData)
-      Await.result(result, 5.seconds) mustBe UserRegisterClientErrorResponse(BAD_REQUEST)
-    }
-
-    "return a UserRegisterServerErrorResponse" in new Setup {
-      when(mockConnector.createNewIndividualUser(Matchers.eq(testData)))
-        .thenReturn(Future.successful(UserRegisterServerErrorResponse(INTERNAL_SERVER_ERROR)))
-
-      val result = TestService.registerIndividual(testData)
-      Await.result(result, 5.seconds) mustBe UserRegisterServerErrorResponse(INTERNAL_SERVER_ERROR)
-    }
-
-    "return a UserRegisterErrorResponse" in new Setup {
-      when(mockConnector.createNewIndividualUser(Matchers.eq(testData)))
-        .thenReturn(Future.successful(UserRegisterErrorResponse(status = 700)))
-
-      val result = TestService.registerIndividual(testData)
-      Await.result(result, 5.seconds) mustBe UserRegisterErrorResponse(700)
+      val result = await(testService.registerIndividual(testUserRegister))
+      result mustBe UserRegisterSuccessResponse(OK)
     }
   }
 }

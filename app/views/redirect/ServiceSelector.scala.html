@@ -1,6 +1,6 @@
 @import config.FrontendConfiguration
-
-@()(implicit request: Request[_], configuration: FrontendConfiguration)
+@import models.auth.AuthContext
+@()(implicit request: Request[_], configuration: FrontendConfiguration, authContext : Option[AuthContext])
 
 @main_template(title = "CJWW - Where do you want to go?"){
     <div class="top-block-single">
