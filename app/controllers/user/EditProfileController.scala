@@ -17,30 +17,30 @@ package controllers.user
 
 import javax.inject.Inject
 
-import auth.{Actions, AuthActions}
+import com.cjwwdev.auth.actions.Actions
+import com.cjwwdev.auth.connectors.AuthConnector
+import config.ApplicationConfiguration
 import connectors._
 import forms.{DisplayNameForm, NewPasswordForm, UserProfileForm}
 import models.accounts.{DashboardDisplay, NewPasswords, PasswordSet, UserProfile}
-import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.{EditProfileService, FeedService}
 import utils.application.FrontendController
-import utils.httpverbs.HttpVerbs
 import views.html.user.EditProfile
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class EditProfileController @Inject()(messagesApi: MessagesApi,
-                                      configuration: Configuration,
-                                      sessionStoreConnector: SessionStoreConnector,
+                                      configuration: ApplicationConfiguration,
                                       accountConnector: AccountConnector,
                                       feedEventService : FeedService,
-                                      http : HttpVerbs,
-                                      actions : AuthActions) extends FrontendController with EditProfileService {
+                                      authConnect: AuthConnector) extends FrontendController with EditProfileService with Actions {
 
-  def show : Action[AnyContent] = actions.authorisedFor.async {
+  val authConnector = authConnect
+
+  def show : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         for {
@@ -58,7 +58,7 @@ class EditProfileController @Inject()(messagesApi: MessagesApi,
         }
   }
 
-  def updateProfile() : Action[AnyContent] = actions.authorisedFor.async {
+  def updateProfile() : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         UserProfileForm.form.bindFromRequest.fold(
@@ -83,14 +83,14 @@ class EditProfileController @Inject()(messagesApi: MessagesApi,
                 for {
                   _ <- feedEventService.basicDetailsFeedEvent
                 } yield {
-                  Redirect(routes.EditProfileController.show())
+                  Redirect(routes.EditProfileController.show()).withSession(request.session. +("firstName" -> valid.firstName) +("lastName" -> valid.lastName))
                 }
             }
           }
         )
   }
 
-  def updatePassword() : Action[AnyContent] = actions.authorisedFor.async {
+  def updatePassword() : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         NewPasswordForm.form.bindFromRequest.fold(
@@ -134,7 +134,7 @@ class EditProfileController @Inject()(messagesApi: MessagesApi,
         )
   }
 
-  def updateSettings() : Action[AnyContent] = actions.authorisedFor.async {
+  def updateSettings() : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         DisplayNameForm.form.bindFromRequest.fold(

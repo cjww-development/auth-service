@@ -16,27 +16,22 @@
 
 package config
 
+import com.cjwwdev.bootstrap.config.BaseConfiguration
 import com.google.inject.Singleton
-import com.typesafe.config.ConfigFactory
 
 @Singleton
-class FrontendConfiguration {
-  val config = ConfigFactory.load
-
-  val env = config.getString("cjww.environment")
-
-  val authMicroservice = config.getString(s"$env.routes.auth-microservice")
-  val accountsMicroservice = config.getString(s"$env.routes.accounts-microservice")
-  val sessionStore = config.getString(s"$env.routes.session-store")
-
-  val diagnosticsFrontend = config.getString(s"$env.routes.diagnostics")
-  val deversityFrontend = s"deversity-frontend"
-  val hubFrontend = s"hub-frontend"
-
-  val APPLICATION_ID = config.getString(s"$env.application-ids.auth-service")
-
+class ApplicationConfiguration extends BaseConfiguration {
   //FeedServiceConfig
-  val APPLICATION_NAME = config.getString("appName")
   val EDIT_PROFILE = "edit-profile"
   val TITLE = "Your profile has been updated"
+
+  val LOGIN_CALLBACK = controllers.login.routes.LoginController.show(None)
+
+  //routes
+  val accountsMicroservice = config.getString("routes.accounts-microservice")
+  val authMicroservice = config.getString("routes.auth-microservice")
+  val sessionStore = config.getString("routes.session-store")
+  val diagnosticsFrontend = config.getString("routes.diagnostics-frontend")
+  val deversityFrontend = config.getString("routes.deversity-frontend")
+  val hubFrontend = config.getString("routes.hub-frontend")
 }

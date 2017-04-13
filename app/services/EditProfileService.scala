@@ -22,23 +22,23 @@ object EditProfileService extends EditProfileService
 trait EditProfileService {
 
   def getDisplayOption(settings : Option[Settings]) : Option[String] = {
-    settings.isDefined match {
-      case false => Some("full")
-      case true => settings.get.displayName
+    settings match {
+      case Some(userSettings) => userSettings.displayName
+      case None => Some("full")
     }
   }
 
   def getDisplayNameColour(settings: Option[Settings]) : Option[String] = {
-    settings.isDefined match {
-      case false => Some("#FFFFFF")
-      case true => settings.get.displayNameColour
+    settings match {
+      case Some(userSettings) => userSettings.displayNameColour
+      case None => Some("#FFFFFF")
     }
   }
 
   def getDisplayImageURL(settings: Option[Settings]) : Option[String] = {
-    settings.isDefined match {
-      case false => Some("/account-services/assets/images/background.jpg")
-      case true => settings.get.displayImageURL
+    settings match {
+      case Some(userSettings) => userSettings.displayImageURL
+      case None => Some("/account-services/assets/images/background.jpg")
     }
   }
 }

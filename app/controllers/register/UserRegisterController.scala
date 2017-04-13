@@ -18,16 +18,15 @@ package controllers.register
 
 import javax.inject.Inject
 
-import auth.{Actions, AuthActions}
+import com.cjwwdev.auth.actions.{Actions, AuthActions}
+import com.cjwwdev.auth.connectors.AuthConnector
 import com.google.inject.Singleton
 import connectors._
 import forms.UserRegisterForm
-import models.accounts.UserRegister
 import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import utils.application.FrontendController
-import utils.httpverbs.HttpVerbs
 import views.html.error_template
 import views.html.register.{RegisterSuccess, UserRegisterView}
 
@@ -36,18 +35,18 @@ import scala.concurrent.Future
 
 @Singleton
 class UserRegisterController @Inject()(messagesApi: MessagesApi,
-                                       configuration: Configuration,
                                        userRegister : UserRegistrationConnector,
-                                       http : HttpVerbs,
-                                       actions: AuthActions) extends FrontendController {
+                                       authConnect: AuthConnector) extends FrontendController with Actions {
 
-  def show : Action[AnyContent] = actions.unauthenticatedAction.async {
+  val authConnector = authConnect
+
+  def show : Action[AnyContent] = unauthenticatedAction.async {
     implicit potentialUser =>
       implicit request =>
-        Future.successful(Ok(UserRegisterView(UserRegisterForm.RegisterUserForm.fill(UserRegister.empty))))
+        Future.successful(Ok(UserRegisterView(UserRegisterForm.RegisterUserForm)))
   }
 
-  def submit : Action[AnyContent] = actions.unauthenticatedAction.async {
+  def submit : Action[AnyContent] = unauthenticatedAction.async {
     implicit potentialUser =>
       implicit request =>
         UserRegisterForm.RegisterUserForm.bindFromRequest.fold(

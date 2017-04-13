@@ -16,11 +16,11 @@
 
 package mocks
 
-import connectors.{AccountConnector, SessionStoreConnector, UserLoginConnector, UserRegistrationConnector}
+import com.cjwwdev.http.verbs.Http
+import connectors.{SessionStoreConnector, UserLoginConnector, UserRegistrationConnector}
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito.reset
 import services.{EditProfileService, FeedService, LoginService}
-import utils.httpverbs.HttpVerbs
 
 trait ComponentMocks {
   this: MockitoSugar =>
@@ -28,7 +28,7 @@ trait ComponentMocks {
   val mockSessionStoreConnector : SessionStoreConnector = mock[SessionStoreConnector]
   val mockEditProfileService : EditProfileService = mock[EditProfileService]
   val mockFeedEventService : FeedService = mock[FeedService]
-  val mockHttpVerbs : HttpVerbs = mock[HttpVerbs]
+  val mockHttpVerbs : Http = mock[Http]
   val mockLoginService : LoginService = mock[LoginService]
   val mockUserRegisterConnector : UserRegistrationConnector = mock[UserRegistrationConnector]
   val mockUserLoginConnector : UserLoginConnector = mock[UserLoginConnector]

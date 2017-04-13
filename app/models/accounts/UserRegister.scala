@@ -17,7 +17,7 @@
 package models.accounts
 
 import play.api.libs.json.Json
-import utils.security.Encryption.sha512
+import com.cjwwdev.security.encryption.SHA512
 
 case class UserRegister(firstName: String,
                         lastName: String,
@@ -27,12 +27,10 @@ case class UserRegister(firstName: String,
                         confirmPassword: String) {
 
   def encryptPasswords : UserRegister = {
-    this.copy(password = sha512(password), confirmPassword = sha512(confirmPassword))
+    this.copy(password = SHA512.encrypt(password), confirmPassword = SHA512.encrypt(confirmPassword))
   }
 }
 
 object UserRegister {
   implicit val format = Json.format[UserRegister]
-
-  def empty : UserRegister = UserRegister("","","","","","")
 }

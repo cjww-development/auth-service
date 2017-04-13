@@ -18,9 +18,10 @@ package mocks
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import config.WSConfiguration
-import connectors.AccountConnector
-import models.auth.AuthContext
+import com.cjwwdev.auth.connectors.AuthConnector
+import com.cjwwdev.auth.models.AuthContext
+import com.cjwwdev.http.verbs.Http
+import com.cjwwdev.security.encryption.DataSecurity
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.{Args, BeforeAndAfterEach, Status, Suite}
@@ -28,8 +29,6 @@ import org.scalatest.mock.MockitoSugar
 import play.api.libs.ws.ahc.AhcWSClient
 import play.api.mvc.{Action, AnyContent, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import utils.httpverbs.HttpVerbs
-import utils.security.DataSecurity
 
 import scala.concurrent.Future
 
@@ -40,8 +39,7 @@ trait AuthMocks
     with MockModels
     with ComponentMocks
     with BeforeAndAfterEach
-    with Suite
-    with WSConfiguration {
+    with Suite {
 
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
@@ -54,16 +52,16 @@ trait AuthMocks
   }
 
   def showWithAuthorisedUser(action: Action[AnyContent],
-                             mockAccountConnector: AccountConnector,
-                             mockHttp : HttpVerbs,
+                             mockAuthConnector: AuthConnector,
+                             mockHttp : Http,
                              context: AuthContext)(test: Future[Result] => Any) {
     val request = buildRequestWithSession
     val mockResponse = mockWSResponseWithBody(DataSecurity.encryptData[AuthContext](context).get)
 
-    when(mockHttp.getUrl(ArgumentMatchers.any()))
+    when(mockHttp.GET(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(Future.successful(mockResponse))
 
-    when(mockAccountConnector.getContext(ArgumentMatchers.any()))
+    when(mockAuthConnector.getContext(ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(context)))
 
     val result = action.apply(request)
@@ -71,17 +69,17 @@ trait AuthMocks
   }
 
   def submitWithAuthorisedUser(action: Action[AnyContent],
-                               mockAccountConnector: AccountConnector,
+                               mockAuthConnector: AuthConnector,
                                request: FakeRequest[AnyContentAsFormUrlEncoded],
-                               mockHttp : HttpVerbs,
+                               mockHttp : Http,
                                context : AuthContext)(test: Future[Result] => Any) {
 
     val mockResponse = mockWSResponseWithBody(DataSecurity.encryptData[AuthContext](context).get)
 
-    when(mockHttp.getUrl(ArgumentMatchers.any()))
+    when(mockHttp.GET(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(Future.successful(mockResponse))
 
-    when(mockAccountConnector.getContext(ArgumentMatchers.any()))
+    when(mockAuthConnector.getContext(ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(context)))
 
     val result = action.apply(request)

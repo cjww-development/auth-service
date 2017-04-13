@@ -16,12 +16,12 @@
 package utils.url
 
 import com.google.inject.{Inject, Singleton}
-import config.FrontendConfiguration
+import config.ApplicationConfiguration
 import play.api.Logger
 import play.api.mvc.Request
 
 @Singleton
-class UrlParser @Inject()(config : FrontendConfiguration) {
+class UrlParser @Inject()(config : ApplicationConfiguration) {
 
   def serviceDirector(implicit request: Request[_]) : String = {
     Logger.info(s"[UrlParse] - [serviceDirector] ${request.getQueryString("redirect").getOrElse("Redirecting to service selector")}")

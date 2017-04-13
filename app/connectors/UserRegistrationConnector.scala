@@ -16,13 +16,14 @@
 
 package connectors
 
+import com.cjwwdev.http.verbs.Http
 import com.google.inject.{Inject, Singleton}
-import config.FrontendConfiguration
+import config.ApplicationConfiguration
 import models.accounts.UserRegister
-import play.api.Logger
+import com.cjwwdev.logging.Logger
 import play.api.http.Status._
-import utils.httpverbs.HttpVerbs
-import utils.security.DataSecurity
+import com.cjwwdev.security.encryption.DataSecurity
+import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -34,8 +35,7 @@ case class UserRegisterServerErrorResponse(status : Int) extends UserRegisterRes
 case class UserRegisterErrorResponse(status : Int) extends UserRegisterResponse
 
 @Singleton
-class UserRegistrationConnector @Inject()(http : HttpVerbs, config : FrontendConfiguration) {
-
+class UserRegistrationConnector @Inject()(http : Http, config : ApplicationConfiguration) {
   private[connectors] def processStatusCode(statusCode : Int) : UserRegisterResponse = {
     class Contains(r : Range) {
       def unapply(i : Int) : Boolean = r contains i
@@ -45,24 +45,24 @@ class UserRegistrationConnector @Inject()(http : HttpVerbs, config : FrontendCon
     val server = new Contains(500 to 699)
 
     statusCode match {
-      case success() => UserRegisterSuccessResponse(statusCode)
-      case client() => UserRegisterClientErrorResponse(statusCode)
-      case server() => UserRegisterServerErrorResponse(statusCode)
-      case _ => UserRegisterErrorResponse(statusCode)
+      case success()  => UserRegisterSuccessResponse(statusCode)
+      case client()   => UserRegisterClientErrorResponse(statusCode)
+      case server()   => UserRegisterServerErrorResponse(statusCode)
+      case _          => UserRegisterErrorResponse(statusCode)
     }
   }
 
-  def createNewIndividualUser(userDetails : UserRegister) : Future[UserRegisterResponse] = {
-    http.post[UserRegister](s"${config.authMicroservice}/create-new-user", userDetails) map {
+  def createNewIndividualUser(userDetails : UserRegister)(implicit request: Request[_]) : Future[UserRegisterResponse] = {
+    http.POST[UserRegister](s"${config.accountsMicroservice}/account/create-new-user", userDetails) map {
       resp =>
         Logger.info(s"[UserRegistrationConnector] [createIndividualUser] Response code from API Call : ${resp.status} - ${resp.statusText}")
         processStatusCode(resp.status)
     }
   }
 
-  def checkUserName(username : String) : Future[Boolean] = {
+  def checkUserName(username : String)(implicit request: Request[_]) : Future[Boolean] = {
     val encUsername = DataSecurity.encryptData[String](username).get
-    http.getUrl(s"${config.authMicroservice}/validate-user-name/$encUsername") map {
+    http.GET(s"${config.accountsMicroservice}/validate/user-name/$encUsername") map {
       _.status match {
         case OK => false
         case CONFLICT => true
@@ -70,9 +70,9 @@ class UserRegistrationConnector @Inject()(http : HttpVerbs, config : FrontendCon
     }
   }
 
-  def checkEmailAddress(email : String) : Future[Boolean] = {
+  def checkEmailAddress(email : String)(implicit request: Request[_]) : Future[Boolean] = {
     val encEmailAddress = DataSecurity.encryptData[String](email).get
-    http.getUrl(s"${config.authMicroservice}/validate-email/$encEmailAddress") map {
+    http.GET(s"${config.accountsMicroservice}/validate/email/$encEmailAddress") map {
       _.status match {
         case OK => false
         case CONFLICT => true

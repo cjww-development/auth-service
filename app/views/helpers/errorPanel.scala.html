@@ -2,7 +2,8 @@
 
 @if(form.hasErrors) {
     <div class="panel panel-danger">
-        <div class="panel-heading"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Something wasn't quite right...</div>
+        <div class="panel-heading"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            Something wasn't quite right...</div>
 
         <ul class="list-group">
         @for(error <- form.errors) {

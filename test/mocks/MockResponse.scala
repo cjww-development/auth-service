@@ -15,12 +15,12 @@
 // limitations under the License.
 package mocks
 
+import com.cjwwdev.security.encryption.DataSecurity
 import models.UserLogin
 import models.accounts.UserAccount
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.ws.WSResponse
-import utils.security.DataSecurity
 
 trait MockResponse extends MockitoSugar{
 

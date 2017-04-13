@@ -1,11 +1,11 @@
 @import models.accounts.BasicDetails
 @import models.accounts.FeedItem
 @import models.accounts.Settings
-@import models.auth.AuthContext
-@(feed : Option[List[FeedItem]], basicDetails : BasicDetails, settings : Option[Settings])(implicit request : Request[_], authContext : Option[AuthContext])
+@import com.cjwwdev.auth.models.AuthContext
+@import services.EditProfileService.{getDisplayImageURL, getDisplayNameColour, getDisplayOption}
+@(feed: Option[List[FeedItem]], basicDetails: BasicDetails, settings: Option[Settings])(implicit request: Request[_], authContext: Option[AuthContext])
 
 @import controllers.user.{routes => userRoutes}
-@import services.EditProfileService.{getDisplayImageURL, getDisplayNameColour, getDisplayOption}
 @import views.html.helpers.feedItem
 
 @colourSwitcher(random : Int) = {
@@ -63,10 +63,10 @@
 
             <div class="row">
                 <div class="col-md-11">
-                    <h1 id="main-title" class="page-title" style="color: @getDisplayNameColour(settings)">Welcome
-                        @if(settings.isDefined){
+                    <h1 id="main-title" class="page-title" style="color: @{getDisplayNameColour(settings)}">Welcome
+                        @if(settings.isDefined) {
                             @if(settings.get.displayName.isDefined) {
-                                @displayNameSelector(getDisplayOption(settings).get)
+                                @displayNameSelector(settings.get.displayName.get))
                             } else {
                                 @basicDetails.firstName @basicDetails.lastName
                             }

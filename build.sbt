@@ -1,29 +1,21 @@
+import com.typesafe.config.ConfigFactory
 import scoverage.ScoverageKeys
+import scala.util.{Failure, Success, Try}
 
+val btVersion: String = {
+  Try(ConfigFactory.load.getString("version")) match {
+    case Success(ver) => ver
+    case Failure(_) => "0.1.0"
+  }
+}
+
+organization := "com.cjww-dev.frontends"
 name := """auth-service"""
-
-version := "1.0-SNAPSHOT"
+version := btVersion
 
 lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
-lazy val root = (project in file("."))
-  .enablePlugins(PlayScala)
-  .settings(playSettings ++ scoverageSettings : _*)
-
-scalaVersion := "2.11.8"
-
-PlayKeys.devSettings := Seq("play.server.http.port" -> "8602")
-
-libraryDependencies ++= Seq(
-  cache,
-  "com.typesafe.play" %% "play-ws" % "2.5.12",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
-  "org.mockito" % "mockito-core" % "2.2.29"
-)
-
 lazy val scoverageSettings = {
-
-  // Semicolon-separated list of regexs matching classes to exclude
   Seq(
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;models/.data/..*;config.*;utils.*;views.*;.*(AuthService|BuildInfo|Routes).*",
     ScoverageKeys.coverageMinimum := 80,
@@ -32,6 +24,38 @@ lazy val scoverageSettings = {
   )
 }
 
+lazy val root = (project in file("."))
+  .enablePlugins(PlayScala)
+  .settings(playSettings ++ scoverageSettings : _*)
+
+scalaVersion := "2.11.10"
+
+PlayKeys.devSettings := Seq("play.server.http.port" -> "8602")
+
+val cjwwDep : Seq[ModuleID] = Seq(
+  "com.cjww-dev.libs" % "data-security_2.11" % "0.6.0",
+  "com.cjww-dev.libs" % "http-verbs_2.11" % "0.10.0",
+  "com.cjww-dev.libs" % "logging_2.11" % "0.2.0",
+  "com.cjww-dev.libs" % "authorisation_2.11" % "0.10.0",
+  "com.cjww-dev.libs" % "frontend-ui_2.11" % "0.3.0",
+  "com.cjww-dev.libs" % "bootstrapper_2.11" % "0.6.0"
+)
+
+val codeDep : Seq[ModuleID] = Seq(
+  "com.kenshoo" %% "metrics-play" % "2.4.0_0.4.1"
+)
+
+val testDep : Seq[ModuleID] = Seq(
+  "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % Test,
+  "org.mockito" % "mockito-core" % "2.7.22" % Test
+)
+
+libraryDependencies ++= Seq(cache)
+libraryDependencies ++= cjwwDep
+libraryDependencies ++= codeDep
+libraryDependencies ++= testDep
+
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+resolvers += "cjww-dev" at "http://dl.bintray.com/cjww-development/releases"
 
 herokuAppName in Compile := "cjww-auth-service"

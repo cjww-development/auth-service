@@ -15,15 +15,16 @@
 // limitations under the License.
 package connectors
 
+import com.cjwwdev.auth.models.AuthContext
 import com.google.inject.{Inject, Singleton}
-import config.FrontendConfiguration
+import config.ApplicationConfiguration
 import models.accounts._
-import models.auth.AuthContext
-import play.api.Logger
+import com.cjwwdev.logging.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsArray, JsObject}
-import utils.httpverbs.HttpVerbs
-import utils.security.DataSecurity
+import com.cjwwdev.http.verbs.Http
+import com.cjwwdev.security.encryption.DataSecurity
+import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -41,24 +42,21 @@ case object FeedEventSuccessResponse extends FeedEventResponse
 case object FeedEventFailedResponse extends FeedEventResponse
 
 @Singleton
-class AccountConnector @Inject()(http : HttpVerbs, config: FrontendConfiguration) {
+class AccountConnector @Inject()(http : Http, config: ApplicationConfiguration) {
 
-  def getContext(contextId : String) : Future[Option[AuthContext]] = {
-    http.getUrl(s"${config.authMicroservice}/get-context/$contextId") map {
-      resp => DataSecurity.decryptInto[AuthContext](resp.body)
+  def updateProfile(userProfile: UserProfile)(implicit auth: AuthContext, request: Request[_]) : Future[Int] = {
+    http.PATCH[UserProfile](s"${config.accountsMicroservice}/account/${auth.user.userId}/update-profile", userProfile) map { resp =>
+      resp.status match {
+        case OK => resp.status
+        case _ =>
+          Logger.info(s"[AccountConnector] - [updateProfile] Update profile encountered a problem")
+          resp.status
+      }
     }
   }
 
-  def updateProfile(userProfile: UserProfile) : Future[Int] = {
-    http.post[UserProfile](s"${config.accountsMicroservice}/accounts/update-profile", userProfile) map {
-      resp =>
-        Logger.info(s"[AccountConnector] - [updateProfile] Response from API Call ${resp.status} - ${resp.statusText}")
-        resp.status
-    }
-  }
-
-  def updatePassword(passwordSet: PasswordSet) : Future[UpdatedPasswordResponse] = {
-    http.post[PasswordSet](s"${config.accountsMicroservice}/accounts/update-password", passwordSet) map {
+  def updatePassword(passwordSet: PasswordSet)(implicit auth: AuthContext, request: Request[_]): Future[UpdatedPasswordResponse] = {
+    http.PATCH[PasswordSet](s"${config.accountsMicroservice}/account/${auth.user.userId}/update-password", passwordSet) map {
       _.status match {
         case CONFLICT => InvalidOldPassword
         case OK => PasswordUpdated
@@ -66,8 +64,8 @@ class AccountConnector @Inject()(http : HttpVerbs, config: FrontendConfiguration
     }
   }
 
-  def updateSettings(settings: AccountSettings) : Future[UpdatedSettingsResponse] = {
-    http.post[AccountSettings](s"${config.accountsMicroservice}/accounts/update-settings", settings) map {
+  def updateSettings(settings: AccountSettings)(implicit auth: AuthContext, request: Request[_]): Future[UpdatedSettingsResponse] = {
+    http.PATCH[AccountSettings](s"${config.accountsMicroservice}/account/${auth.user.userId}/update-settings", settings) map {
       _.status match {
         case OK => UpdatedSettingsSuccess
         case INTERNAL_SERVER_ERROR => UpdatedSettingsFailed
@@ -75,8 +73,8 @@ class AccountConnector @Inject()(http : HttpVerbs, config: FrontendConfiguration
     }
   }
 
-  def createFeedItem(feedItem: FeedItem) : Future[FeedEventResponse] = {
-    http.post[FeedItem](s"${config.accountsMicroservice}/accounts/create-feed-item", feedItem) map {
+  def createFeedItem(feedItem: FeedItem)(implicit request: Request[_]) : Future[FeedEventResponse] = {
+    http.POST[FeedItem](s"${config.accountsMicroservice}/create-feed-item", feedItem) map {
       resp => resp.status match {
         case OK => FeedEventSuccessResponse
         case INTERNAL_SERVER_ERROR => FeedEventFailedResponse
@@ -84,39 +82,41 @@ class AccountConnector @Inject()(http : HttpVerbs, config: FrontendConfiguration
     }
   }
 
-  def getFeedItems(userId : String) : Future[Option[List[FeedItem]]] = {
-    http.get[String](s"${config.accountsMicroservice}/accounts/get-feed", userId) map {
-      resp =>
-        DataSecurity.decryptInto[JsObject](resp.body) match {
-          case Some(obj) => Some(obj.value("feed-array").as[JsArray].as[List[FeedItem]])
-          case None => None
+  def getFeedItems(implicit auth: AuthContext, request: Request[_]) : Future[Option[List[FeedItem]]] = {
+    http.GET(s"${config.accountsMicroservice}/account/${auth.user.userId}/get-user-feed") map { resp =>
+      resp.status match {
+        case OK => DataSecurity.decryptInto[JsObject](resp.body) match {
+          case Some(json) => Some(json.value("feed-array").as[JsArray].as[List[FeedItem]])
+          case _ => None
         }
+        case NOT_FOUND => None
+      }
     }
   }
 
-  def getBasicDetails(implicit authContext: AuthContext) : Future[Option[BasicDetails]] = {
-    http.getUrl(s"${config.accountsMicroservice}${authContext.basicDetailsUri}") map {
-      resp => resp.status match {
+  def getBasicDetails(implicit authContext: AuthContext, request: Request[_]) : Future[Option[BasicDetails]] = {
+    http.GET(s"${config.accountsMicroservice}${authContext.basicDetailsUri}") map { resp =>
+      resp.status match {
         case OK => DataSecurity.decryptInto[BasicDetails](resp.body)
-        case NOT_FOUND => None
+        case _ => None
       }
     }
   }
 
-  def getEnrolments(implicit authContext: AuthContext) : Future[Option[Enrolments]] = {
-    http.getUrl(s"${config.accountsMicroservice}${authContext.enrolmentsUri}") map {
-      resp => resp.status match {
+  def getEnrolments(implicit authContext: AuthContext, request: Request[_]) : Future[Option[Enrolments]] = {
+    http.GET(s"${config.accountsMicroservice}${authContext.enrolmentsUri}") map { resp =>
+      resp.status match {
         case OK => DataSecurity.decryptInto[Enrolments](resp.body)
-        case NOT_FOUND => None
+        case _ => None
       }
     }
   }
 
-  def getSettings(implicit authContext: AuthContext) : Future[Option[Settings]] = {
-    http.getUrl(s"${config.accountsMicroservice}${authContext.settingsUri}") map {
-      resp => resp.status match {
+  def getSettings(implicit authContext: AuthContext, request: Request[_]) : Future[Option[Settings]] = {
+    http.GET(s"${config.accountsMicroservice}${authContext.settingsUri}") map { resp =>
+      resp.status match {
         case OK => DataSecurity.decryptInto[Settings](resp.body)
-        case NOT_FOUND => None
+        case _ => None
       }
     }
   }

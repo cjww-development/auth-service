@@ -17,33 +17,33 @@ package controllers.user
 
 import javax.inject.Inject
 
-import auth.{Actions, AuthActions}
-import connectors.{AccountConnector, SessionStoreConnector}
-import play.api.Configuration
+import com.cjwwdev.auth.actions.Actions
+import com.cjwwdev.auth.connectors.AuthConnector
+import config.ApplicationConfiguration
+import connectors.AccountConnector
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.FeedService
 import utils.application.FrontendController
-import utils.httpverbs.HttpVerbs
 import views.html.user.Dashboard
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class DashboardController @Inject() (messagesApi: MessagesApi,
-                                     configuration: Configuration,
-                                     sessionStoreConnector: SessionStoreConnector,
-                                     accountConnector: AccountConnector,
-                                     feedService: FeedService,
-                                     http : HttpVerbs,
-                                     actions : AuthActions) extends FrontendController {
+class DashboardController @Inject()(messagesApi: MessagesApi,
+                                    configuration: ApplicationConfiguration,
+                                    accountConnector: AccountConnector,
+                                    feedService: FeedService,
+                                    authConnect: AuthConnector) extends FrontendController with Actions{
 
-  def show : Action[AnyContent] = actions.authorisedFor.async {
+  val authConnector = authConnect
+
+  def show : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         for {
           Some(basicDetails) <- accountConnector.getBasicDetails
           settings <- accountConnector.getSettings
-          feed <- feedService.processRetrievedList(user.user.userId)
+          feed <- feedService.processRetrievedList
         } yield {
           Ok(Dashboard(feed, basicDetails, settings))
         }

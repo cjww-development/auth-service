@@ -15,40 +15,34 @@
 // limitations under the License.
 package connectors
 
+import com.cjwwdev.auth.models.AuthContext
+import com.cjwwdev.http.exceptions.HttpExceptions
+import com.cjwwdev.http.verbs.Http
 import com.google.inject.{Inject, Singleton}
-import config.FrontendConfiguration
+import config.ApplicationConfiguration
 import models.UserLogin
-import models.auth.AuthContextDetails
-import play.api.Logger
-import utils.httpverbs.HttpVerbs
-import utils.security.DataSecurity
-import play.api.http.Status.{OK, FORBIDDEN}
+import com.cjwwdev.security.encryption.DataSecurity
+import play.api.mvc.Request
+import play.api.http.Status.{FORBIDDEN, OK}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 sealed trait UserLoginResponse
-case class  UserLoginSuccessResponse(contextDetail : AuthContextDetails) extends UserLoginResponse
+case class  UserLoginSuccessResponse(contextDetail : AuthContext) extends UserLoginResponse
 case object UserLoginFailedResponse extends UserLoginResponse
 case object UserLoginException extends UserLoginResponse
 
 @Singleton
-class UserLoginConnector @Inject()(http: HttpVerbs, config : FrontendConfiguration) {
-
-  def getUser(loginDetails : UserLogin) : Future[UserLoginResponse] = {
+class UserLoginConnector @Inject()(http: Http, config : ApplicationConfiguration) extends HttpExceptions {
+  def getUser(loginDetails : UserLogin)(implicit request: Request[_]) : Future[UserLoginResponse] = {
     val enc = DataSecurity.encryptData[UserLogin](loginDetails).get
-    http.getUrl(s"${config.authMicroservice}/login?enc=$enc") map {
-      resp =>
-        Logger.info(s"[UserLoginConnector] [getUser] Response code from api call : ${resp.status} - ${resp.statusText}")
-        resp.status match {
-          case OK =>
-            DataSecurity.decryptInto[AuthContextDetails](resp.body) match {
-              case Some(context) => UserLoginSuccessResponse(context)
-              case None => UserLoginFailedResponse
-            }
-          case FORBIDDEN => UserLoginFailedResponse
-          case _ => UserLoginException
-        }
+    http.GET(s"${config.authMicroservice}/login/user?enc=$enc") map { resp =>
+      resp.status match {
+        case OK => UserLoginSuccessResponse(DataSecurity.decryptInto[AuthContext](resp.body).get)
+        case FORBIDDEN => UserLoginFailedResponse
+        case _ => UserLoginException
+      }
     }
   }
 }

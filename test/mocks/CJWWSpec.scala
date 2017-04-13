@@ -16,35 +16,18 @@
 
 package mocks
 
-import auth.{AuthActions, AuthenticatedAction, UnauthenticatedAction}
-import models.auth.AuthContext
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.{Action, AnyContent, Request, Result}
 
-import scala.concurrent.{Await, Awaitable, Future}
+import scala.concurrent.{Await, Awaitable}
 import scala.concurrent.duration._
 
 trait CJWWSpec extends PlaySpec with OneAppPerSuite with AuthMocks {
-  lazy val fakeApplication: Application = new GuiceApplicationBuilder().bindings().build()
+  override lazy val fakeApplication: Application = new GuiceApplicationBuilder().bindings().build()
 
   implicit val duration = 5.seconds
 
   def await[T](future : Awaitable[T]) : T = Await.result(future, duration)
-
-  val actions : AuthActions = new AuthActions {
-    override def unauthenticatedAction = new UnauthenticatedAction {
-      override def async(body: (Option[AuthContext]) => (Request[AnyContent]) => Future[Result]) = Action.async{
-        implicit request => body(Some(testContext))(request)
-      }
-    }
-
-    override def authorisedFor = new AuthenticatedAction {
-      override def async(body: AuthContext => (Request[AnyContent]) => Future[Result]) = Action.async{
-        implicit request => body(testContext)(request)
-      }
-    }
-  }
 }
 

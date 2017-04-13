@@ -16,14 +16,14 @@
 package models.accounts
 
 import play.api.libs.json.Json
-import utils.security.Encryption.sha512
+import com.cjwwdev.security.encryption.SHA512
 
 case class NewPasswords(oldPassword : String, newPassword : String, confirmPassword : String) {
   def encrypt : NewPasswords =
     copy(
-      oldPassword = sha512(oldPassword),
-      newPassword = sha512(newPassword),
-      confirmPassword = sha512(confirmPassword)
+      oldPassword = SHA512.encrypt(oldPassword),
+      newPassword = SHA512.encrypt(newPassword),
+      confirmPassword = SHA512.encrypt(confirmPassword)
     )
 }
 

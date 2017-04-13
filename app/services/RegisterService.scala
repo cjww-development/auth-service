@@ -20,17 +20,15 @@ package services
 import com.google.inject.{Inject, Singleton}
 import connectors.{UserRegisterResponse, UserRegistrationConnector}
 import models.accounts.UserRegister
-import play.api.Logger
+import com.cjwwdev.logging.Logger
+import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
 class RegisterService @Inject()(userRegistration : UserRegistrationConnector) {
-  def registerIndividual(user : UserRegister) : Future[UserRegisterResponse] = {
-    userRegistration.createNewIndividualUser(user) map {
-      resp => Logger.info(s"[UserRegistrationConnector] [registerIndividual] response is $resp")
-        resp
-    }
+  def registerIndividual(user : UserRegister)(implicit request: Request[_]) : Future[UserRegisterResponse] = {
+    userRegistration.createNewIndividualUser(user)
   }
 }

@@ -16,14 +16,12 @@
 package models
 
 import play.api.libs.json.Json
-import utils.security.Encryption.sha512
+import com.cjwwdev.security.encryption.SHA512
 
 case class UserLogin(username : String, password : String) {
-  def encryptPassword : UserLogin = this.copy(password = sha512(password))
+  def encryptPassword : UserLogin = this.copy(password = SHA512.encrypt(password))
 }
 
 object UserLogin {
   implicit val format = Json.format[UserLogin]
-
-  def empty : UserLogin = UserLogin("","")
 }

@@ -16,15 +16,14 @@
 
 package utils.application
 
-import auth.Actions
-import config.FrontendConfiguration
-import models.auth.AuthContext
+import com.cjwwdev.auth.models.AuthContext
+import config.ApplicationConfiguration
 import play.api.mvc.Controller
 import utils.url.UrlParser
 
 trait FrontendController extends Controller {
 
-  val urlParser = new UrlParser(new FrontendConfiguration)
+  val urlParser = new UrlParser(new ApplicationConfiguration)
 
   implicit def optionUser(implicit user : AuthContext) : Option[AuthContext] = Some(user)
 }

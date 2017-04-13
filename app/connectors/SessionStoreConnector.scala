@@ -17,52 +17,39 @@
 package connectors
 
 import com.google.inject.{Inject, Singleton}
-import config.FrontendConfiguration
+import config.ApplicationConfiguration
 import models.SessionUpdateSet
-import play.api.Logger
-import play.api.http.Status._
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Request
-import utils.httpverbs.HttpVerbs
-import utils.security.DataSecurity
+import com.cjwwdev.logging.Logger
+import com.cjwwdev.http.verbs.Http
+import com.cjwwdev.security.encryption.DataSecurity
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class SessionStoreConnector @Inject()(http : HttpVerbs, config : FrontendConfiguration) {
-
-  def cache[T](sessionId : String, data : T)(implicit format: Format[T]) : Future[WSResponse] = {
-    http.post[T](s"${config.sessionStore}/cache", data, "sessionID" -> sessionId) map {
+class SessionStoreConnector @Inject()(http : Http, config : ApplicationConfiguration) {
+  def cache[T](sessionId : String, data : T)(implicit format: Format[T], request: Request[_]) : Future[WSResponse] = {
+    http.POST[T](s"${config.sessionStore}/session/$sessionId/cache", data) map {
       resp =>
         Logger.info(s"[SessionStoreController] - [cache] Response from API Call ${resp.status} - ${resp.statusText}")
         resp
     }
   }
 
-  def getDataElement[T](key : String)(implicit format : Format[T], request: Request[_]) : Future[Option[T]] = {
-    http.get[String](s"${config.sessionStore}/get-data-element", key, "sessionID" -> request.session("cookieId")) map {
-      data =>
-        Logger.info(s"[SessionStoreController] - [getDataElement] Response from API Call ${data.status} - ${data.statusText}")
-        DataSecurity.decryptInto[T](data.body)
+  def getDataElement[T](key : String)(implicit format : Format[T], request: Request[_]) : Future[T] = {
+    http.GET(s"${config.sessionStore}/session/${request.session("cookieId")}/data/$key") map { resp =>
+      DataSecurity.decryptInto[T](resp.body).get
     }
   }
 
-  def updateSession(updateSet : SessionUpdateSet)(implicit format : Format[SessionUpdateSet], request: Request[_]) : Future[Boolean] = {
-    http.post[SessionUpdateSet](s"${config.sessionStore}/update-session", updateSet, "sessionID" -> request.session("cookieId")) map {
-      _.status match {
-        case OK => true
-        case INTERNAL_SERVER_ERROR => false
-      }
-    }
+  def updateSession(updateSet : SessionUpdateSet)(implicit format : Format[SessionUpdateSet], request: Request[_]) : Future[Int] = {
+    http.PUT[SessionUpdateSet](s"${config.sessionStore}/session/${request.session("cookieId")}", updateSet) map(_.status)
   }
 
-  def destroySession(sessionId : String) : Future[WSResponse] = {
-    http.get[String](s"${config.sessionStore}/destroy", sessionId) map {
-      resp =>
-        Logger.info(s"[SessionStoreController] - [destroySession] Response from API Call ${resp.status} - ${resp.statusText}")
-        resp
-    }
+  def destroySession(implicit request: Request[_]) : Future[WSResponse] = {
+    http.DELETE(s"${config.sessionStore}/session/${request.session("cookieId")}/destroy")
   }
 }

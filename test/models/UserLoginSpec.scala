@@ -40,12 +40,6 @@ class UserLoginSpec extends PlaySpec {
       Json.toJson[UserLogin](testModel) mustBe testJson
     }
 
-    "return an empty UserLogin" in {
-      val result = UserLogin.empty
-      result.username mustBe ""
-      result.password mustBe ""
-    }
-
     "return a model with a encrypted password" in {
       val result = testModel.encryptPassword
       result.username mustBe "testUserName"

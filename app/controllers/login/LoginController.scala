@@ -17,62 +17,57 @@ package controllers.login
 
 import javax.inject.Inject
 
-import auth.{Actions, AuthActions}
+import com.cjwwdev.auth.actions.Actions
+import com.cjwwdev.logging.Logger
+import com.cjwwdev.auth.connectors.AuthConnector
 import com.google.inject.Singleton
+import config.ApplicationConfiguration
 import connectors.SessionStoreConnector
 import forms.UserLoginForm
-import models.UserLogin
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import play.api.{Configuration, Logger}
 import services.LoginService
 import utils.application.FrontendController
-import utils.httpverbs.HttpVerbs
 import views.html.login.UserLoginView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class LoginController@Inject()(messagesApi: MessagesApi,
-                               configuration: Configuration,
-                               userLogin : LoginService,
-                               sessionStoreConnector: SessionStoreConnector,
-                               http : HttpVerbs,
-                               actions: AuthActions) extends FrontendController {
+class LoginController @Inject()(messagesApi: MessagesApi, configuration: ApplicationConfiguration,
+                                userLogin : LoginService, sessionStoreConnector: SessionStoreConnector,
+                                authConnect: AuthConnector) extends FrontendController with Actions {
 
-  def show(redirect : Option[String]) : Action[AnyContent] = actions.unauthenticatedAction.async {
+  val authConnector = authConnect
+
+  def show(redirect : Option[String]) : Action[AnyContent] = unauthenticatedAction.async {
     implicit user =>
       implicit request =>
-        Future.successful(Ok(UserLoginView(UserLoginForm.loginForm.fill(UserLogin.empty))))
+        Future.successful(Ok(UserLoginView(UserLoginForm.loginForm)))
   }
 
-  def submit : Action[AnyContent] = actions.unauthenticatedAction.async {
+  def submit : Action[AnyContent] = unauthenticatedAction.async {
     implicit user =>
       implicit request =>
         UserLoginForm.loginForm.bindFromRequest.fold(
           errors => Future.successful(BadRequest(UserLoginView(errors))),
-          valid =>
-            userLogin.processLoginAttempt(valid) map {
-              case Some(session) => Redirect(urlParser.serviceDirector).withSession(session)
-              case None =>
-                Ok(
-                  UserLoginView(
-                    UserLoginForm.loginForm.fill(valid)
-                      .withError("userName", "Your user name or password is incorrect")
-                      .withError("password", "")
-                  )
-                )
-            }
+          valid => userLogin.processLoginAttempt(valid) map {
+            case Some(session) => Redirect(urlParser.serviceDirector).withSession(session)
+            case None => Ok(
+              UserLoginView(
+                UserLoginForm.loginForm.fill(valid).withError("userName", "Your user name or password is incorrect").withError("password", "")
+              )
+            )
+          }
         )
   }
 
-  def signOut : Action[AnyContent] = Action.async {
-    implicit request =>
-      sessionStoreConnector.destroySession(request.session("cookieId")) map {
-        resp =>
+  def signOut : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
+    implicit user =>
+      implicit request =>
+        sessionStoreConnector.destroySession map { resp =>
           Logger.info(s"[LoginController] - [signOut] : Response from session store - ${resp.status} : ${resp.statusText}")
           Redirect(routes.LoginController.show(None)).withNewSession
-      }
+        }
   }
 }

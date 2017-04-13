@@ -17,9 +17,10 @@ package controllers.redirect
 
 import javax.inject.Inject
 
-import auth.{Actions, AuthActions}
+import com.cjwwdev.auth.actions.Actions
+import com.cjwwdev.auth.connectors.AuthConnector
 import com.google.inject.Singleton
-import config.FrontendConfiguration
+import config.ApplicationConfiguration
 import play.api.mvc.{Action, AnyContent}
 import utils.application.FrontendController
 import views.html.redirect.ServiceSelector
@@ -27,9 +28,11 @@ import views.html.redirect.ServiceSelector
 import scala.concurrent.Future
 
 @Singleton
-class RedirectController @Inject()(implicit configuration: FrontendConfiguration, actions : AuthActions) extends FrontendController {
+class RedirectController @Inject()(implicit configuration: ApplicationConfiguration, authConnect: AuthConnector) extends FrontendController with Actions {
 
-  def chooseService : Action[AnyContent] = actions.authorisedFor.async {
+  val authConnector = authConnect
+
+  def chooseService : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         Future.successful(Ok(ServiceSelector()))
