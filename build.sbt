@@ -9,9 +9,10 @@ val btVersion: String = {
   }
 }
 
-organization := "com.cjww-dev.frontends"
 name := """auth-service"""
 version := btVersion
+scalaVersion := "2.11.10"
+organization := "com.cjww-dev.frontends"
 
 lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
@@ -28,8 +29,6 @@ lazy val root = (project in file("."))
   .enablePlugins(PlayScala)
   .settings(playSettings ++ scoverageSettings : _*)
 
-scalaVersion := "2.11.10"
-
 PlayKeys.devSettings := Seq("play.server.http.port" -> "8602")
 
 val cjwwDep : Seq[ModuleID] = Seq(
@@ -37,7 +36,7 @@ val cjwwDep : Seq[ModuleID] = Seq(
   "com.cjww-dev.libs" % "http-verbs_2.11" % "0.10.0",
   "com.cjww-dev.libs" % "logging_2.11" % "0.2.0",
   "com.cjww-dev.libs" % "authorisation_2.11" % "0.10.0",
-  "com.cjww-dev.libs" % "frontend-ui_2.11" % "0.3.0",
+  "com.cjww-dev.libs" % "frontend-ui_2.11" % "0.5.0",
   "com.cjww-dev.libs" % "bootstrapper_2.11" % "0.6.0"
 )
 
@@ -59,3 +58,8 @@ resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 resolvers += "cjww-dev" at "http://dl.bintray.com/cjww-development/releases"
 
 herokuAppName in Compile := "cjww-auth-service"
+
+bintrayOrganization := Some("cjww-development")
+bintrayReleaseOnPublish in ThisBuild := false
+bintrayRepository := "releases"
+bintrayOmitLicense := true
