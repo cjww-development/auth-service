@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -13,6 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 
 package services
 
@@ -29,12 +30,24 @@ import scala.concurrent.Future
 
 @Singleton
 class LoginService @Inject()(userLogin: UserLoginConnector, sessionStoreConnector: SessionStoreConnector) {
-  private def sessionMap(context: AuthContext) : Map[String, String] = Map(
-    "cookieId" -> s"session-${UUID.randomUUID()}",
-    "contextId" -> context.contextId,
-    "firstName" -> context.user.firstName,
-    "lastName" -> context.user.lastName
-  )
+  private def sessionMap(context: AuthContext): Map[String, String] = {
+    context.user.credentialType match {
+      case "organisation" => Map(
+        "cookieId"        -> s"session-${UUID.randomUUID()}",
+        "contextId"       -> context.contextId,
+        "orgName"       -> context.user.orgName.get,
+        "credentialType"  -> context.user.credentialType
+      )
+      case "individual" => Map(
+        "cookieId"        -> s"session-${UUID.randomUUID()}",
+        "contextId"       -> context.contextId,
+        "firstName"       -> context.user.firstName.get,
+        "lastName"        -> context.user.lastName.get,
+        "credentialType"  -> context.user.credentialType,
+        if(context.user.role.isDefined) "role" -> context.user.role.get else "" -> ""
+      )
+    }
+  }
 
   def processLoginAttempt(credentials : UserLogin)(implicit request: Request[_]) : Future[Option[Session]] = {
     userLogin.getUser(credentials.encryptPassword) flatMap {

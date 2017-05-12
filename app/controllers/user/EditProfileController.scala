@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -13,13 +13,14 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+
 package controllers.user
 
 import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import config.ApplicationConfiguration
 import connectors._
 import forms.{DisplayNameForm, NewPasswordForm, UserProfileForm}
 import models.accounts.{DashboardDisplay, NewPasswords, PasswordSet, UserProfile}
@@ -33,14 +34,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class EditProfileController @Inject()(messagesApi: MessagesApi,
-                                      configuration: ApplicationConfiguration,
                                       accountConnector: AccountConnector,
                                       feedEventService : FeedService,
                                       authConnect: AuthConnector) extends FrontendController with EditProfileService with Actions {
 
   val authConnector = authConnect
 
-  def show : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
+  def show : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         for {
@@ -58,7 +58,7 @@ class EditProfileController @Inject()(messagesApi: MessagesApi,
         }
   }
 
-  def updateProfile() : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
+  def updateProfile() : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         UserProfileForm.form.bindFromRequest.fold(
@@ -90,7 +90,7 @@ class EditProfileController @Inject()(messagesApi: MessagesApi,
         )
   }
 
-  def updatePassword() : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
+  def updatePassword() : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         NewPasswordForm.form.bindFromRequest.fold(
@@ -123,7 +123,11 @@ class EditProfileController @Inject()(messagesApi: MessagesApi,
                           EditProfile(
                             UserProfileForm.form.fill(UserProfile.fromAccount(basicDetails.get)),
                             NewPasswordForm.form.fill(valid).withError("oldPassword", "Your old password is incorrect"),
-                            DisplayNameForm.form.fill(DashboardDisplay(getDisplayOption(settings), getDisplayNameColour(settings), getDisplayImageURL(settings))),
+                            DisplayNameForm.form.fill(DashboardDisplay(
+                              getDisplayOption(settings),
+                              getDisplayNameColour(settings),
+                              getDisplayImageURL(settings)
+                            )),
                             basicDetails.get
                           )
                         )
@@ -134,7 +138,7 @@ class EditProfileController @Inject()(messagesApi: MessagesApi,
         )
   }
 
-  def updateSettings() : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
+  def updateSettings() : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         DisplayNameForm.form.bindFromRequest.fold(

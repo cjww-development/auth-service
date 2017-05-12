@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -14,14 +14,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 package utils.validation
 
-import models.accounts.{NewPasswords, UserRegister}
+import models.accounts.{NewPasswords, OrgRegister, UserRegister}
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 object RegisterValidation {
+
+  def initialsChecker: Mapping[String] = {
+    val initialsConstraint: Constraint[String] = Constraint("constraints.initials")({
+      initials =>
+        val error = initials match {
+          case "" => Seq(ValidationError("You have not entered any initials"))
+          case _ => if(initials.length > 5) Seq(ValidationError("Please enter no more than 5 letters")) else Nil
+        }
+        if(error.isEmpty) Valid else Invalid(error)
+    })
+    text().verifying(initialsConstraint)
+  }
+
+  def locationChecker: Mapping[String] = {
+    val locationConstraint: Constraint[String] = Constraint("constraints.location")({
+      location =>
+        val error = location match {
+          case "" => Seq(ValidationError("You have not entered your schools location"))
+          case _  => Nil
+        }
+        if(error.isEmpty) Valid else Invalid(error)
+    })
+    text().verifying(locationConstraint)
+  }
 
   def firstNameChecker : Mapping[String] = {
     val validfirstname = """(^\\w[A-Za-z]{0,29}\\b)""".r
@@ -77,7 +102,7 @@ object RegisterValidation {
 
   def emailChecker : Mapping[String] = {
     val validEmail = """[A-Za-z0-9\-_.]{1,126}@[A-Za-z0-9\-_.]{1,126}""".r
-    val emailConstraint : Constraint[String] = Constraint("constraints.email")({
+    val emailConstraint : Constraint[String] = Constraint("constraints.orgEmail")({
       text =>
         val error = text match {
           case validEmail() => Nil
@@ -139,20 +164,20 @@ object RegisterValidation {
     text().verifying(confirmPasswordCheckConstraint)
   }
 
-//  def orgXPasswordCheck : Constraint[OrgRegister] = {
-//    Constraint("constraints.password")({
-//      orForm : OrgRegister =>
-//        if(orForm.password == orForm.confirmPassword) {
-//          Valid
-//        } else if(orForm.password.isEmpty) {
-//          Invalid(Seq(ValidationError(Messages("cjww.auth.password.error.notfound"))))
-//        } else if(orForm.confirmPassword.isEmpty) {
-//          Invalid(Seq(ValidationError(Messages("cjww.auth.confirmpassword.error.notfound"))))
-//        } else {
-//          Invalid(Seq(ValidationError(Messages("cjww.auth.password.error.nomatch"))))
-//        }
-//    })
-//  }
+  def orgXPasswordCheck : Constraint[OrgRegister] = {
+    Constraint("constraints.password")({
+      orForm : OrgRegister =>
+        if(orForm.password == orForm.confirmPassword) {
+          Valid
+        } else if(orForm.password.isEmpty) {
+          Invalid(Seq(ValidationError("You have not entered a password")))
+        } else if(orForm.confirmPassword.isEmpty) {
+          Invalid(Seq(ValidationError("You have not confirmed your password")))
+        } else {
+          Invalid(Seq(ValidationError("The passwords you have entered do not match")))
+        }
+    })
+  }
 
   def xPasswordCheck : Constraint[UserRegister] = {
     Constraint("constraints.password")({

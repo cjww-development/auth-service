@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 package utils.application
 
 import com.cjwwdev.auth.models.AuthContext
@@ -21,9 +22,9 @@ import config.ApplicationConfiguration
 import play.api.mvc.Controller
 import utils.url.UrlParser
 
-trait FrontendController extends Controller {
+trait FrontendController extends Controller with ApplicationConfiguration {
 
-  val urlParser = new UrlParser(new ApplicationConfiguration)
+  val urlParser = new UrlParser
 
   implicit def optionUser(implicit user : AuthContext) : Option[AuthContext] = Some(user)
 }

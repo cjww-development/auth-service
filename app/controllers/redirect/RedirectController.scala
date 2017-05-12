@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -13,6 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package controllers.redirect
 
 import javax.inject.Inject
@@ -28,13 +29,31 @@ import views.html.redirect.ServiceSelector
 import scala.concurrent.Future
 
 @Singleton
-class RedirectController @Inject()(implicit configuration: ApplicationConfiguration, authConnect: AuthConnector) extends FrontendController with Actions {
+class RedirectController @Inject()(implicit authConnect: AuthConnector) extends FrontendController with Actions {
 
   val authConnector = authConnect
 
-  def chooseService : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
+  def chooseService : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         Future.successful(Ok(ServiceSelector()))
+  }
+
+  def redirectToDeversity: Action[AnyContent] = unauthenticatedAction.async {
+    implicit user =>
+      implicit request =>
+        Future.successful(Redirect(deversityFrontend))
+  }
+
+  def redirectToDiagnostics: Action[AnyContent] = unauthenticatedAction.async {
+    implicit user =>
+      implicit request =>
+        Future.successful(Redirect(diagnosticsFrontend))
+  }
+
+  def redirectToHub: Action[AnyContent] = unauthenticatedAction.async {
+    implicit user =>
+      implicit request =>
+        Future.successful(Redirect(hubFrontend))
   }
 }

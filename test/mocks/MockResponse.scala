@@ -39,7 +39,7 @@ trait MockResponse extends MockitoSugar{
   }
 
   val testUserCredentials = UserLogin("testUserName","testPassword")
-  val testUserDetails = UserAccount(Some("testID"),"testFirstName","testLastName","testUserName","test@email.com","testPassword")
+  val testUserDetails = UserAccount(Some("testID"),"testFirstName","testLastName","testUserName", None,"test@email.com","testPassword")
 
   val encryptedUserDetails = DataSecurity.encryptData[UserAccount](testUserDetails)
 }

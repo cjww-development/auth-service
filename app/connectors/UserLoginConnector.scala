@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -34,10 +34,10 @@ case object UserLoginFailedResponse extends UserLoginResponse
 case object UserLoginException extends UserLoginResponse
 
 @Singleton
-class UserLoginConnector @Inject()(http: Http, config : ApplicationConfiguration) extends HttpExceptions {
+class UserLoginConnector @Inject()(http: Http) extends HttpExceptions with ApplicationConfiguration {
   def getUser(loginDetails : UserLogin)(implicit request: Request[_]) : Future[UserLoginResponse] = {
     val enc = DataSecurity.encryptData[UserLogin](loginDetails).get
-    http.GET(s"${config.authMicroservice}/login/user?enc=$enc") map { resp =>
+    http.GET(s"$authMicroservice/login/user?enc=$enc") map { resp =>
       resp.status match {
         case OK => UserLoginSuccessResponse(DataSecurity.decryptInto[AuthContext](resp.body).get)
         case FORBIDDEN => UserLoginFailedResponse

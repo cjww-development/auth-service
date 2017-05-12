@@ -14,22 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package services
+package models.deversity
 
-import com.google.inject.{Inject, Singleton}
-import connectors.{UserRegisterResponse, UserRegistrationConnector}
-import models.accounts.{OrgRegister, UserRegister}
-import play.api.mvc.Request
+import play.api.libs.json.Json
 
-import scala.concurrent.Future
+case class TeacherDetails(title: String, lastName: String, room: String, status: String)
 
-@Singleton
-class RegisterService @Inject()(userRegistration : UserRegistrationConnector) {
-  def registerIndividual(user : UserRegister)(implicit request: Request[_]) : Future[UserRegisterResponse] = {
-    userRegistration.createNewIndividualUser(user)
-  }
-
-  def registerOrg(org: OrgRegister)(implicit request: Request[_]): Future[UserRegisterResponse] = {
-    userRegistration.createNewOrgUser(org)
-  }
+object TeacherDetails {
+  implicit val format = Json.format[TeacherDetails]
 }

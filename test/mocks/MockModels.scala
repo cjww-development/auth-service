@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -37,8 +37,11 @@ trait MockModels {
       "context-1234567890",
       User(
         "user-766543",
-        "testFirstName",
-        "testLastName"
+        Some("testFirstName"),
+        Some("testLastName"),
+        None,
+        "individual",
+        None
       ),
       "testLink",
       "testLink",

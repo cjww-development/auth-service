@@ -14,22 +14,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package services
+package forms
 
-import com.google.inject.{Inject, Singleton}
-import connectors.{UserRegisterResponse, UserRegistrationConnector}
 import models.accounts.{OrgRegister, UserRegister}
-import play.api.mvc.Request
+import play.api.data.Form
+import play.api.data.Forms._
+import utils.validation.RegisterValidation._
 
-import scala.concurrent.Future
-
-@Singleton
-class RegisterService @Inject()(userRegistration : UserRegistrationConnector) {
-  def registerIndividual(user : UserRegister)(implicit request: Request[_]) : Future[UserRegisterResponse] = {
-    userRegistration.createNewIndividualUser(user)
-  }
-
-  def registerOrg(org: OrgRegister)(implicit request: Request[_]): Future[UserRegisterResponse] = {
-    userRegistration.createNewOrgUser(org)
-  }
+object OrgRegisterForm {
+  val orgRegisterForm = Form(
+    mapping(
+      "orgName"           -> userNameChecker,
+      "initials"          -> initialsChecker,
+      "orgUserName"       -> userNameChecker,
+      "location"          -> locationChecker,
+      "orgEmail"          -> emailChecker,
+      "password"          -> passwordCheck,
+      "confirmPassword"   -> confirmPasswordCheck
+    )(OrgRegister.apply)(OrgRegister.unapply).verifying(orgXPasswordCheck)
+  )
 }

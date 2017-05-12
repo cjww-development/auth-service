@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -34,9 +34,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class LoginController @Inject()(messagesApi: MessagesApi, configuration: ApplicationConfiguration,
-                                userLogin : LoginService, sessionStoreConnector: SessionStoreConnector,
-                                authConnect: AuthConnector) extends FrontendController with Actions {
+class LoginController @Inject()(messagesApi: MessagesApi, userLogin : LoginService,
+                                sessionStoreConnector: SessionStoreConnector, authConnect: AuthConnector) extends FrontendController with Actions {
 
   val authConnector = authConnect
 
@@ -62,7 +61,7 @@ class LoginController @Inject()(messagesApi: MessagesApi, configuration: Applica
         )
   }
 
-  def signOut : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
+  def signOut : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         sessionStoreConnector.destroySession map { resp =>

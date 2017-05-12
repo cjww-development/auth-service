@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -19,8 +19,7 @@ package config
 import com.cjwwdev.bootstrap.config.BaseConfiguration
 import com.google.inject.Singleton
 
-@Singleton
-class ApplicationConfiguration extends BaseConfiguration {
+trait ApplicationConfiguration extends BaseConfiguration {
   //FeedServiceConfig
   val EDIT_PROFILE = "edit-profile"
   val TITLE = "Your profile has been updated"

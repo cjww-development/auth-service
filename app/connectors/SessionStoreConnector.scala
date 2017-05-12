@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -30,9 +30,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class SessionStoreConnector @Inject()(http : Http, config : ApplicationConfiguration) {
+class SessionStoreConnector @Inject()(http : Http) extends ApplicationConfiguration {
   def cache[T](sessionId : String, data : T)(implicit format: Format[T], request: Request[_]) : Future[WSResponse] = {
-    http.POST[T](s"${config.sessionStore}/session/$sessionId/cache", data) map {
+    http.POST[T](s"$sessionStore/session/$sessionId/cache", data) map {
       resp =>
         Logger.info(s"[SessionStoreController] - [cache] Response from API Call ${resp.status} - ${resp.statusText}")
         resp
@@ -40,16 +40,16 @@ class SessionStoreConnector @Inject()(http : Http, config : ApplicationConfigura
   }
 
   def getDataElement[T](key : String)(implicit format : Format[T], request: Request[_]) : Future[T] = {
-    http.GET(s"${config.sessionStore}/session/${request.session("cookieId")}/data/$key") map { resp =>
+    http.GET(s"$sessionStore/session/${request.session("cookieId")}/data/$key") map { resp =>
       DataSecurity.decryptInto[T](resp.body).get
     }
   }
 
   def updateSession(updateSet : SessionUpdateSet)(implicit format : Format[SessionUpdateSet], request: Request[_]) : Future[Int] = {
-    http.PUT[SessionUpdateSet](s"${config.sessionStore}/session/${request.session("cookieId")}", updateSet) map(_.status)
+    http.PUT[SessionUpdateSet](s"$sessionStore/session/${request.session("cookieId")}", updateSet) map(_.status)
   }
 
   def destroySession(implicit request: Request[_]) : Future[WSResponse] = {
-    http.DELETE(s"${config.sessionStore}/session/${request.session("cookieId")}/destroy")
+    http.DELETE(s"$sessionStore/session/${request.session("cookieId")}/destroy")
   }
 }

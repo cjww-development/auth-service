@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -13,39 +13,44 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package controllers.user
 
 import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import config.ApplicationConfiguration
-import connectors.AccountConnector
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import services.FeedService
+import services.DashboardService
 import utils.application.FrontendController
-import views.html.user.Dashboard
+import views.html.user.{Dashboard, OrgDashboard}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class DashboardController @Inject()(messagesApi: MessagesApi,
-                                    configuration: ApplicationConfiguration,
-                                    accountConnector: AccountConnector,
-                                    feedService: FeedService,
+                                    dashboardService: DashboardService,
                                     authConnect: AuthConnector) extends FrontendController with Actions{
 
   val authConnector = authConnect
 
-  def show : Action[AnyContent] = authorisedFor(configuration.LOGIN_CALLBACK).async {
+  def show : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
-        for {
-          Some(basicDetails) <- accountConnector.getBasicDetails
-          settings <- accountConnector.getSettings
-          feed <- feedService.processRetrievedList
-        } yield {
-          Ok(Dashboard(feed, basicDetails, settings))
+        user.user.credentialType match {
+          case "organisation" => for {
+            Some(basicDetails)  <- dashboardService.getOrgBasicDetails
+            teacherList         <- dashboardService.getTeacherList
+          } yield Ok(OrgDashboard(basicDetails, teacherList))
+          case "individual" => for {
+            Some(basicDetails)  <- dashboardService.getBasicDetails
+            settings            <- dashboardService.getSettings
+            feed                <- dashboardService.getFeed
+            deversityEnrolment  <- dashboardService.getDeversityEnrolment
+          } yield {
+            Ok(Dashboard(feed, basicDetails, settings, deversityEnrolment))
+          }
         }
   }
 }

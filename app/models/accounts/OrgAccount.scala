@@ -16,16 +16,23 @@
 
 package models.accounts
 
+import java.util.UUID
+
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json._
 
-case class FeedItem(userId : String, sourceDetail: SourceDetail, eventDetail: EventDetail, generated : DateTime)
+case class OrgAccount(orgId: Option[String],
+                      orgName: String,
+                      initials: String,
+                      orgUserName: String,
+                      location: String,
+                      orgEmail: String,
+                      credentialType: String,
+                      password: String,
+                      metaData: Option[Map[String, DateTime]],
+                      settings: Option[Map[String, String]])
 
-case class SourceDetail(service : String, location : String)
-
-case class EventDetail(title : String, description : String)
-
-object FeedItem {
+object OrgAccount {
   implicit val dateTimeRead: Reads[DateTime] =
     (__ \ "$date").read[Long].map { dateTime =>
       new DateTime(dateTime, DateTimeZone.UTC)
@@ -37,7 +44,7 @@ object FeedItem {
     )
   }
 
-  implicit val formatSource = Json.format[SourceDetail]
-  implicit val formatEvent = Json.format[EventDetail]
-  implicit val format = Json.format[FeedItem]
+  implicit val format = Json.format[OrgAccount]
 }
+
+

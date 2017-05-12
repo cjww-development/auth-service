@@ -1,9 +1,14 @@
 @import models.accounts.BasicDetails
 @import models.accounts.FeedItem
 @import models.accounts.Settings
+@import models.accounts.DeversityEnrolment
 @import com.cjwwdev.auth.models.AuthContext
 @import services.EditProfileService.{getDisplayImageURL, getDisplayNameColour, getDisplayOption}
-@(feed: Option[List[FeedItem]], basicDetails: BasicDetails, settings: Option[Settings])(implicit request: Request[_], authContext: Option[AuthContext])
+
+@(feed: Option[List[FeedItem]],
+  basicDetails: BasicDetails,
+  settings: Option[Settings],
+  deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], authContext: Option[AuthContext])
 
 @import controllers.user.{routes => userRoutes}
 @import views.html.helpers.feedItem
@@ -66,7 +71,7 @@
                     <h1 id="main-title" class="page-title" style="color: @{getDisplayNameColour(settings)}">Welcome
                         @if(settings.isDefined) {
                             @if(settings.get.displayName.isDefined) {
-                                @displayNameSelector(settings.get.displayName.get))
+                                @displayNameSelector(settings.get.displayName.get)
                             } else {
                                 @basicDetails.firstName @basicDetails.lastName
                             }
@@ -112,6 +117,32 @@
                             <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> View problem reports</h4>
                         </a>
                     </div>
+
+                    @if(deversityEnrolment.isDefined) {
+                        <h2>Deversity</h2>
+                        <hr>
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Deversity enrolment</h3>
+                            </div>
+
+                            @if(deversityEnrolment.map(_.statusConfirmed).contains("rejected")) {
+                                <h4 class="@deversityEnrolment.map(_.statusConfirmed) text-center">@deversityEnrolment.map(_.statusConfirmed.capitalize)</h4>
+                            } else {
+                                <ul class="list-group">
+                                    <li class="list-group-item text-center"><h4 class="@deversityEnrolment.map(_.statusConfirmed)">@deversityEnrolment.map(_.statusConfirmed.capitalize)</h4></li>
+                                    <li class="list-group-item text-center"><h4>@deversityEnrolment.map(_.role.capitalize)</h4></li>
+                                    <li class="list-group-item text-center"><h4>@deversityEnrolment.map(_.schoolName.capitalize)</h4></li>
+                                    @if(deversityEnrolment.get.teacher.isDefined) {
+                                        <li class="list-group-item text-center"><h4>@deversityEnrolment.map(_.teacher.map(_.capitalize))</h4></li>
+                                    }
+                                    @if(deversityEnrolment.get.room.isDefined) {
+                                        <li class="list-group-item text-center"><h4>@deversityEnrolment.map(_.room.map(_.capitalize))</h4></li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    }
                 </div>
 
                 <div class="col-md-9">

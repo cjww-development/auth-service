@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -13,6 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package utils.url
 
 import com.google.inject.{Inject, Singleton}
@@ -21,14 +22,14 @@ import play.api.Logger
 import play.api.mvc.Request
 
 @Singleton
-class UrlParser @Inject()(config : ApplicationConfiguration) {
+class UrlParser @Inject()() extends ApplicationConfiguration{
 
   def serviceDirector(implicit request: Request[_]) : String = {
     Logger.info(s"[UrlParse] - [serviceDirector] ${request.getQueryString("redirect").getOrElse("Redirecting to service selector")}")
     request.getQueryString("redirect") match {
-      case Some("diagnostics") => config.diagnosticsFrontend
-      case Some("deversity") => config.deversityFrontend
-      case Some("hub") => config.hubFrontend
+      case Some("diagnostics") => diagnosticsFrontend
+      case Some("deversity") => deversityFrontend
+      case Some("hub") => hubFrontend
       case _ => controllers.redirect.routes.RedirectController.chooseService().url
     }
   }

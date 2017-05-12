@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 the original author or authors.
+// Copyright (C) 2016-2017 the original author or authors.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -27,13 +27,13 @@ import play.api.mvc.Request
 import scala.concurrent.Future
 
 @Singleton
-class FeedService @Inject()(accountConnector: AccountConnector, config : ApplicationConfiguration) {
+class FeedService @Inject()(accountConnector: AccountConnector) extends ApplicationConfiguration {
 
   private[services] def buildFeedItem(location : String, desc : String)(implicit authContext : AuthContext) : FeedItem = {
     FeedItem(
       authContext.user.userId,
-      SourceDetail(config.appName, location),
-      EventDetail(config.TITLE, desc),
+      SourceDetail(appName, location),
+      EventDetail(TITLE, desc),
       DateTime.now
     )
   }

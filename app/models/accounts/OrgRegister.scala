@@ -14,22 +14,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package services
+package models.accounts
 
-import com.google.inject.{Inject, Singleton}
-import connectors.{UserRegisterResponse, UserRegistrationConnector}
-import models.accounts.{OrgRegister, UserRegister}
-import play.api.mvc.Request
+import com.cjwwdev.security.encryption.SHA512
+import play.api.libs.json.Json
 
-import scala.concurrent.Future
+case class OrgRegister(orgName: String,
+                       initials: String,
+                       orgUserName: String,
+                       location: String,
+                       orgEmail: String,
+                       password: String,
+                       confirmPassword: String) {
 
-@Singleton
-class RegisterService @Inject()(userRegistration : UserRegistrationConnector) {
-  def registerIndividual(user : UserRegister)(implicit request: Request[_]) : Future[UserRegisterResponse] = {
-    userRegistration.createNewIndividualUser(user)
-  }
-
-  def registerOrg(org: OrgRegister)(implicit request: Request[_]): Future[UserRegisterResponse] = {
-    userRegistration.createNewOrgUser(org)
+  def encryptPasswords: OrgRegister = {
+    copy(password = SHA512.encrypt(password), confirmPassword = SHA512.encrypt(confirmPassword))
   }
 }
+
+object OrgRegister {
+  implicit val format = Json.format[OrgRegister]
+}
+
+

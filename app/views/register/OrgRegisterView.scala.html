@@ -1,0 +1,65 @@
+@import models.accounts.UserRegister
+@import models.accounts.OrgRegister
+@(register: Form[OrgRegister])(implicit request: Request[_])
+
+@import controllers.register.{routes => registerRoutes}
+@import views.html.helpers._
+
+@main_template(title = "CJWW Account - Register"){
+    <div class="top-block-single">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-2"></div>
+
+                <div class="col-md-8">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+
+                            <p class="text-center">
+                                <img src="@routes.Assets.versioned("images/logo.png")" width="50%" alt="">
+                            </p>
+
+                            <div class="page-header">
+                                <h1 class="pageTitle text-center">New around here?</h1>
+                                <p class="text-center">Register your school for DEVersity</p>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-6">
+                                @errorPanel(register)
+                                </div>
+                                <div class="col-md-3"></div>
+                            </div>
+
+                            <form action="@registerRoutes.OrgRegisterController.submit()" method="post">
+                                @textInput(register("orgName"), "orgName", "School name", "Your schools name", "text", "cjww-input-group-addon")
+
+                                @textInput(register("initials"), "initials", "Initials", "Your schools initials", "text", "cjww-input-group-addon")
+
+                                @textInput(register("orgUserName"), "orgUserName", "School user name", "Your schools user name", "text", "cjww-input-group-addon")
+
+                                @textInput(register("location"), "location", "Location", "Your schools location", "text", "cjww-input-group-addon")
+
+                                @textInput(register("orgEmail"), "orgEmail", "Email", "Email", "text", "cjww-input-group-addon")
+
+                                @textInput(register("password"), "password", "Password", "Password", "password", "cjww-input-group-addon")
+
+                                @textInput(register("confirmPassword"), "confirmPassword", "Confirm", "Confirm password", "password", "cjww-input-group-addon")
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <button type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Register</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+    </div>
+}

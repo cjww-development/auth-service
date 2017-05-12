@@ -1,0 +1,106 @@
+@import models.deversity.OrgDetails
+
+@import models.deversity.TeacherDetails
+@(basicDetails: OrgDetails, teacherList: List[TeacherDetails])(implicit request: Request[_])
+
+@import controllers.user.{routes => userRoutes}
+@import views.html.helpers._
+
+@colourSwitcher(random : Int) = {
+    @random match {
+        case 0 => {
+            #0A5A95
+        }
+        case 1 => {
+            #F08B16
+        }
+        case 2 => {
+            #9A090C
+        }
+        case 3 => {
+            #57920B
+        }
+        case _ => {
+            #0A5A95
+        }
+    }
+}
+
+@main_template(title = "CJWW Account - dashboard") {
+    <div class="cjww-jumbo-background" style="background: url('/account-services/assets/images/background.jpg') fixed center no-repeat;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <object>
+                        <svg viewBox="0 0 140 140" preserveAspectRatio="xMinYMin meet">
+                            <g>
+                                <circle fill="@colourSwitcher(scala.util.Random.nextInt(4))" r="50%" cx="50%" cy="50%" class="circle-back" />
+                                <text fill="#ffffff" font-size="45" font-family="Verdana" x="50%" y="60%">
+                                    <tspan text-anchor="middle">@basicDetails.initials</tspan>
+                                </text>
+                            </g>
+                        </svg>
+                    </object>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-11">
+                    <h1 id="main-title" class="page-title" style="">Welcome @basicDetails.orgName</h1>
+                </div>
+
+                <div class="col-md-1">
+                    <div class="btn-group cjww-button">
+                        <button class="btn btn-default btn-lg dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>  <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> Change cover picture</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href=""><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Edit Profile</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="top-block-single">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h2>Quick links</h2>
+                    <hr>
+                    <div class="list-group">
+                        <a href="" class="list-group-item">
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Review new enrolments</h4>
+                        </a>
+                        <a href="" class="list-group-item">
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Edit profile</h4>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Messages <span class="badge">0</span></h4>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <h2>Your teachers</h2>
+                    <hr>
+
+                    <div class="row">
+                        @if(teacherList.isEmpty) {
+                            <p class="text-center">@basicDetails.orgName currently has no enroled teachers</p>
+                        } else {
+                            @for(teacher <- teacherList) {
+                                <div class="col-md-3">
+                                    @teacherLink(teacher)
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

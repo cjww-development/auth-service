@@ -1,0 +1,42 @@
+@import models.deversity.TeacherDetails
+
+@(teacher: TeacherDetails)(implicit request: Request[_])
+
+@colourSwitcher(random : Int) = {
+    @random match {
+        case 0 => {
+            #0A5A95
+        }
+        case 1 => {
+            #F08B16
+        }
+        case 2 => {
+            #9A090C
+        }
+        case 3 => {
+            #57920B
+        }
+        case _ => {
+            #0A5A95
+        }
+    }
+}
+
+<div class="thumbnail" style="min-height: 350px">
+    <a href="">
+        <object>
+            <svg viewBox="0 0 140 140" preserveAspectRatio="xMinYMin meet">
+                <g>
+                    <circle fill="@colourSwitcher(scala.util.Random.nextInt(4))" r="50%" cx="50%" cy="50%" class="circle-back" />
+                    <text fill="#ffffff" font-size="45" font-family="Verdana" x="50%" y="60%">
+                        <tspan text-anchor="middle">@teacher.title.capitalize.head.@teacher.lastName.capitalize.head</tspan>
+                    </text>
+                </g>
+            </svg>
+        </object>
+        <div class="caption">
+            <h3 class="text-center">@teacher.title<br>@teacher.lastName</h3>
+        </div>
+    </a>
+    <h4 class="@teacher.status text-center">@teacher.status.capitalize</h4>
+</div>
