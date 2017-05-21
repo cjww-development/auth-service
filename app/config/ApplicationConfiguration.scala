@@ -27,10 +27,10 @@ trait ApplicationConfiguration extends BaseConfiguration {
   val LOGIN_CALLBACK = controllers.login.routes.LoginController.show(None)
 
   //routes
-  val accountsMicroservice = config.getString("routes.accounts-microservice")
-  val authMicroservice = config.getString("routes.auth-microservice")
-  val sessionStore = config.getString("routes.session-store")
-  val diagnosticsFrontend = config.getString("routes.diagnostics-frontend")
-  val deversityFrontend = config.getString("routes.deversity-frontend")
-  val hubFrontend = config.getString("routes.hub-frontend")
+  val accountsMicroservice      = config.getString(s"$env.routes.accounts-microservice")
+  val authMicroservice          = config.getString(s"$env.routes.auth-microservice")
+  val sessionStore              = config.getString(s"$env.routes.session-store")
+  val diagnosticsFrontend       = config.getString(s"$env.routes.diagnostics-frontend")
+  val deversityFrontend         = config.getString(s"$env.routes.deversity-frontend")
+  val hubFrontend               = config.getString(s"$env.routes.hub-frontend")
 }
