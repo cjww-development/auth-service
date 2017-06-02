@@ -17,17 +17,22 @@
 package models.accounts
 
 import com.cjwwdev.json.JsonFormats
+import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
-case class Enrolments(hubId : Option[String],
-                      diagId : Option[String],
-                      deversityId : Option[String])
+case class BasicDetails(firstName : String,
+                        lastName : String,
+                        userName : String,
+                        email : String,
+                        createdAt : DateTime)
 
-object Enrolments extends JsonFormats[Enrolments] {
-  override implicit val standardFormat: OFormat[Enrolments] = (
-    (__ \ "hubId").formatNullable[String] and
-    (__ \ "diagId").formatNullable[String] and
-    (__ \ "deversityId").formatNullable[String]
-  )(Enrolments.apply, unlift(Enrolments.unapply))
+object BasicDetails extends JsonFormats[BasicDetails] {
+  override implicit val standardFormat: OFormat[BasicDetails] = (
+    (__ \ "firstName").format[String] and
+    (__ \ "lastName").format[String] and
+    (__ \ "userName").format[String] and
+    (__ \ "email").format[String] and
+    (__ \ "createdAt").format[DateTime](dateTimeRead)(dateTimeWrite)
+  )(BasicDetails.apply, unlift(BasicDetails.unapply))
 }

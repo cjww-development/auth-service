@@ -16,28 +16,16 @@
 
 package models.accounts
 
-import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json._
+import com.cjwwdev.security.encryption.SHA512
 
-case class FeedItem(userId : String, sourceDetail: SourceDetail, eventDetail: EventDetail, generated : DateTime)
+case class PasswordSet(oldPassword : String, newPassword : String, confirmPassword : String)
 
-case class SourceDetail(service : String, location : String)
-
-case class EventDetail(title : String, description : String)
-
-object FeedItem {
-  implicit val dateTimeRead: Reads[DateTime] =
-    (__ \ "$date").read[Long].map { dateTime =>
-      new DateTime(dateTime, DateTimeZone.UTC)
-    }
-
-  implicit val dateTimeWrite: Writes[DateTime] = new Writes[DateTime] {
-    def writes(dateTime: DateTime): JsValue = Json.obj(
-      "$date" -> dateTime.getMillis
+object PasswordSet {
+  implicit val passwordSetWrit: OWrites[PasswordSet] = new OWrites[PasswordSet] {
+    override def writes(o: PasswordSet): JsObject = Json.obj(
+      "previousPassword"  -> SHA512.encrypt(o.oldPassword),
+      "newPassword"       -> SHA512.encrypt(o.newPassword)
     )
   }
-
-  implicit val formatSource = Json.format[SourceDetail]
-  implicit val formatEvent = Json.format[EventDetail]
-  implicit val format = Json.format[FeedItem]
 }

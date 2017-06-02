@@ -14,24 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+package enums
 
-package models.accounts
-
-import play.api.libs.json.Json
-import com.cjwwdev.security.encryption.SHA512
-
-case class UserRegister(firstName: String,
-                        lastName: String,
-                        userName: String,
-                        email: String,
-                        password: String,
-                        confirmPassword: String) {
-
-  def encryptPasswords : UserRegister = {
-    this.copy(password = SHA512.encrypt(password), confirmPassword = SHA512.encrypt(confirmPassword))
-  }
-}
-
-object UserRegister {
-  implicit val format = Json.format[UserRegister]
+object HttpResponse extends Enumeration {
+  val success = Value
+  val failed = Value
 }

@@ -16,7 +16,7 @@
 
 package forms
 
-import models.accounts.{OrgRegister, UserRegister}
+import models.registration.OrgRegistration
 import play.api.data.Form
 import play.api.data.Forms._
 import utils.validation.RegisterValidation._
@@ -31,6 +31,6 @@ object OrgRegisterForm {
       "orgEmail"          -> emailChecker,
       "password"          -> passwordCheck,
       "confirmPassword"   -> confirmPasswordCheck
-    )(OrgRegister.apply)(OrgRegister.unapply).verifying(orgXPasswordCheck)
+    )(OrgRegistration.apply)(OrgRegistration.unapply).verifying(orgXPasswordCheck)
   )
 }

@@ -2,11 +2,9 @@ import com.typesafe.config.ConfigFactory
 import scoverage.ScoverageKeys
 import scala.util.{Failure, Success, Try}
 
-val btVersion: String = {
-  Try(ConfigFactory.load.getString("version")) match {
-    case Success(ver) => ver
-    case Failure(_) => "0.1.0"
-  }
+val btVersion: String = Try(ConfigFactory.load.getString("version")) match {
+  case Success(ver) => ver
+  case Failure(_) => "0.1.0"
 }
 
 name := """auth-service"""
@@ -39,12 +37,13 @@ lazy val root = (project in file("."))
 PlayKeys.devSettings := Seq("play.server.http.port" -> "8602")
 
 val cjwwDep : Seq[ModuleID] = Seq(
-  "com.cjww-dev.libs" % "data-security_2.11" % "0.10.0",
-  "com.cjww-dev.libs" % "http-verbs_2.11" % "0.16.0",
-  "com.cjww-dev.libs" % "logging_2.11" % "0.5.0",
-  "com.cjww-dev.libs" % "authorisation_2.11" % "0.17.0",
+  "com.cjww-dev.libs" % "data-security_2.11" % "1.1.0",
+  "com.cjww-dev.libs" % "http-verbs_2.11" % "1.6.0",
+  "com.cjww-dev.libs" % "logging_2.11" % "0.6.0",
+  "com.cjww-dev.libs" % "authorisation_2.11" % "1.2.0",
   "com.cjww-dev.libs" % "frontend-ui_2.11" % "0.5.0",
-  "com.cjww-dev.libs" % "bootstrapper_2.11" % "1.4.2"
+  "com.cjww-dev.libs" % "bootstrapper_2.11" % "1.5.0",
+  "com.cjww-dev.libs" % "application-utilities_2.11" % "0.4.0"
 )
 
 val codeDep : Seq[ModuleID] = Seq(
@@ -53,10 +52,9 @@ val codeDep : Seq[ModuleID] = Seq(
 
 val testDep : Seq[ModuleID] = Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % Test,
-  "org.mockito" % "mockito-core" % "2.7.22" % Test
+  "org.mockito" % "mockito-core" % "2.8.9" % Test
 )
 
-libraryDependencies ++= Seq(cache)
 libraryDependencies ++= cjwwDep
 libraryDependencies ++= codeDep
 libraryDependencies ++= testDep

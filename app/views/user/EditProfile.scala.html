@@ -1,6 +1,7 @@
-@import models.accounts.{BasicDetails, DashboardDisplay, NewPasswords, UserProfile}
+@import models.accounts.{BasicDetails, PasswordSet, UserProfile}
 @import com.cjwwdev.auth.models.AuthContext
-@(profile : Form[UserProfile], passwords : Form[NewPasswords], displayname : Form[DashboardDisplay], basicDetails : BasicDetails)(implicit request : Request[_], authContext : Option[AuthContext])
+@import models.accounts.Settings
+@(profile : Form[UserProfile], passwords : Form[PasswordSet], displayname : Form[Settings], basicDetails : BasicDetails)(implicit request : Request[_], authContext : Option[AuthContext])
 
 @import views.html.helpers.{disabledTextInput, errorPanel, radioButton, textInput}
 

@@ -16,40 +16,59 @@
 
 package connectors
 
+import com.cjwwdev.http.exceptions.{ForbiddenException, NotFoundException, ServerErrorException}
+import com.cjwwdev.http.utils.SessionUtils
 import com.google.inject.{Inject, Singleton}
 import config.ApplicationConfiguration
 import models.SessionUpdateSet
-import play.api.libs.json.Format
-import play.api.libs.ws.WSResponse
+import play.api.libs.json.{OWrites, Reads}
 import play.api.mvc.Request
-import com.cjwwdev.logging.Logger
+import play.api.http.Status.{CREATED, OK}
 import com.cjwwdev.http.verbs.Http
-import com.cjwwdev.security.encryption.DataSecurity
+import enums.SessionCache
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class SessionStoreConnector @Inject()(http : Http) extends ApplicationConfiguration {
-  def cache[T](sessionId : String, data : T)(implicit format: Format[T], request: Request[_]) : Future[WSResponse] = {
+class SessionStoreConnector @Inject()(http : Http) extends ApplicationConfiguration with SessionUtils {
+  def cache[T](sessionId : String, data : T)(implicit writes: OWrites[T], request: Request[_]) : Future[SessionCache.Value] = {
     http.POST[T](s"$sessionStore/session/$sessionId/cache", data) map {
-      resp =>
-        Logger.info(s"[SessionStoreController] - [cache] Response from API Call ${resp.status} - ${resp.statusText}")
-        resp
+      _.status match {
+        case CREATED => SessionCache.cached
+      }
+    } recover {
+      case _: ServerErrorException => SessionCache.cacheFailure
+      case e: ForbiddenException  => throw e
     }
   }
 
-  def getDataElement[T](key : String)(implicit format : Format[T], request: Request[_]) : Future[T] = {
-    http.GET(s"$sessionStore/session/${request.session("cookieId")}/data/$key") map { resp =>
-      DataSecurity.decryptInto[T](resp.body).get
+  def getDataElement[T](key : String)(implicit reads: Reads[T], request: Request[_]) : Future[Option[T]] = {
+    http.GET(s"$sessionStore/session/$getCookieId/data/$key") map {
+      data => Some(data)
+    } recover {
+      case _: NotFoundException   => None
+      case e: ForbiddenException  => throw e
     }
   }
 
-  def updateSession(updateSet : SessionUpdateSet)(implicit format : Format[SessionUpdateSet], request: Request[_]) : Future[Int] = {
-    http.PUT[SessionUpdateSet](s"$sessionStore/session/${request.session("cookieId")}", updateSet) map(_.status)
+  def updateSession(updateSet : SessionUpdateSet)(implicit writes: OWrites[SessionUpdateSet], request: Request[_]) : Future[SessionCache.Value] = {
+    http.PUT[SessionUpdateSet](s"$sessionStore/session/$getCookieId", updateSet) map {
+      _.status match {
+        case OK => SessionCache.cacheUpdated
+      }
+    } recover {
+      case _: ServerErrorException => SessionCache.cacheUpdateFailure
+    }
   }
 
-  def destroySession(implicit request: Request[_]) : Future[WSResponse] = {
-    http.DELETE(s"$sessionStore/session/${request.session("cookieId")}/destroy")
+  def destroySession(implicit request: Request[_]) : Future[SessionCache.Value] = {
+    http.DELETE(s"$sessionStore/session/$getCookieId/destroy") map {
+      _.status match {
+        case OK => SessionCache.cacheDestroyed
+      }
+    } recover {
+      case _: ServerErrorException => SessionCache.cacheDestructionFailure
+    }
   }
 }

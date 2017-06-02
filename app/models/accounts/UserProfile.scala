@@ -14,23 +14,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+package models.accounts
 
-package forms
+import com.cjwwdev.json.JsonFormats
+import org.joda.time.{DateTime, DateTimeZone}
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
-import models.registration.UserRegistration
-import play.api.data.Form
-import play.api.data.Forms._
-import utils.validation.RegisterValidation._
+case class UserProfile(firstName : String, lastName : String, userName : String, email : String)
 
-object UserRegisterForm{
-  val RegisterUserForm = Form(
-    mapping(
-      "firstName" -> firstNameChecker,
-      "lastName" -> lastNameChecker,
-      "userName" -> userNameChecker,
-      "email" -> emailChecker,
-      "password" -> passwordCheck,
-      "confirmPassword" -> confirmPasswordCheck
-    )(UserRegistration.apply)(UserRegistration.unapply).verifying(xPasswordCheck)
-  )
+object UserProfile extends JsonFormats[UserProfile] {
+  override implicit val standardFormat: OFormat[UserProfile] = (
+    (__ \ "firstName").format[String] and
+    (__ \ "lastName").format[String] and
+    (__ \ "userName").format[String] and
+    (__ \ "email").format[String]
+  )(UserProfile.apply, unlift(UserProfile.unapply))
 }

@@ -16,7 +16,7 @@
 
 package forms
 
-import models.accounts.NewPasswords
+import models.accounts.PasswordSet
 import play.api.data.Form
 import play.api.data.Forms._
 import utils.validation.RegisterValidation._
@@ -27,6 +27,6 @@ object NewPasswordForm {
       "oldPassword" -> oldPasswordCheck,
       "newPassword" -> passwordCheck,
       "confirmPassword" -> confirmPasswordCheck
-    )(NewPasswords.apply)(NewPasswords.unapply).verifying(profileXPasswordCheck)
+    )(PasswordSet.apply)(PasswordSet.unapply).verifying(profileXPasswordCheck)
   )
 }

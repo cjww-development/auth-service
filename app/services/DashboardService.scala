@@ -19,22 +19,24 @@ package services
 import javax.inject.{Inject, Singleton}
 
 import com.cjwwdev.auth.models.AuthContext
-import connectors.AccountConnector
-import models.accounts.{BasicDetails, DeversityEnrolment, FeedItem, Settings}
+import com.cjwwdev.logging.Logger
+import connectors.AccountsMicroserviceConnector
+import models.accounts.{BasicDetails, DeversityEnrolment, Settings}
 import models.deversity.{OrgDetails, TeacherDetails}
+import models.feed.FeedItem
 import play.api.mvc.Request
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
-class DashboardService @Inject()(accountConnector: AccountConnector, feedService: FeedService) {
+class DashboardService @Inject()(accountConnector: AccountsMicroserviceConnector, feedService: FeedService) {
 
-  def getBasicDetails(implicit authContext: AuthContext, request: Request[_]): Future[Option[BasicDetails]] = {
+  def getBasicDetails(implicit authContext: AuthContext, request: Request[_]): Future[BasicDetails] = {
     accountConnector.getBasicDetails
   }
 
-  def getSettings(implicit authContext: AuthContext, request: Request[_]): Future[Option[Settings]] = {
+  def getSettings(implicit authContext: AuthContext, request: Request[_]): Future[Settings] = {
     accountConnector.getSettings
   }
 

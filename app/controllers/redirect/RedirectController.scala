@@ -21,7 +21,6 @@ import javax.inject.Inject
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
 import com.google.inject.Singleton
-import config.ApplicationConfiguration
 import play.api.mvc.{Action, AnyContent}
 import utils.application.FrontendController
 import views.html.redirect.ServiceSelector

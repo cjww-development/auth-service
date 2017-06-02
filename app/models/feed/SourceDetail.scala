@@ -14,12 +14,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package models.accounts
+package models.feed
 
-import play.api.libs.json.Json
+import com.cjwwdev.json.JsonFormats
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
-case class DeversityDetails(orgId: String, teacherId: String)
+case class SourceDetail(service : String, location : String)
 
-object DeversityDetails {
-  implicit val format = Json.format[DeversityDetails]
+object SourceDetail extends JsonFormats[SourceDetail] {
+  override implicit val standardFormat: OFormat[SourceDetail] = (
+    (__ \ "service").format[String] and
+    (__ \ "location").format[String]
+  )(SourceDetail.apply, unlift(SourceDetail.unapply))
 }

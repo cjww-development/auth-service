@@ -19,14 +19,14 @@ package controllers.register
 
 import javax.inject.Inject
 
-import com.cjwwdev.auth.actions.{Actions, AuthActions}
+import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
 import com.google.inject.Singleton
-import connectors._
+import enums.HttpResponse
 import forms.UserRegisterForm
-import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
+import services.RegisterService
 import utils.application.FrontendController
 import views.html.error_template
 import views.html.register.{RegisterSuccess, UserRegisterView}
@@ -36,7 +36,7 @@ import scala.concurrent.Future
 
 @Singleton
 class UserRegisterController @Inject()(messagesApi: MessagesApi,
-                                       userRegister : UserRegistrationConnector,
+                                       userRegister : RegisterService,
                                        authConnect: AuthConnector) extends FrontendController with Actions {
 
   val authConnector = authConnect
@@ -51,16 +51,10 @@ class UserRegisterController @Inject()(messagesApi: MessagesApi,
     implicit potentialUser =>
       implicit request =>
         UserRegisterForm.RegisterUserForm.bindFromRequest.fold(
-          errors => {
-            Future.successful(BadRequest(UserRegisterView(errors)))
-          },
-          newUser => {
-            userRegister.createNewIndividualUser(newUser.encryptPasswords) map {
-              case UserRegisterSuccessResponse(_) => Ok(RegisterSuccess("individual"))
-              case UserRegisterClientErrorResponse(_) => BadRequest(error_template(messagesApi("cjww.auth.error.generic")))
-              case UserRegisterServerErrorResponse(_) => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
-              case UserRegisterErrorResponse(_) => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
-            }
+          errors => Future.successful(BadRequest(UserRegisterView(errors))),
+          newUser => userRegister.registerIndividual(newUser) map {
+            case HttpResponse.success => Ok(RegisterSuccess("individual"))
+            case HttpResponse.failed  => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
           }
         )
   }

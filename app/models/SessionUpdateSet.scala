@@ -16,10 +16,15 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json, OWrites}
 
 case class SessionUpdateSet(key : String, data : String)
 
 object SessionUpdateSet {
-  implicit val format = Json.format[SessionUpdateSet]
+  implicit val sessionUpdateSetWrites: OWrites[SessionUpdateSet] = new OWrites[SessionUpdateSet] {
+    override def writes(o: SessionUpdateSet): JsObject = Json.obj(
+      "key" -> o.key,
+      "data" -> o.data
+    )
+  }
 }

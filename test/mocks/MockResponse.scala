@@ -15,12 +15,14 @@
 // limitations under the License.
 package mocks
 
-import com.cjwwdev.security.encryption.DataSecurity
+import akka.util.ByteString
 import models.UserLogin
-import models.accounts.UserAccount
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import play.api.libs.ws.WSResponse
+import play.api.libs.json.JsValue
+import play.api.libs.ws.{WSCookie, WSResponse}
+
+import scala.xml.Elem
 
 trait MockResponse extends MockitoSugar{
 
@@ -38,8 +40,19 @@ trait MockResponse extends MockitoSugar{
     m
   }
 
-  val testUserCredentials = UserLogin("testUserName","testPassword")
-  val testUserDetails = UserAccount(Some("testID"),"testFirstName","testLastName","testUserName", None,"test@email.com","testPassword")
+  def fakeHttpResponse(statusCode: Int, bodyContents: String): WSResponse = new WSResponse {
+    override def cookie(name: String): Option[WSCookie] = ???
+    override def underlying[T]: T = ???
+    override def body: String = bodyContents
+    override def bodyAsBytes: ByteString = ???
+    override def cookies: Seq[WSCookie] = ???
+    override def allHeaders: Map[String, Seq[String]] = ???
+    override def xml: Elem = ???
+    override def statusText: String = ???
+    override def json: JsValue = ???
+    override def header(key: String): Option[String] = ???
+    override def status: Int = statusCode
+  }
 
-  val encryptedUserDetails = DataSecurity.encryptData[UserAccount](testUserDetails)
+  val testUserCredentials = UserLogin("testUserName","testPassword")
 }
