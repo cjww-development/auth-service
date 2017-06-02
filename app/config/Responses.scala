@@ -14,23 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+package config
 
-package forms
-
-import models.registration.UserRegistration
-import play.api.data.Form
-import play.api.data.Forms._
-import utils.validation.RegisterValidation._
-
-object UserRegisterForm{
-  val RegisterUserForm = Form(
-    mapping(
-      "firstName" -> firstNameChecker,
-      "lastName" -> lastNameChecker,
-      "userName" -> userNameChecker,
-      "email" -> emailChecker,
-      "password" -> passwordCheck,
-      "confirmPassword" -> confirmPasswordCheck
-    )(UserRegistration.apply)(UserRegistration.unapply).verifying(xPasswordCheck)
-  )
-}
+sealed trait UpdatedPasswordResponse
+case object InvalidOldPassword extends UpdatedPasswordResponse
+case object PasswordUpdated extends UpdatedPasswordResponse

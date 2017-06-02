@@ -14,26 +14,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package models.accounts
+
+package models.registration
 
 import com.cjwwdev.security.encryption.SHA512
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json, OWrites}
 
-case class OrgRegister(orgName: String,
-                       initials: String,
-                       orgUserName: String,
-                       location: String,
-                       orgEmail: String,
-                       password: String,
-                       confirmPassword: String) {
+case class UserRegistration(firstName: String,
+                            lastName: String,
+                            userName: String,
+                            email: String,
+                            password: String,
+                            confirmPassword: String)
 
-  def encryptPasswords: OrgRegister = {
-    copy(password = SHA512.encrypt(password), confirmPassword = SHA512.encrypt(confirmPassword))
+object UserRegistration {
+  implicit val userRegisterWrites: OWrites[UserRegistration] = new OWrites[UserRegistration] {
+    override def writes(o: UserRegistration): JsObject = Json.obj(
+      "firstName" -> o.firstName,
+      "lastName"  -> o.lastName,
+      "userName"  -> o.userName,
+      "email"     -> o.email,
+      "password"  -> SHA512.encrypt(o.password)
+    )
   }
 }
-
-object OrgRegister {
-  implicit val format = Json.format[OrgRegister]
-}
-
-

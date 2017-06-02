@@ -14,20 +14,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package models.accounts
+package models.feed
 
 import com.cjwwdev.json.JsonFormats
+import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
-case class Enrolments(hubId : Option[String],
-                      diagId : Option[String],
-                      deversityId : Option[String])
+case class FeedItem(userId : String,
+                    sourceDetail: SourceDetail,
+                    eventDetail: EventDetail,
+                    generated : DateTime)
 
-object Enrolments extends JsonFormats[Enrolments] {
-  override implicit val standardFormat: OFormat[Enrolments] = (
-    (__ \ "hubId").formatNullable[String] and
-    (__ \ "diagId").formatNullable[String] and
-    (__ \ "deversityId").formatNullable[String]
-  )(Enrolments.apply, unlift(Enrolments.unapply))
+object FeedItem extends JsonFormats[FeedItem] {
+  override implicit val standardFormat: OFormat[FeedItem] = (
+    (__ \ "userId").format[String] and
+    (__ \ "sourceDetail").format[SourceDetail](SourceDetail.standardFormat) and
+    (__ \ "eventDetail").format[EventDetail](EventDetail.standardFormat) and
+    (__ \ "generated").format[DateTime](dateTimeRead)(dateTimeWrite)
+  )(FeedItem.apply, unlift(FeedItem.unapply))
 }

@@ -16,13 +16,16 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json, OWrites}
 import com.cjwwdev.security.encryption.SHA512
 
-case class UserLogin(username : String, password : String) {
-  def encryptPassword : UserLogin = this.copy(password = SHA512.encrypt(password))
-}
+case class UserLogin(username : String, password : String)
 
 object UserLogin {
-  implicit val format = Json.format[UserLogin]
+  implicit val userLoginWrites: OWrites[UserLogin] = new OWrites[UserLogin] {
+    override def writes(o: UserLogin): JsObject = Json.obj(
+      "username" -> o.username,
+      "password" -> SHA512.encrypt(o.password)
+    )
+  }
 }

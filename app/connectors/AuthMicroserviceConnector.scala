@@ -16,33 +16,23 @@
 package connectors
 
 import com.cjwwdev.auth.models.AuthContext
-import com.cjwwdev.http.exceptions.HttpExceptions
+import com.cjwwdev.http.exceptions.ForbiddenException
 import com.cjwwdev.http.verbs.Http
 import com.google.inject.{Inject, Singleton}
-import config.ApplicationConfiguration
+import config._
 import models.UserLogin
 import com.cjwwdev.security.encryption.DataSecurity
 import play.api.mvc.Request
-import play.api.http.Status.{FORBIDDEN, OK}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-sealed trait UserLoginResponse
-case class  UserLoginSuccessResponse(contextDetail : AuthContext) extends UserLoginResponse
-case object UserLoginFailedResponse extends UserLoginResponse
-case object UserLoginException extends UserLoginResponse
-
 @Singleton
-class UserLoginConnector @Inject()(http: Http) extends HttpExceptions with ApplicationConfiguration {
-  def getUser(loginDetails : UserLogin)(implicit request: Request[_]) : Future[UserLoginResponse] = {
-    val enc = DataSecurity.encryptData[UserLogin](loginDetails).get
-    http.GET(s"$authMicroservice/login/user?enc=$enc") map { resp =>
-      resp.status match {
-        case OK => UserLoginSuccessResponse(DataSecurity.decryptInto[AuthContext](resp.body).get)
-        case FORBIDDEN => UserLoginFailedResponse
-        case _ => UserLoginException
-      }
+class AuthMicroserviceConnector @Inject()(http: Http) extends ApplicationConfiguration {
+  def getUser(loginDetails : UserLogin)(implicit request: Request[_]) : Future[AuthContext] = {
+    val enc = DataSecurity.encryptType[UserLogin](loginDetails).get
+    http.GET[AuthContext](s"$authMicroservice/login/user?enc=$enc") recover {
+      case e: ForbiddenException => throw e
     }
   }
 }

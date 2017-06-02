@@ -17,19 +17,20 @@
 package services
 
 import com.google.inject.{Inject, Singleton}
-import connectors.{UserRegisterResponse, UserRegistrationConnector}
-import models.accounts.{OrgRegister, UserRegister}
+import connectors.AccountsMicroserviceConnector
+import enums.HttpResponse
+import models.registration.{OrgRegistration, UserRegistration}
 import play.api.mvc.Request
 
 import scala.concurrent.Future
 
 @Singleton
-class RegisterService @Inject()(userRegistration : UserRegistrationConnector) {
-  def registerIndividual(user : UserRegister)(implicit request: Request[_]) : Future[UserRegisterResponse] = {
-    userRegistration.createNewIndividualUser(user)
+class RegisterService @Inject()(accountsConnector: AccountsMicroserviceConnector) {
+  def registerIndividual(user : UserRegistration)(implicit request: Request[_]) : Future[HttpResponse.Value] = {
+    accountsConnector.createNewIndividualUser(user)
   }
 
-  def registerOrg(org: OrgRegister)(implicit request: Request[_]): Future[UserRegisterResponse] = {
-    userRegistration.createNewOrgUser(org)
+  def registerOrg(org: OrgRegistration)(implicit request: Request[_]): Future[HttpResponse.Value] = {
+    accountsConnector.createNewOrgUser(org)
   }
 }

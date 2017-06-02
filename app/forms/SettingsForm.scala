@@ -14,23 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package forms
 
-import models.registration.UserRegistration
+import models.accounts.Settings
 import play.api.data.Form
 import play.api.data.Forms._
-import utils.validation.RegisterValidation._
 
-object UserRegisterForm{
-  val RegisterUserForm = Form(
+object SettingsForm {
+  val form = Form(
     mapping(
-      "firstName" -> firstNameChecker,
-      "lastName" -> lastNameChecker,
-      "userName" -> userNameChecker,
-      "email" -> emailChecker,
-      "password" -> passwordCheck,
-      "confirmPassword" -> confirmPasswordCheck
-    )(UserRegistration.apply)(UserRegistration.unapply).verifying(xPasswordCheck)
+      "displayName"       -> optional(text),
+      "displayNameColour" -> optional(text),
+      "displayImageURL"   -> optional(text)
+    )(Settings.apply)(Settings.unapply)
   )
 }

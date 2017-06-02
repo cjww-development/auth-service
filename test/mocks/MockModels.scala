@@ -17,11 +17,12 @@
 package mocks
 
 import com.cjwwdev.auth.models.{AuthContext, User}
-import com.cjwwdev.security.encryption.DataSecurity
-import models.accounts.{BasicDetails, Enrolments, Settings, UserProfile}
-import org.joda.time.DateTime
+import models.accounts._
+import org.joda.time.{DateTime, DateTimeZone}
 
 trait MockModels {
+
+  final val now = new DateTime(DateTimeZone.UTC)
 
   val testBasicDetails =
     BasicDetails(
@@ -29,7 +30,7 @@ trait MockModels {
       "testLastName",
       "testUserName",
       "test@email.com",
-      Some(Map("createdAt" -> DateTime.now()))
+      now
     )
 
   implicit val testContext =
@@ -45,7 +46,8 @@ trait MockModels {
       ),
       "testLink",
       "testLink",
-      "testLink"
+      "testLink",
+      now
     )
 
   val testSettings =
@@ -69,6 +71,12 @@ trait MockModels {
       Some("testDiagId"),
       Some("testDevId")
     )
+
+  val testPasswordSet = PasswordSet(
+    oldPassword       = "testOldPassword",
+    newPassword       = "testNewPassword",
+    confirmPassword   = "testConfirmPassword"
+  )
 
   val testEncFeedList = "NHb63SXRUGosU2HezDjp/En1mS0Ab2c4C7R8rhd2BnxVJie2aaBH+HgKlJpzKVO0GeO4oU6sM8Tb8lMY7ggpniq8Go5idu3qsfbCNLpqp9NrrhL83bGM3q/Ji2GAz64Uf6tS5qOo4KxKOZPH35XGd60n+AIfQ3RTM1/xjwRf2WzzzVui2o/Axnv8P+6D/RTeyKZgaxY5QWjsTODgV1LbYWhrrrXxwGcTbO08bIDdczcDb2vVSUhBY4tVK2DsImfxnH4itDUvk709VjZSb7ABND99Cfznpr/14fbnvmfIw51fKJnowLa+jmELTCvSS/KYoI521jS0zvcRc2rLSOeIxawXH3BqxLO50Videkljqs2DIfD+1VyUsX/AOGaoGEWDGalLRiZ9o7Mi+hC/7E6GsdPPB56RubfE8WR2/GVOHjsBtwyR/VQrQ2HRXG5btCu99AIDEB38Jiufea1pRS/dqV9s9jQywPqeLOz/GgJ97uLWN+kRMdlz2G4nQbCeZv17nis7W3ghCJ4i6gfm1gYAm5kLbcsKu0ptEAzG0QO7r0OHMF+52jkcY+BuupOphXkvP0LpNLKoClDWFzriTyjZqUAFwFnk0fLCPXkfUwfsKME2oRkn6tqVcEPFAYzgjUESEcgjfSQVxfUuUhmA4YN2Ph9IWH8r6zaulp5VxeyjU8EX6wzHOuwChO1KowsKgIcbipejaNGGj8+g1Mac2n3PjF3GZfFMxRt1+4NxIW1HSKxGCSapb85mAb7P9DgAAcHtrZjxjphY308vEHY2kn9tRc/KfNRt/h1niVZr8cDz3J82v1eyS7VRI8BUaxieeW1/3vduB1LAdydv2wuH3dpAsOLtOymRGCEaMk1cdPuOIYpCbQZjsyMBsv3ih1vIXXJr883VogvBZM+CPeruUcJ6PoWi2pDm+0+lUiC0zOZ1Ntij9wouBT95nkKEdo5aOf5uOa2/W1SnDqsnAdmvq+24skrKEBINjPkD3a57OuYrM8swiwwP1lkadmdk15Km8qvMkENNyvaFb1lp8A1/guANQ13bPNC42RJNI+qPEl0YY44n4z11buY/veeWgES1k8F1VC/fVTKun8lYp8+h+pLb598dm7JVdapOhRCB1ssgVsKa7oozoo2iQXM0vIGBrJS3oUBEQp5Rwai26Tt+Cwv/19l1kFOZTuc/HuaGeqTZILltPHvsDdAIDBZ6A1T2wOrIx9nx8V44viix9v01jw3AxDgymXBJmAJF3EUuOQNsUxvBjnfzhe0JtFlPEzSnzBFciQrsPFMZLliS0JEr2YhXgw=="
 }

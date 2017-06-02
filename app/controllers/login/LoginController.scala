@@ -18,10 +18,8 @@ package controllers.login
 import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
-import com.cjwwdev.logging.Logger
 import com.cjwwdev.auth.connectors.AuthConnector
 import com.google.inject.Singleton
-import config.ApplicationConfiguration
 import connectors.SessionStoreConnector
 import forms.UserLoginForm
 import play.api.i18n.MessagesApi
@@ -64,9 +62,8 @@ class LoginController @Inject()(messagesApi: MessagesApi, userLogin : LoginServi
   def signOut : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
-        sessionStoreConnector.destroySession map { resp =>
-          Logger.info(s"[LoginController] - [signOut] : Response from session store - ${resp.status} : ${resp.statusText}")
-          Redirect(routes.LoginController.show(None)).withNewSession
+        sessionStoreConnector.destroySession map {
+          _ => Redirect(routes.LoginController.show(None)).withNewSession
         }
   }
 }

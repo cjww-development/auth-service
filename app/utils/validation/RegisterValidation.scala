@@ -17,7 +17,8 @@
 
 package utils.validation
 
-import models.accounts.{NewPasswords, OrgRegister, UserRegister}
+import models.accounts.PasswordSet
+import models.registration.{OrgRegistration, UserRegistration}
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
@@ -164,9 +165,9 @@ object RegisterValidation {
     text().verifying(confirmPasswordCheckConstraint)
   }
 
-  def orgXPasswordCheck : Constraint[OrgRegister] = {
+  def orgXPasswordCheck : Constraint[OrgRegistration] = {
     Constraint("constraints.password")({
-      orForm : OrgRegister =>
+      orForm : OrgRegistration =>
         if(orForm.password == orForm.confirmPassword) {
           Valid
         } else if(orForm.password.isEmpty) {
@@ -179,9 +180,9 @@ object RegisterValidation {
     })
   }
 
-  def xPasswordCheck : Constraint[UserRegister] = {
+  def xPasswordCheck : Constraint[UserRegistration] = {
     Constraint("constraints.password")({
-      urForm : UserRegister =>
+      urForm : UserRegistration =>
         if(urForm.password == urForm.confirmPassword) {
           Valid
         } else if(urForm.password.isEmpty) {
@@ -194,9 +195,9 @@ object RegisterValidation {
     })
   }
 
-  def profileXPasswordCheck : Constraint[NewPasswords] = {
+  def profileXPasswordCheck : Constraint[PasswordSet] = {
     Constraint("constraints.password")({
-      pForm : NewPasswords =>
+      pForm : PasswordSet =>
         if(pForm.newPassword == pForm.confirmPassword) {
           Valid
         } else if(pForm.newPassword.isEmpty) {

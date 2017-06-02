@@ -16,12 +16,20 @@
 
 package models.accounts
 
-import play.api.libs.json.Json
+import com.cjwwdev.json.JsonFormats
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 case class Settings(displayName : Option[String],
                     displayNameColour : Option[String],
                     displayImageURL : Option[String])
 
-object Settings {
-  implicit val format = Json.format[Settings]
+object Settings extends JsonFormats[Settings] {
+  override implicit val standardFormat: OFormat[Settings] = (
+    (__ \ "displayName").formatNullable[String] and
+    (__ \ "displayNameColour").formatNullable[String] and
+    (__ \ "displayImageURL").formatNullable[String]
+  )(Settings.apply, unlift(Settings.unapply))
+
+  val default = Settings(Some("full"), Some("#FFFFFF"), Some("/account-services/assets/images/background.jpg"))
 }

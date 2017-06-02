@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import connectors._
+import enums.HttpResponse
 import forms.OrgRegisterForm
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
@@ -50,11 +50,9 @@ class OrgRegisterController @Inject()(messagesApi: MessagesApi,
       implicit request =>
         OrgRegisterForm.orgRegisterForm.bindFromRequest.fold(
           errors => Future.successful(BadRequest(OrgRegisterView(errors))),
-          valid => userRegister.registerOrg(valid.encryptPasswords) map {
-            case UserRegisterSuccessResponse(_)     => Ok(RegisterSuccess("organisation"))
-            case UserRegisterClientErrorResponse(_) => BadRequest(error_template(messagesApi("cjww.auth.error.generic")))
-            case UserRegisterServerErrorResponse(_) => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
-            case UserRegisterErrorResponse(_)       => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
+          valid => userRegister.registerOrg(valid) map {
+            case HttpResponse.success => Ok(RegisterSuccess("organisation"))
+            case HttpResponse.failed  => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
           }
         )
   }

@@ -19,15 +19,16 @@ package services
 import com.cjwwdev.auth.models.AuthContext
 import com.google.inject.{Inject, Singleton}
 import config.ApplicationConfiguration
-import connectors.{AccountConnector, FeedEventResponse}
-import models.accounts.{EventDetail, FeedItem, Settings, SourceDetail}
+import connectors.AccountsMicroserviceConnector
+import enums.HttpResponse
+import models.feed.{EventDetail, FeedItem, SourceDetail}
 import org.joda.time.DateTime
 import play.api.mvc.Request
 
 import scala.concurrent.Future
 
 @Singleton
-class FeedService @Inject()(accountConnector: AccountConnector) extends ApplicationConfiguration {
+class FeedService @Inject()(accountConnector: AccountsMicroserviceConnector) extends ApplicationConfiguration {
 
   private[services] def buildFeedItem(location : String, desc : String)(implicit authContext : AuthContext) : FeedItem = {
     FeedItem(
@@ -38,17 +39,17 @@ class FeedService @Inject()(accountConnector: AccountConnector) extends Applicat
     )
   }
 
-  def basicDetailsFeedEvent(implicit authContext: AuthContext, request: Request[_]) : Future[FeedEventResponse] = {
+  def basicDetailsFeedEvent(implicit authContext: AuthContext, request: Request[_]) : Future[HttpResponse.Value] = {
     val feedEvent = buildFeedItem("edit-profile","You updated your basic details")
     accountConnector.createFeedItem(feedEvent)
   }
 
-  def passwordUpdateFeedEvent(implicit authContext: AuthContext, request: Request[_]) : Future[FeedEventResponse] = {
+  def passwordUpdateFeedEvent(implicit authContext: AuthContext, request: Request[_]) : Future[HttpResponse.Value] = {
     val feedEvent = buildFeedItem("edit-profile","You changed your password")
     accountConnector.createFeedItem(feedEvent)
   }
 
-  def accountSettingsFeedEvent(implicit authContext: AuthContext, request: Request[_]) : Future[FeedEventResponse] = {
+  def accountSettingsFeedEvent(implicit authContext: AuthContext, request: Request[_]) : Future[HttpResponse.Value] = {
     val feedEvent = buildFeedItem("edit-profile","You updated your account settings")
     accountConnector.createFeedItem(feedEvent)
   }

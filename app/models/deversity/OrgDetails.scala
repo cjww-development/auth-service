@@ -17,10 +17,16 @@
 
 package models.deversity
 
-import play.api.libs.json.Json
+import com.cjwwdev.json.JsonFormats
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 case class OrgDetails(orgName: String, initials: String, location: String)
 
-object OrgDetails {
-  implicit val format = Json.format[OrgDetails]
+object OrgDetails extends JsonFormats[OrgDetails] {
+  override implicit val standardFormat: OFormat[OrgDetails] = (
+    (__ \ "orgName").format[String] and
+    (__ \ "initials").format[String] and
+    (__ \ "location").format[String]
+  )(OrgDetails.apply, unlift(OrgDetails.unapply))
 }

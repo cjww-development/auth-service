@@ -22,14 +22,17 @@ import java.util.UUID
 import com.cjwwdev.auth.models.AuthContext
 import com.google.inject.{Inject, Singleton}
 import connectors._
+import enums.SessionCache
 import models.UserLogin
+import models.accounts.UserProfile
+import play.api.libs.json.{JsValue, Json, OWrites}
 import play.api.mvc.{Request, Session}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class LoginService @Inject()(userLogin: UserLoginConnector, sessionStoreConnector: SessionStoreConnector) {
+class LoginService @Inject()(userLogin: AuthMicroserviceConnector, sessionStoreConnector: SessionStoreConnector) {
   private def sessionMap(context: AuthContext): Map[String, String] = {
     context.user.credentialType match {
       case "organisation" => Map(
@@ -50,13 +53,15 @@ class LoginService @Inject()(userLogin: UserLoginConnector, sessionStoreConnecto
   }
 
   def processLoginAttempt(credentials : UserLogin)(implicit request: Request[_]) : Future[Option[Session]] = {
-    userLogin.getUser(credentials.encryptPassword) flatMap {
-      case UserLoginSuccessResponse(context) =>
-        val session = Session(sessionMap(context))
-        sessionStoreConnector.cache[String](session("cookieId"), context.contextId).map {
-          _ => Some(session)
-        }
-      case UserLoginFailedResponse | UserLoginException => Future.successful(None)
+    userLogin.getUser(credentials) flatMap { context =>
+      val session = Session(sessionMap(context))
+      sessionStoreConnector.cache[AuthContext](session("cookieId"), context) map {
+        case SessionCache.cached       => Some(session)
+      } recover {
+        case e: Throwable => throw e
+      }
+    } recover {
+      case _: Throwable => None
     }
   }
 }

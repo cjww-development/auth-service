@@ -14,18 +14,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package forms
+package enums
 
-import models.accounts.DashboardDisplay
-import play.api.data.Form
-import play.api.data.Forms._
+object SessionCache extends Enumeration {
+  val cached                      = Value
+  val cacheFailure                = Value
 
-object DisplayNameForm {
-  val form = Form(
-    mapping(
-      "displayName" -> optional(text),
-      "displayNameColour" -> optional(text),
-      "displayImageURL" -> optional(text)
-    )(DashboardDisplay.apply)(DashboardDisplay.unapply)
-  )
+  val cacheUpdated                = Value
+  val cacheUpdateFailure          = Value
+
+  val cacheDestroyed              = Value
+  val cacheDestructionFailure     = Value
 }

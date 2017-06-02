@@ -16,30 +16,29 @@
 
 package services
 
-import models.accounts.Settings
+import models.accounts.{BasicDetails, Settings, UserProfile}
+import scala.language.implicitConversions
 
 object EditProfileService extends EditProfileService
 
 trait EditProfileService {
 
-  def getDisplayOption(settings : Option[Settings]) : Option[String] = {
-    settings match {
-      case Some(userSettings) => userSettings.displayName
-      case None => Some("full")
-    }
+  implicit def basicDetailsToUserProfile(basicDetails: BasicDetails): UserProfile = UserProfile(
+    firstName = basicDetails.firstName,
+    lastName = basicDetails.lastName,
+    userName = basicDetails.userName,
+    email = basicDetails.email
+  )
+
+  def getDisplayOption(settings: Settings) : Option[String] = {
+    settings.displayNameColour
   }
 
-  def getDisplayNameColour(settings: Option[Settings]) : Option[String] = {
-    settings match {
-      case Some(userSettings) => userSettings.displayNameColour
-      case None => Some("#FFFFFF")
-    }
+  def getDisplayNameColour(settings: Settings) : Option[String] = {
+    settings.displayNameColour
   }
 
-  def getDisplayImageURL(settings: Option[Settings]) : Option[String] = {
-    settings match {
-      case Some(userSettings) => userSettings.displayImageURL
-      case None => Some("/account-services/assets/images/background.jpg")
-    }
+  def getDisplayImageURL(settings: Settings) : Option[String] = {
+    settings.displayImageURL
   }
 }

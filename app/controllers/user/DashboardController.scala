@@ -27,7 +27,6 @@ import utils.application.FrontendController
 import views.html.user.{Dashboard, OrgDashboard}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class DashboardController @Inject()(messagesApi: MessagesApi,
                                     dashboardService: DashboardService,
@@ -44,13 +43,11 @@ class DashboardController @Inject()(messagesApi: MessagesApi,
             teacherList         <- dashboardService.getTeacherList
           } yield Ok(OrgDashboard(basicDetails, teacherList))
           case "individual" => for {
-            Some(basicDetails)  <- dashboardService.getBasicDetails
+            basicDetails        <- dashboardService.getBasicDetails
             settings            <- dashboardService.getSettings
             feed                <- dashboardService.getFeed
             deversityEnrolment  <- dashboardService.getDeversityEnrolment
-          } yield {
-            Ok(Dashboard(feed, basicDetails, settings, deversityEnrolment))
-          }
+          } yield Ok(Dashboard(feed, basicDetails, settings, deversityEnrolment))
         }
   }
 }

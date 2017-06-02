@@ -1,13 +1,13 @@
 @import models.accounts.BasicDetails
-@import models.accounts.FeedItem
 @import models.accounts.Settings
 @import models.accounts.DeversityEnrolment
 @import com.cjwwdev.auth.models.AuthContext
+@import models.feed.FeedItem
 @import services.EditProfileService.{getDisplayImageURL, getDisplayNameColour, getDisplayOption}
 
 @(feed: Option[List[FeedItem]],
   basicDetails: BasicDetails,
-  settings: Option[Settings],
+  settings: Settings,
   deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], authContext: Option[AuthContext])
 
 @import controllers.user.{routes => userRoutes}
@@ -69,12 +69,8 @@
             <div class="row">
                 <div class="col-md-11">
                     <h1 id="main-title" class="page-title" style="color: @{getDisplayNameColour(settings)}">Welcome
-                        @if(settings.isDefined) {
-                            @if(settings.get.displayName.isDefined) {
-                                @displayNameSelector(settings.get.displayName.get)
-                            } else {
-                                @basicDetails.firstName @basicDetails.lastName
-                            }
+                        @if(settings.displayName.isDefined) {
+                            @displayNameSelector(settings.displayName.get)
                         } else {
                             @basicDetails.firstName @basicDetails.lastName
                         }

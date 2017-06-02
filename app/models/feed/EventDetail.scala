@@ -14,23 +14,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+package models.feed
 
-package forms
+import com.cjwwdev.json.JsonFormats
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
-import models.registration.UserRegistration
-import play.api.data.Form
-import play.api.data.Forms._
-import utils.validation.RegisterValidation._
+case class EventDetail(title : String, description : String)
 
-object UserRegisterForm{
-  val RegisterUserForm = Form(
-    mapping(
-      "firstName" -> firstNameChecker,
-      "lastName" -> lastNameChecker,
-      "userName" -> userNameChecker,
-      "email" -> emailChecker,
-      "password" -> passwordCheck,
-      "confirmPassword" -> confirmPasswordCheck
-    )(UserRegistration.apply)(UserRegistration.unapply).verifying(xPasswordCheck)
-  )
+object EventDetail extends JsonFormats[EventDetail] {
+  override implicit val standardFormat: OFormat[EventDetail] = (
+    (__ \ "title").format[String] and
+    (__ \ "description").format[String]
+  )(EventDetail.apply, unlift(EventDetail.unapply))
 }

@@ -21,10 +21,10 @@ import com.google.inject.Singleton
 
 trait ApplicationConfiguration extends BaseConfiguration {
   //FeedServiceConfig
-  val EDIT_PROFILE = "edit-profile"
-  val TITLE = "Your profile has been updated"
+  val EDIT_PROFILE              = "edit-profile"
+  val TITLE                     = "Your profile has been updated"
 
-  val LOGIN_CALLBACK = controllers.login.routes.LoginController.show(None)
+  val LOGIN_CALLBACK            = controllers.login.routes.LoginController.show(None)
 
   //routes
   val accountsMicroservice      = config.getString(s"$env.routes.accounts-microservice")
