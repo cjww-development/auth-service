@@ -30,15 +30,15 @@ trait EditProfileService {
     email = basicDetails.email
   )
 
-  def getDisplayOption(settings: Settings) : Option[String] = {
+  def getDisplayOption(settings: Settings): String = {
     settings.displayNameColour
   }
 
-  def getDisplayNameColour(settings: Settings) : Option[String] = {
+  def getDisplayNameColour(settings: Settings): String = {
     settings.displayNameColour
   }
 
-  def getDisplayImageURL(settings: Settings) : Option[String] = {
+  def getDisplayImageURL(settings: Settings): String = {
     settings.displayImageURL
   }
 }

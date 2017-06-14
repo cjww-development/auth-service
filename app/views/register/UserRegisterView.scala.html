@@ -8,54 +8,61 @@
 @main_template(title = "CJWW Account - Register"){
     <div class="top-block-single">
         <div class="container">
-
             <div class="row">
-               <div class="col-md-2"></div>
+                <div class="col-md-2"></div>
 
-               <div class="col-md-8">
-                   <div class="panel panel-default">
-                       <div class="panel-body">
+                <div class="col-md-8">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
 
-                           <p class="text-center">
-                               <img src="@routes.Assets.versioned("images/logo.png")" width="50%" alt="">
-                           </p>
+                            <p class="text-center">
+                                <img src="@routes.Assets.versioned("images/logo.png")" width="50%" alt="">
+                            </p>
 
-                           <div class="page-header">
-                               <h1 class="pageTitle text-center">New around here?</h1>
-                           </div>
+                            <div class="page-header">
+                                <h1 class="pageTitle text-center">New around here?</h1>
+                            </div>
 
-                           <div class="row">
-                               <div class="col-md-3"></div>
-                               <div class="col-md-6">
-                                    @errorPanel(register)
-                               </div>
-                               <div class="col-md-3"></div>
-                           </div>
+                            <div class="row">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-6">
+                                @errorPanel(register)
+                                </div>
+                                <div class="col-md-3"></div>
+                            </div>
 
-                           <form action="@registerRoutes.UserRegisterController.submit()" method="post">
-                               @textInput(register("firstName"), "firstName", "First name", "First name", "text", "cjww-input-group-addon")
+                            <form action="@registerRoutes.UserRegisterController.submit()" method="post">
+                                @textInput(register("firstName"), "firstName", "First name", "First name", "text", "cjww-input-group-addon")
 
-                               @textInput(register("lastName"), "lastName", "Last name", "Last name", "text", "cjww-input-group-addon")
+                                @textInput(register("lastName"), "lastName", "Last name", "Last name", "text", "cjww-input-group-addon")
 
-                               @textInput(register("userName"), "userName", "User name", "User name", "text", "cjww-input-group-addon")
+                                @textInput(register("userName"), "userName", "User name", "User name", "text", "cjww-input-group-addon")
 
-                               @textInput(register("email"), "email", "Email", "Email", "text", "cjww-input-group-addon")
+                                @textInput(register("email"), "email", "Email", "Email", "text", "cjww-input-group-addon")
 
-                               @textInput(register("password"), "password", "Password", "Password", "password", "cjww-input-group-addon")
+                                @textInput(register("password"), "password", "Password", "Password", "password", "cjww-input-group-addon")
 
-                               @textInput(register("confirmPassword"), "confirmPassword", "Confirm", "Confirm password", "password", "cjww-input-group-addon")
+                                @textInput(register("confirmPassword"), "confirmPassword", "Confirm", "Confirm password", "password", "cjww-input-group-addon")
 
-                               <div class="form-group">
-                                   <div class="input-group">
-                                       <button type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Register</button>
-                                   </div>
-                               </div>
-                           </form>
-                       </div>
-                   </div>
-               </div>
+                                <div id="js-password-validation" class="form-group hidden">
+                                    <h4 id="capital-letter" class="text-muted"><span id="capital-letter-glyph" class="glyphicon glyphicon-minus" aria-hidden="true"></span> must contain a capital letter</h4>
+                                    <h4 id="lower-case-letter" class="text-muted"><span id="lower-case-letter-glyph" class="glyphicon glyphicon-minus" aria-hidden="true"></span> must contain a lower case letter</h4>
+                                    <h4 id="number" class="text-muted"><span id="number-glyph" class="glyphicon glyphicon-minus" aria-hidden="true"></span> must contain a number</h4>
+                                    <h4 id="length" class="text-muted"><span id="length-glyph" class="glyphicon glyphicon-minus" aria-hidden="true"></span> must be at least 10 characters long</h4>
+                                    <h4 id="match" class="text-muted"><span id="match-glyph" class="glyphicon glyphicon-minus" aria-hidden="true"></span> must match your confirmed password</h4>
+                                </div>
 
-               <div class="col-md-2"></div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <button type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Register</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2"></div>
             </div>
         </div>
     </div>

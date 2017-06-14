@@ -52,7 +52,7 @@ class LoginController @Inject()(messagesApi: MessagesApi, userLogin : LoginServi
             case Some(session) => Redirect(urlParser.serviceDirector).withSession(session)
             case None => Ok(
               UserLoginView(
-                UserLoginForm.loginForm.fill(valid).withError("userName", "Your user name or password is incorrect").withError("password", "")
+                UserLoginForm.loginForm.fill(valid).withError("userName", messagesApi("cjww.auth.login.error.invalid")).withError("password", "")
               )
             )
           }

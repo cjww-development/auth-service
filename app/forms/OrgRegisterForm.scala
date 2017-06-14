@@ -19,18 +19,18 @@ package forms
 import models.registration.OrgRegistration
 import play.api.data.Form
 import play.api.data.Forms._
-import utils.validation.RegisterValidation._
+import forms.validation.OrgRegistrationValidation._
 
 object OrgRegisterForm {
   val orgRegisterForm = Form(
     mapping(
-      "orgName"           -> userNameChecker,
-      "initials"          -> initialsChecker,
-      "orgUserName"       -> userNameChecker,
-      "location"          -> locationChecker,
-      "orgEmail"          -> emailChecker,
-      "password"          -> passwordCheck,
-      "confirmPassword"   -> confirmPasswordCheck
-    )(OrgRegistration.apply)(OrgRegistration.unapply).verifying(orgXPasswordCheck)
+      "orgName"           -> orgNameValidation,
+      "initials"          -> initialsValidation,
+      "orgUserName"       -> userNameValidation,
+      "location"          -> locationValidation,
+      "orgEmail"          -> emailAddressValidation,
+      "password"          -> passwordValidation,
+      "confirmPassword"   -> confirmPasswordValidation
+    )(OrgRegistration.apply)(OrgRegistration.unapply).verifying(orgXPasswordValidation)
   )
 }

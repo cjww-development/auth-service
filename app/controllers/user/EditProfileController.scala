@@ -21,6 +21,7 @@ import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
+import com.cjwwdev.logging.Logger
 import config.{InvalidOldPassword, PasswordUpdated}
 import connectors.AccountsMicroserviceConnector
 import enums.HttpResponse
@@ -149,12 +150,15 @@ class EditProfileController @Inject()(messagesApi: MessagesApi,
               )
             }
           },
-          valid => accountConnector.updateSettings(valid) flatMap {
-            case HttpResponse.success =>
-              feedEventService.accountSettingsFeedEvent map {
-                _ => Redirect(routes.EditProfileController.show())
-              }
-            case HttpResponse.failed => Future.successful(InternalServerError)
+          valid => {
+            Logger.debug(s"SETTINGS = $valid")
+            accountConnector.updateSettings(valid) flatMap {
+              case HttpResponse.success =>
+                feedEventService.accountSettingsFeedEvent map {
+                  _ => Redirect(routes.EditProfileController.show())
+                }
+              case HttpResponse.failed => Future.successful(InternalServerError)
+            }
           }
         )
   }

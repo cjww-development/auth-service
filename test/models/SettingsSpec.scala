@@ -14,19 +14,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package forms
+package models
 
 import models.accounts.Settings
-import play.api.data.Form
-import play.api.data.Forms._
-import forms.validation.SettingsValidation._
+import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.{JsSuccess, Json}
 
-object SettingsForm {
-  val form = Form(
-    mapping(
-      "displayName"       -> displayNameValidation,
-      "displayNameColour" -> displayNameColourValidation,
-      "displayImageURL"   -> displayImageUrlValidation
-    )(Settings.apply)(Settings.unapply)
+class SettingsSpec extends PlaySpec {
+
+  val testSettings = Settings(
+    displayName = "full",
+    displayNameColour = "#FFFFFF",
+    displayImageURL = "/test/uri"
   )
+
+  val testSettingsJson = Json.parse(
+    """
+      |{
+      | "displayName" : "full",
+      | "displayNameColour" : "#FFFFFF",
+      | "displayImageURL" : "/test/uri"
+      |}
+    """.stripMargin)
+
+  "Settings" should {
+    "write into json" in {
+      Json.toJson(testSettings)(Settings.settingsWrite) mustBe testSettingsJson
+    }
+
+    "be read from json" in {
+      Json.fromJson(testSettingsJson)(Settings.settingsRead) mustBe JsSuccess(testSettings)
+    }
+  }
 }
