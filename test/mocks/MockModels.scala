@@ -52,9 +52,9 @@ trait MockModels {
 
   val testSettings =
     Settings(
-      Some("user"),
-      Some("#124AAO"),
-      Some("/test/Link")
+      "user",
+      "#124AAO",
+      "/test/Link"
     )
 
   val testProfile =

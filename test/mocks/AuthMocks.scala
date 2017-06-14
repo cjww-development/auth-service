@@ -26,7 +26,7 @@ import com.cjwwdev.security.encryption.DataSecurity
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.{Args, BeforeAndAfterEach, Status, Suite}
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import play.api.libs.ws.ahc.AhcWSClient
 import play.api.mvc.{Action, AnyContent, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest

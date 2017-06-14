@@ -20,17 +20,17 @@ package forms
 import models.registration.UserRegistration
 import play.api.data.Form
 import play.api.data.Forms._
-import utils.validation.RegisterValidation._
+import forms.validation.RegistrationValidation._
 
 object UserRegisterForm{
   val RegisterUserForm = Form(
     mapping(
-      "firstName" -> firstNameChecker,
-      "lastName" -> lastNameChecker,
-      "userName" -> userNameChecker,
-      "email" -> emailChecker,
-      "password" -> passwordCheck,
-      "confirmPassword" -> confirmPasswordCheck
-    )(UserRegistration.apply)(UserRegistration.unapply).verifying(xPasswordCheck)
+      "firstName"       -> firstNameValidation,
+      "lastName"        -> lastNameValidation,
+      "userName"        -> userNameValidation,
+      "email"           -> emailAddressValidation,
+      "password"        -> passwordValidation,
+      "confirmPassword" -> confirmPasswordValidation
+    )(UserRegistration.apply)(UserRegistration.unapply).verifying(xPasswordValidation)
   )
 }

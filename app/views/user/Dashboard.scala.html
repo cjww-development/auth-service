@@ -69,11 +69,7 @@
             <div class="row">
                 <div class="col-md-11">
                     <h1 id="main-title" class="page-title" style="color: @{getDisplayNameColour(settings)}">Welcome
-                        @if(settings.displayName.isDefined) {
-                            @displayNameSelector(settings.displayName.get)
-                        } else {
-                            @basicDetails.firstName @basicDetails.lastName
-                        }
+                        @displayNameSelector(settings.displayName)
                     </h1>
                 </div>
 

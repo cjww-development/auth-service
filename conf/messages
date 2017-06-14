@@ -1,29 +1,24 @@
 #Error messages
-cjww.auth.error.generic=There was problem and we are working to resolve it. Please try again later!
+cjww.auth.error.generic                                 =There was problem and we are working to resolve it. Please try again later!
 
 #Login utilities.validation
-cjww.auth.login.username.error.notfound=You have not entered your username
-cjww.auth.login.password.error.notfound=You have not entered your password
-cjww.auth.login.error.invalid=Your username or password wasn't correct
+cjww.auth.login.username.error.notfound                 =You have not entered your username
+cjww.auth.login.password.error.notfound                 =You have not entered your password
+cjww.auth.login.error.invalid                           =Your username or password wasn''t correct
 
-#Register utilities.validation
-cjww.auth.register.firstname.error.notfound=You have not entered your first name
-cjww.auth.register.firstname.error.invalid=The first name you have entered is too long
+#Update password
+cjww.auth.update.password.old.invalid                   =You have not entered your old password
 
-cjww.auth.register.lastname.error.notfound=You have not entered your last name
-cjww.auth.register.lastname.error.invalid=The last name you have entered is too long
+#Registration validation messages
+cjww.auth.register.generic.userName.invalid             =You have not entered a valid user name
+cjww.auth.register.generic.email.invalid                =You have not entered a valid email address
+cjww.auth.register.generic.password.invalid             =You have not entered a password
+cjww.auth.register.generic.confirmPassword.invalid      =You have not confirmed your password
+cjww.auth.register.generic.password.match               =The passwords you have entered don''t match
 
-cjww.auth.register.username.error.notfound=You have not entered your user name
-cjww.auth.register.username.error.invalid=The user name you have entered is too long
-cjww.auth.register.username.error.inuse=This user name has been taken
+cjww.auth.register.user.firstName.invalid               =You have not entered a valid first name
+cjww.auth.register.user.lastName.invalid                =You have not entered a valid last name
 
-cjww.auth.register.email.error.notfound=Please enter a valid email address
-cjww.auth.register.email.error.invalid=This is not a valid email address
-cjww.auth.register.email.error.inuse=This email is already registered
-
-cjww.auth.register.password.error.notfound=You have not entered your first name
-
-cjww.auth.password.error.nomatch=The passwords you have entered do not match
-cjww.auth.password.error.notfound=You have not entered a password
-cjww.auth.confirmpassword.error.notfound=You have not confirmed your password
-
+cjww.auth.register.org.orgName.invalid                  =You have not entered a valid organisation name
+cjww.auth.register.org.initials.length                  =Enter five characters or less for your initials
+cjww.auth.register.org.location.invalid                 =You have not entered a valid location

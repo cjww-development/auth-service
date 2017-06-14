@@ -19,14 +19,14 @@ package forms
 import models.accounts.PasswordSet
 import play.api.data.Form
 import play.api.data.Forms._
-import utils.validation.RegisterValidation._
+import forms.validation.UpdatePasswordValidation._
 
 object NewPasswordForm {
   val form = Form(
     mapping(
-      "oldPassword" -> oldPasswordCheck,
-      "newPassword" -> passwordCheck,
-      "confirmPassword" -> confirmPasswordCheck
-    )(PasswordSet.apply)(PasswordSet.unapply).verifying(profileXPasswordCheck)
+      "oldPassword" -> oldPasswordValidation,
+      "newPassword" -> passwordValidation,
+      "confirmPassword" -> confirmPasswordValidation
+    )(PasswordSet.apply)(PasswordSet.unapply).verifying(profileXPasswordValidation)
   )
 }

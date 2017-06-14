@@ -19,7 +19,7 @@ package mocks
 
 import com.cjwwdev.http.verbs.Http
 import connectors.SessionStoreConnector
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.mockito.Mockito.reset
 import services.{EditProfileService, FeedService, LoginService}
 

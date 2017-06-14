@@ -16,20 +16,40 @@
 
 package models.accounts
 
-import com.cjwwdev.json.JsonFormats
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json.Json.JsValueWrapper
 
-case class Settings(displayName : Option[String],
-                    displayNameColour : Option[String],
-                    displayImageURL : Option[String])
+case class Settings(displayName: String,
+                    displayNameColour: String,
+                    displayImageURL: String)
 
-object Settings extends JsonFormats[Settings] {
-  override implicit val standardFormat: OFormat[Settings] = (
-    (__ \ "displayName").formatNullable[String] and
-    (__ \ "displayNameColour").formatNullable[String] and
-    (__ \ "displayImageURL").formatNullable[String]
-  )(Settings.apply, unlift(Settings.unapply))
+object Settings {
+  implicit val settingsRead: Reads[Settings] = new Reads[Settings] {
+    override def reads(json: JsValue): JsResult[Settings] = JsSuccess(
+      Settings(
+        displayName       = (json \ "displayName").asOpt[String].getOrElse(default.displayName),
+        displayNameColour = (json \ "displayNameColour").asOpt[String].getOrElse(default.displayNameColour),
+        displayImageURL   = (json \ "displayImageURL").asOpt[String].getOrElse(default.displayImageURL)
+      )
+    )
+  }
 
-  val default = Settings(Some("full"), Some("#FFFFFF"), Some("/account-services/assets/images/background.jpg"))
+  implicit val settingsWrite: OWrites[Settings] = new OWrites[Settings] {
+    override def writes(o: Settings): JsObject = {
+      def buildImageUrl: (String, JsValueWrapper) = {
+        o.displayImageURL match {
+          case "" => "displayImageURL" -> default.displayImageURL
+          case _  => "displayImageURL" -> o.displayImageURL
+        }
+      }
+      Json.obj(
+        "displayName"       -> o.displayName,
+        "displayNameColour" -> o.displayNameColour,
+        buildImageUrl
+      )
+    }
+  }
+
+  val default = Settings("full", "#FFFFFF", "/account-services/assets/images/background.jpg")
 }

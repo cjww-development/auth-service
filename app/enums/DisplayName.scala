@@ -14,18 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package forms
+package enums
 
-import models.UserLogin
-import play.api.data.Form
-import play.api.data.Forms._
-import forms.validation.LoginValidation._
-
-object UserLoginForm {
-  val loginForm = Form(
-    mapping(
-      "userName" -> userNameValidation,
-      "password" -> passwordValidation
-    )(UserLogin.apply)(UserLogin.unapply)
-  )
+object DisplayName extends Enumeration {
+  val full = Value
+  val short = Value
+  val user = Value
 }
