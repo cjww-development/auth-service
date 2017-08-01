@@ -16,14 +16,12 @@
 
 package forms.validation
 
+import com.cjwwdev.regex.RegexPack
 import play.api.data.Forms.text
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
-trait CommonValidation {
-  private val emailRegex      = """[A-Za-z0-9\-_.]{1,126}@[A-Za-z0-9\-_.]{1,126}""".r
-  private val userNameRegex   = """^\w[A-Za-z0-9]{0,10}$""".r
-
+trait CommonValidation extends RegexPack {
   def userNameValidation: Mapping[String] = {
     val userNameConstraint: Constraint[String] = Constraint("constraints.userName")({ userName =>
       val errors = userName match {
@@ -49,8 +47,9 @@ trait CommonValidation {
   def passwordValidation: Mapping[String] = {
     val passwordConstraint: Constraint[String] = Constraint("constraints.password")({ password =>
       val errors = password match {
-        case "" => Seq(ValidationError("You have not entered a password"))
-        case _ => Nil
+        case passwordRegex()  => Nil
+        case ""               => Seq(ValidationError("You have not entered your password"))
+        case _                => Seq(ValidationError("You have not entered a valid password"))
       }
       if(errors.isEmpty) Valid else Invalid(errors)
     })
@@ -61,8 +60,9 @@ trait CommonValidation {
     val confirmPasswordConstraint: Constraint[String] = Constraint("constraints.confirmPassword")({
       text =>
         val errors = text match {
-          case "" => Seq(ValidationError("You have not confirmed your password"))
-          case _ => Nil
+          case passwordRegex()  => Nil
+          case ""               => Seq(ValidationError("You have not confirmed your password"))
+          case _                => Seq(ValidationError("You have not entered a valid password"))
         }
         if(errors.isEmpty) Valid else Invalid(errors)
     })

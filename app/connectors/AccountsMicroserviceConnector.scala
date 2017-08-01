@@ -20,11 +20,10 @@ import javax.inject.{Inject, Singleton}
 import com.cjwwdev.auth.models.AuthContext
 import com.cjwwdev.http.exceptions.{ClientErrorException, ConflictException, HttpDecryptionException, NotFoundException, ServerErrorException}
 import com.cjwwdev.http.verbs.Http
-import com.cjwwdev.logging.Logger
 import com.cjwwdev.security.encryption.DataSecurity
 import config._
 import config.MissingBasicDetailsException
-import enums.HttpResponse
+import enums.{HttpResponse, Registration}
 import models.accounts._
 import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.FeedItem
@@ -32,6 +31,7 @@ import models.registration.{OrgRegistration, UserRegistration}
 import play.api.http.Status._
 import play.api.libs.json.{JsArray, JsObject}
 import play.api.mvc.Request
+import play.api.Logger
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -114,7 +114,7 @@ class AccountsMicroserviceConnector @Inject()(http: Http) extends ApplicationCon
   }
 
   def getSchoolInfo(school: String)(implicit authContext: AuthContext, request: Request[_]): Future[Option[OrgDetails]] = {
-    val schoolEnc = DataSecurity.encryptString(school).get
+    val schoolEnc = DataSecurity.encryptString(school)
     http.GET[OrgDetails](s"$accountsMicroservice/school/$schoolEnc/details") map {
       orgDeets => Some(orgDeets)
     } recover {
@@ -123,8 +123,8 @@ class AccountsMicroserviceConnector @Inject()(http: Http) extends ApplicationCon
   }
 
   def getTeacherInfo(teacher: String, school: String)(implicit authContext: AuthContext, request: Request[_]): Future[Option[TeacherDetails]] = {
-    val teacherEnc  = DataSecurity.encryptString(teacher).get
-    val schoolEnc   = DataSecurity.encryptString(school).get
+    val teacherEnc  = DataSecurity.encryptString(teacher)
+    val schoolEnc   = DataSecurity.encryptString(school)
     http.GET[TeacherDetails](s"$accountsMicroservice/teacher/$teacherEnc/school/$schoolEnc/details") map {
       teacherDeets => Some(teacherDeets)
     } recover {
@@ -144,28 +144,24 @@ class AccountsMicroserviceConnector @Inject()(http: Http) extends ApplicationCon
     http.GET[List[TeacherDetails]](s"$accountsMicroservice/account/${authContext.user.userId}/teachers")
   }
 
-  def createNewIndividualUser(userDetails : UserRegistration)(implicit request: Request[_]) : Future[HttpResponse.Value] = {
+  def createNewIndividualUser(userDetails : UserRegistration)(implicit request: Request[_]) : Future[Registration.Value] = {
     http.POST[UserRegistration](s"$accountsMicroservice/account/create-new-user", userDetails) map {
-      _.status match {
-        case CREATED => HttpResponse.success
-      }
+      _ => Registration.success
     } recover {
-      case _ => HttpResponse.failed
+      case _ => Registration.failed
     }
   }
 
-  def createNewOrgUser(orgUserDetails: OrgRegistration)(implicit request: Request[_]): Future[HttpResponse.Value] = {
+  def createNewOrgUser(orgUserDetails: OrgRegistration)(implicit request: Request[_]): Future[Registration.Value] = {
     http.POST[OrgRegistration](s"$accountsMicroservice/account/create-new-org-user", orgUserDetails) map {
-      _.status match {
-        case CREATED => HttpResponse.success
-      }
+      _ => Registration.success
     } recover {
-      case _ => HttpResponse.failed
+      case _ => Registration.failed
     }
   }
 
   def checkUserName(username : String)(implicit request: Request[_]) : Future[Boolean] = {
-    val encUsername = DataSecurity.encryptString(username).get
+    val encUsername = DataSecurity.encryptString(username)
     http.HEAD(s"$accountsMicroservice/validate/user-name/$encUsername") map {
       _.status match {
         case OK => false
@@ -176,7 +172,7 @@ class AccountsMicroserviceConnector @Inject()(http: Http) extends ApplicationCon
   }
 
   def checkEmailAddress(email : String)(implicit request: Request[_]) : Future[Boolean] = {
-    val encEmailAddress = DataSecurity.encryptString(email).get
+    val encEmailAddress = DataSecurity.encryptString(email)
     http.HEAD(s"$accountsMicroservice/validate/email/$encEmailAddress") map {
       _.status match {
         case OK => false

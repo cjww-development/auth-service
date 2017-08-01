@@ -22,10 +22,6 @@ import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 object RegistrationValidation extends CommonValidation {
-
-  private val firstNameRegex  = """^\w[A-Za-z]{0,29}$""".r
-  private val lastNameRegex   = """^\w[A-Za-z-]{0,49}$""".r
-
   def firstNameValidation: Mapping[String] = {
     val firstNameConstraint: Constraint[String] = Constraint("constraints.firstName")({ firstName =>
       val errors = firstName match {

@@ -57,7 +57,7 @@ trait AuthMocks
                              mockHttp : Http,
                              context: AuthContext)(test: Future[Result] => Any) {
     val request = buildRequestWithSession
-    val mockResponse = mockWSResponseWithBody(DataSecurity.encryptType[AuthContext](context).get)
+    val mockResponse = mockWSResponseWithBody(DataSecurity.encryptType[AuthContext](context))
 
     when(mockAuthConnector.getContext(ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(context)))
@@ -72,7 +72,7 @@ trait AuthMocks
                                mockHttp : Http,
                                context : AuthContext)(test: Future[Result] => Any) {
 
-    val mockResponse = mockWSResponseWithBody(DataSecurity.encryptType[AuthContext](context).get)
+    val mockResponse = mockWSResponseWithBody(DataSecurity.encryptType[AuthContext](context))
 
     when(mockAuthConnector.getContext(ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(context)))

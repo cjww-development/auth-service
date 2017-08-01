@@ -1,4 +1,3 @@
-
 @(accType : String)(implicit request : Request[_])
 
 @individual = {
@@ -21,11 +20,11 @@
 }
 
 @individualLogin = {
-    <a class="btn btn-success" href="/account-services/login"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login</a>
+    <a class="btn btn-success" href="@controllers.login.routes.LoginController.show(None)"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login</a>
 }
 
 @organisationLogin = {
-    <a class="btn btn-success" href="/account-services/org-login"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login</a>
+    <a class="btn btn-success" href="@controllers.login.routes.LoginController.show(None)"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login</a>
 }
 
 @main_template(title = "Welcome!") {

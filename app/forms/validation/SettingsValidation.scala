@@ -16,19 +16,14 @@
 
 package forms.validation
 
-import models.accounts.Settings
+import com.cjwwdev.regex.RegexPack
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 class InvalidSettingsException(msg: String) extends Exception(msg)
 
-object SettingsValidation {
-
-  private val hexadecimalColourRegex = """^#(?:[0-9a-fA-F]{3}){1,2}$""".r
-  private val urlRegex = """https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)""".r
-  private val defaultUrl = "/account-services/assets/images/background.jpg"
-
+object SettingsValidation extends RegexPack {
   def displayNameValidation: Mapping[String] = {
     val displayNameConstraint: Constraint[String] = Constraint("constraint.displayName")({ displayName =>
       val errors = displayName match {
@@ -57,9 +52,9 @@ object SettingsValidation {
     val displayImageURLConstraint: Constraint[String] = Constraint("constraint.displayImageURL")({ displayImageURL =>
       val errors = displayImageURL match {
         case `defaultUrl` => Nil
-        case urlRegex() => Nil
-        case "" => Nil
-        case _ => Seq(ValidationError("Enter a valid URL for your background image"))
+        case urlRegex()   => Nil
+        case ""           => Nil
+        case _            => Seq(ValidationError("Enter a valid URL for your background image"))
       }
       if(errors.isEmpty) Valid else Invalid(errors)
     })

@@ -17,14 +17,14 @@
 package forms
 
 import org.scalatestplus.play.PlaySpec
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class NewPasswordFormSpec extends PlaySpec {
   "NewPasswordForm" should {
     "bind fully" when {
       "the form is filled with valid data" in {
         val testNewPasswords = Map(
-          "oldPassword"     -> "testOldPassword",
+          "oldPassword"     -> "testOldPassword123",
           "newPassword"     -> "testPassword123",
           "confirmPassword" -> "testPassword123"
         )
@@ -43,18 +43,17 @@ class NewPasswordFormSpec extends PlaySpec {
         )
 
         val result = NewPasswordForm.form.bind(testNewPasswords)
-        result.errors mustBe List(
-          FormError("oldPassword", List("You have not entered your old password")),
-          FormError("newPassword", List("You have not entered a password")),
-          FormError("confirmPassword", List("You have not confirmed your password"))
-        )
+
+        result.error("oldPassword").get.message mustBe "You have not entered your old password"
+        result.error("newPassword").get.message mustBe "You have not entered your password"
+        result.error("confirmPassword").get.message mustBe "You have not confirmed your password"
       }
     }
 
     "have some errors" when {
       "the passwords don't match" in {
         val testNewPasswords = Map(
-          "oldPassword"     -> "testOldPassword",
+          "oldPassword"     -> "testOldPassword123",
           "newPassword"     -> "testPassword123",
           "confirmPassword" -> "testPassword12"
         )

@@ -19,7 +19,6 @@ package services
 import javax.inject.{Inject, Singleton}
 
 import com.cjwwdev.auth.models.AuthContext
-import com.cjwwdev.logging.Logger
 import connectors.AccountsMicroserviceConnector
 import models.accounts.{BasicDetails, DeversityEnrolment, Settings}
 import models.deversity.{OrgDetails, TeacherDetails}

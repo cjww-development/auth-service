@@ -25,8 +25,9 @@ object UpdatePasswordValidation extends CommonValidation {
   def oldPasswordValidation: Mapping[String] = {
     val passwordCheckConstraint: Constraint[String] = Constraint("constraints.oldPassword")({ password =>
       val errors = password match {
-        case "" => Seq(ValidationError("You have not entered your old password"))
-        case _ => Nil
+        case passwordRegex()  => Nil
+        case ""               => Seq(ValidationError("You have not entered your old password"))
+        case _                => Seq(ValidationError("You have not entered a valid password"))
       }
       if(errors.isEmpty) Valid else Invalid(errors)
     })

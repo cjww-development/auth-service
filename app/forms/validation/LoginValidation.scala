@@ -16,6 +16,7 @@
 
 package forms.validation
 
+import com.cjwwdev.regex.RegexPack
 import play.api.data.Forms.text
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
