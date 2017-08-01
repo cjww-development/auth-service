@@ -57,7 +57,7 @@ class OrgRegisterFormSpec extends PlaySpec {
           FormError("orgUserName", List("You have not entered a valid user name")),
           FormError("location", List("You have not entered a valid location")),
           FormError("orgEmail", List("You have not entered a valid email address")),
-          FormError("password", List("You have not entered a password")),
+          FormError("password", List("You have not entered your password")),
           FormError("confirmPassword", List("You have not confirmed your password"))
         )
       }

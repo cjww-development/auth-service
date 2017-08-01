@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import enums.HttpResponse
+import enums.{HttpResponse, Registration}
 import forms.OrgRegisterForm
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
@@ -39,21 +39,30 @@ class OrgRegisterController @Inject()(messagesApi: MessagesApi,
 
   val authConnector = authConnect
 
-  def show: Action[AnyContent] = unauthenticatedAction.async {
-    implicit potentialUser =>
-      implicit request =>
-        Future.successful(Ok(OrgRegisterView(OrgRegisterForm.orgRegisterForm)))
+  def show: Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(Ok(OrgRegisterView(OrgRegisterForm.orgRegisterForm)))
   }
 
-  def submit: Action[AnyContent] = unauthenticatedAction.async {
-    implicit user =>
-      implicit request =>
-        OrgRegisterForm.orgRegisterForm.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(OrgRegisterView(errors))),
-          valid => userRegister.registerOrg(valid) map {
-            case HttpResponse.success => Ok(RegisterSuccess("organisation"))
-            case HttpResponse.failed  => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
-          }
-        )
+  def submit: Action[AnyContent] = Action.async {
+    implicit request =>
+      OrgRegisterForm.orgRegisterForm.bindFromRequest.fold(
+        errors => Future.successful(BadRequest(OrgRegisterView(errors))),
+        newOrg => userRegister.registerOrg(newOrg) map {
+          case Registration.success       => Ok(RegisterSuccess("organisation"))
+          case Registration.bothInUse     => BadRequest(OrgRegisterView(
+            OrgRegisterForm.orgRegisterForm.fill(newOrg)
+              .withError("orgUserName", messagesApi("cjww.auth.register.generic.userName.inUse"))
+              .withError("orgEmail", messagesApi("cjww.auth.register.generic.email.inUse"))
+          ))
+          case Registration.userNameInUse => BadRequest(OrgRegisterView(
+            OrgRegisterForm.orgRegisterForm.fill(newOrg).withError("orgUserName", messagesApi("cjww.auth.register.generic.userName.inUse"))
+          ))
+          case Registration.emailInUse    => BadRequest(OrgRegisterView(
+            OrgRegisterForm.orgRegisterForm.fill(newOrg).withError("orgEmail", messagesApi("cjww.auth.register.generic.email.inUse"))
+          ))
+          case Registration.failed        => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
+        }
+      )
   }
 }

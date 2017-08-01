@@ -18,19 +18,46 @@ package services
 
 import com.google.inject.{Inject, Singleton}
 import connectors.AccountsMicroserviceConnector
-import enums.HttpResponse
+import enums.{HttpResponse, Registration}
 import models.registration.{OrgRegistration, UserRegistration}
 import play.api.mvc.Request
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
 class RegisterService @Inject()(accountsConnector: AccountsMicroserviceConnector) {
-  def registerIndividual(user : UserRegistration)(implicit request: Request[_]) : Future[HttpResponse.Value] = {
-    accountsConnector.createNewIndividualUser(user)
+
+  def registerIndividual(user : UserRegistration)(implicit request: Request[_]): Future[Registration.Value] = {
+    for {
+      userNameInUse <- accountsConnector.checkUserName(user.userName)
+      emailInUse    <- accountsConnector.checkEmailAddress(user.email)
+      registered    <- if(!userNameInUse & !emailInUse) {
+        accountsConnector.createNewIndividualUser(user)
+      } else {
+        Future.successful(evaluateInUseResponses(userNameInUse, emailInUse))
+      }
+    } yield registered
   }
 
-  def registerOrg(org: OrgRegistration)(implicit request: Request[_]): Future[HttpResponse.Value] = {
-    accountsConnector.createNewOrgUser(org)
+  def registerOrg(org: OrgRegistration)(implicit request: Request[_]): Future[Registration.Value] = {
+    for {
+      userNameInUse <- accountsConnector.checkUserName(org.orgUserName)
+      emailInUse    <- accountsConnector.checkEmailAddress(org.orgEmail)
+      registered    <- if(!userNameInUse & !emailInUse) {
+        accountsConnector.createNewOrgUser(org)
+      } else {
+        Future.successful(evaluateInUseResponses(userNameInUse, emailInUse))
+      }
+    } yield registered
+  }
+
+  private def evaluateInUseResponses(inUse: (Boolean, Boolean)): Registration.Value = {
+    inUse match {
+      case (true, true)   => Registration.bothInUse
+      case (false, true)  => Registration.emailInUse
+      case (true, false)  => Registration.userNameInUse
+      case _              => Registration.failed
+    }
   }
 }

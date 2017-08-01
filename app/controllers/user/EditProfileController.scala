@@ -21,14 +21,13 @@ import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import com.cjwwdev.logging.Logger
 import config.{InvalidOldPassword, PasswordUpdated}
 import connectors.AccountsMicroserviceConnector
 import enums.HttpResponse
 import forms.{NewPasswordForm, SettingsForm, UserProfileForm}
-import models.accounts.Settings
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
+import play.api.Logger
 import services.{EditProfileService, FeedService}
 import utils.application.FrontendController
 import views.html.user.EditProfile

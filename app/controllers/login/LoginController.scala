@@ -37,26 +37,24 @@ class LoginController @Inject()(messagesApi: MessagesApi, userLogin : LoginServi
 
   val authConnector = authConnect
 
-  def show(redirect : Option[String]) : Action[AnyContent] = unauthenticatedAction.async {
-    implicit user =>
-      implicit request =>
-        Future.successful(Ok(UserLoginView(UserLoginForm.loginForm)))
+  def show(redirect : Option[String]) : Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(Ok(UserLoginView(UserLoginForm.loginForm)))
   }
 
-  def submit : Action[AnyContent] = unauthenticatedAction.async {
-    implicit user =>
-      implicit request =>
-        UserLoginForm.loginForm.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(UserLoginView(errors))),
-          valid => userLogin.processLoginAttempt(valid) map {
-            case Some(session) => Redirect(urlParser.serviceDirector).withSession(session)
-            case None => Ok(
-              UserLoginView(
-                UserLoginForm.loginForm.fill(valid).withError("userName", messagesApi("cjww.auth.login.error.invalid")).withError("password", "")
-              )
+  def submit : Action[AnyContent] = Action.async {
+    implicit request =>
+      UserLoginForm.loginForm.bindFromRequest.fold(
+        errors => Future.successful(BadRequest(UserLoginView(errors))),
+        valid => userLogin.processLoginAttempt(valid) map {
+          case Some(session) => Redirect(urlParser.serviceDirector).withSession(session)
+          case None => Ok(
+            UserLoginView(
+              UserLoginForm.loginForm.fill(valid).withError("userName", messagesApi("cjww.auth.login.error.invalid")).withError("password", "")
             )
-          }
-        )
+          )
+        }
+      )
   }
 
   def signOut : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {

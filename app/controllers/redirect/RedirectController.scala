@@ -38,21 +38,18 @@ class RedirectController @Inject()(implicit authConnect: AuthConnector) extends 
         Future.successful(Ok(ServiceSelector()))
   }
 
-  def redirectToDeversity: Action[AnyContent] = unauthenticatedAction.async {
-    implicit user =>
-      implicit request =>
-        Future.successful(Redirect(deversityFrontend))
+  def redirectToDeversity: Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(Redirect(deversityFrontend))
   }
 
-  def redirectToDiagnostics: Action[AnyContent] = unauthenticatedAction.async {
-    implicit user =>
-      implicit request =>
-        Future.successful(Redirect(diagnosticsFrontend))
+  def redirectToDiagnostics: Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(Redirect(diagnosticsFrontend))
   }
 
-  def redirectToHub: Action[AnyContent] = unauthenticatedAction.async {
-    implicit user =>
-      implicit request =>
-        Future.successful(Redirect(hubFrontend))
+  def redirectToHub: Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(Redirect(hubFrontend))
   }
 }

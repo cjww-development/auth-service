@@ -54,7 +54,7 @@ class UserRegisterFormSpec extends PlaySpec {
           FormError("lastName", List("You have not entered a valid last name")),
           FormError("userName", List("You have not entered a valid user name")),
           FormError("email", List("You have not entered a valid email address")),
-          FormError("password", List("You have not entered a password")),
+          FormError("password", List("You have not entered your password")),
           FormError("confirmPassword", List("You have not confirmed your password"))
         )
       }

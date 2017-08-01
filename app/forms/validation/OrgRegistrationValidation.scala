@@ -22,11 +22,6 @@ import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 object OrgRegistrationValidation extends CommonValidation {
-
-  private val initialsRegex = """^[A-Z]{1,5}$""".r
-  private val locationRegex = """^\w[A-Za-z-]{0,49}$""".r
-  private val orgNameRegex  = """^\w[A-Za-z-]{0,49}$""".r
-
   def orgNameValidation: Mapping[String] = {
     val orgNameConstraint: Constraint[String] = Constraint("constraints.orgName")({ orgName =>
       val errors = orgName match {

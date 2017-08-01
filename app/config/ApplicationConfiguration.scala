@@ -16,7 +16,7 @@
 
 package config
 
-import com.cjwwdev.bootstrap.config.BaseConfiguration
+import com.cjwwdev.config.BaseConfiguration
 import com.google.inject.Singleton
 
 trait ApplicationConfiguration extends BaseConfiguration {

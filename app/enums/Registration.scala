@@ -14,8 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config
+package enums
 
-import scala.util.control.NoStackTrace
-
-class MissingBasicDetailsException(msg: String) extends Exception
+object Registration extends Enumeration {
+  val success       = Value
+  val userNameInUse = Value
+  val emailInUse    = Value
+  val bothInUse     = Value
+  val failed        = Value
+}

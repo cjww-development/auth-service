@@ -30,7 +30,7 @@ import scala.concurrent.Future
 @Singleton
 class AuthMicroserviceConnector @Inject()(http: Http) extends ApplicationConfiguration {
   def getUser(loginDetails : UserLogin)(implicit request: Request[_]) : Future[AuthContext] = {
-    val enc = DataSecurity.encryptType[UserLogin](loginDetails).get
+    val enc = DataSecurity.encryptType[UserLogin](loginDetails)
     http.GET[AuthContext](s"$authMicroservice/login/user?enc=$enc") recover {
       case e: ForbiddenException => throw e
     }

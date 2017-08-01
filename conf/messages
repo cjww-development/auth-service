@@ -11,7 +11,9 @@ cjww.auth.update.password.old.invalid                   =You have not entered yo
 
 #Registration validation messages
 cjww.auth.register.generic.userName.invalid             =You have not entered a valid user name
+cjww.auth.register.generic.userName.inUse               =You cannot have this user name
 cjww.auth.register.generic.email.invalid                =You have not entered a valid email address
+cjww.auth.register.generic.email.inUse                  =You cannot use this email address
 cjww.auth.register.generic.password.invalid             =You have not entered a password
 cjww.auth.register.generic.confirmPassword.invalid      =You have not confirmed your password
 cjww.auth.register.generic.password.match               =The passwords you have entered don''t match
