@@ -23,6 +23,7 @@ import connectors.AccountsMicroserviceConnector
 import models.accounts.{BasicDetails, DeversityEnrolment, Settings}
 import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.FeedItem
+import play.api.Logger
 import play.api.mvc.Request
 
 import scala.concurrent.Future
@@ -77,6 +78,14 @@ class DashboardService @Inject()(accountConnector: AccountsMicroserviceConnector
   }
 
   def getTeacherList(implicit authContext: AuthContext, request: Request[_]): Future[List[TeacherDetails]] = {
-    accountConnector.getTeacherList
+    accountConnector.getTeacherList map {
+      list =>
+        Logger.debug(s"LIST SIZE => ${list.size}")
+        list
+    }
+  }
+
+  def getPendingEnrolmentCount(implicit authContext: AuthContext, request: Request[_]): Future[Int] = {
+    accountConnector.getPendingEnrolmentCount map(_.\("pendingCount").as[Int])
   }
 }
