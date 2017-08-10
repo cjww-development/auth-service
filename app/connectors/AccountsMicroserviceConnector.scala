@@ -29,7 +29,7 @@ import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.FeedItem
 import models.registration.{OrgRegistration, UserRegistration}
 import play.api.http.Status._
-import play.api.libs.json.{JsArray, JsObject}
+import play.api.libs.json.{JsArray, JsObject, JsValue}
 import play.api.mvc.Request
 import play.api.Logger
 
@@ -180,5 +180,9 @@ class AccountsMicroserviceConnector @Inject()(http: Http) extends ApplicationCon
     } recover {
       case _: ConflictException => true
     }
+  }
+
+  def getPendingEnrolmentCount(implicit authContext: AuthContext, request: Request[_]): Future[JsValue] = {
+    http.GET[JsValue](s"$accountsMicroservice/account/${authContext.user.userId}/pending-deversity-enrolments")
   }
 }

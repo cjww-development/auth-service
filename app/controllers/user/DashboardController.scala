@@ -41,7 +41,8 @@ class DashboardController @Inject()(messagesApi: MessagesApi,
           case "organisation" => for {
             Some(basicDetails)  <- dashboardService.getOrgBasicDetails
             teacherList         <- dashboardService.getTeacherList
-          } yield Ok(OrgDashboard(basicDetails, teacherList))
+            pendingCount        <- dashboardService.getPendingEnrolmentCount
+          } yield Ok(OrgDashboard(basicDetails, teacherList, pendingCount))
           case "individual" => for {
             basicDetails        <- dashboardService.getBasicDetails
             settings            <- dashboardService.getSettings
