@@ -16,6 +16,7 @@
 
 package connectors
 
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions.{ForbiddenException, NotFoundException, ServerErrorException}
 import com.cjwwdev.http.utils.SessionUtils
 import com.google.inject.{Inject, Singleton}
@@ -31,7 +32,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class SessionStoreConnector @Inject()(http : Http) extends ApplicationConfiguration with SessionUtils {
+class SessionStoreConnector @Inject()(http : Http, val config: ConfigurationLoader) extends ApplicationConfiguration with SessionUtils {
   def cache[T](sessionId : String, data : T)(implicit writes: OWrites[T], request: Request[_]) : Future[SessionCache.Value] = {
     http.POST[T](s"$sessionStore/session/$sessionId/cache", data) map {
       _.status match {

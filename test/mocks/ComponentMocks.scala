@@ -17,6 +17,7 @@
 
 package mocks
 
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.verbs.Http
 import connectors.SessionStoreConnector
 import org.scalatest.mockito.MockitoSugar
@@ -31,6 +32,7 @@ trait ComponentMocks {
   val mockFeedEventService : FeedService = mock[FeedService]
   val mockHttpVerbs : Http = mock[Http]
   val mockLoginService : LoginService = mock[LoginService]
+  val mockConfig = mock[ConfigurationLoader]
 
   def resetMocks() : Unit = {
     reset(mockSessionStoreConnector)

@@ -21,8 +21,9 @@ import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
+import com.cjwwdev.config.ConfigurationLoader
 import com.google.inject.Singleton
-import enums.{HttpResponse, Registration}
+import enums.Registration
 import forms.UserRegisterForm
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
@@ -37,9 +38,8 @@ import scala.concurrent.Future
 @Singleton
 class UserRegisterController @Inject()(messagesApi: MessagesApi,
                                        userRegister : RegisterService,
-                                       authConnect: AuthConnector) extends FrontendController with Actions {
-
-  val authConnector = authConnect
+                                       val authConnector: AuthConnector,
+                                       val config: ConfigurationLoader) extends FrontendController with Actions {
 
   def show : Action[AnyContent] = Action.async {
     implicit request =>

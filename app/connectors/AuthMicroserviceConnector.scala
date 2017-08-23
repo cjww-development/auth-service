@@ -16,6 +16,7 @@
 package connectors
 
 import com.cjwwdev.auth.models.AuthContext
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions.ForbiddenException
 import com.cjwwdev.http.verbs.Http
 import com.google.inject.{Inject, Singleton}
@@ -28,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class AuthMicroserviceConnector @Inject()(http: Http) extends ApplicationConfiguration {
+class AuthMicroserviceConnector @Inject()(http: Http, val config: ConfigurationLoader) extends ApplicationConfiguration {
   def getUser(loginDetails : UserLogin)(implicit request: Request[_]) : Future[AuthContext] = {
     val enc = DataSecurity.encryptType[UserLogin](loginDetails)
     http.GET[AuthContext](s"$authMicroservice/login/user?enc=$enc") recover {

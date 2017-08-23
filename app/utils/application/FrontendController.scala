@@ -20,11 +20,7 @@ package utils.application
 import com.cjwwdev.auth.models.AuthContext
 import config.ApplicationConfiguration
 import play.api.mvc.Controller
-import utils.url.UrlParser
 
 trait FrontendController extends Controller with ApplicationConfiguration {
-
-  val urlParser = new UrlParser
-
   implicit def optionUser(implicit user : AuthContext) : Option[AuthContext] = Some(user)
 }

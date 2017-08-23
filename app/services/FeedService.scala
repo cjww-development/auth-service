@@ -17,6 +17,7 @@
 package services
 
 import com.cjwwdev.auth.models.AuthContext
+import com.cjwwdev.config.ConfigurationLoader
 import com.google.inject.{Inject, Singleton}
 import config.ApplicationConfiguration
 import connectors.AccountsMicroserviceConnector
@@ -28,7 +29,10 @@ import play.api.mvc.Request
 import scala.concurrent.Future
 
 @Singleton
-class FeedService @Inject()(accountConnector: AccountsMicroserviceConnector) extends ApplicationConfiguration {
+class FeedService @Inject()(accountConnector: AccountsMicroserviceConnector,
+                            val config: ConfigurationLoader) extends ApplicationConfiguration {
+
+  private val appName = config.loadedConfig.underlying.getString("appName")
 
   private[services] def buildFeedItem(location : String, desc : String)(implicit authContext : AuthContext) : FeedItem = {
     FeedItem(

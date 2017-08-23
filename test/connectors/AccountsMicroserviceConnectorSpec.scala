@@ -32,7 +32,7 @@ class AccountsMicroserviceConnectorSpec extends CJWWSpec {
 
   class Setup {
     implicit val request = FakeRequest()
-    val testConnector = new AccountsMicroserviceConnector(mockHttpVerbs)
+    val testConnector = new AccountsMicroserviceConnector(mockHttpVerbs, mockConfig)
   }
 
   "updateProfile" should {

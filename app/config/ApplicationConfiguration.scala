@@ -16,10 +16,12 @@
 
 package config
 
-import com.cjwwdev.config.BaseConfiguration
-import com.google.inject.Singleton
+import com.cjwwdev.config.ConfigurationLoader
 
-trait ApplicationConfiguration extends BaseConfiguration {
+trait ApplicationConfiguration {
+
+  val config: ConfigurationLoader
+
   //FeedServiceConfig
   val EDIT_PROFILE              = "edit-profile"
   val TITLE                     = "Your profile has been updated"
@@ -27,10 +29,10 @@ trait ApplicationConfiguration extends BaseConfiguration {
   val LOGIN_CALLBACK            = controllers.login.routes.LoginController.show(None)
 
   //routes
-  val accountsMicroservice      = config.getString(s"$env.routes.accounts-microservice")
-  val authMicroservice          = config.getString(s"$env.routes.auth-microservice")
-  val sessionStore              = config.getString(s"$env.routes.session-store")
-  val diagnosticsFrontend       = config.getString(s"$env.routes.diagnostics-frontend")
-  val deversityFrontend         = config.getString(s"$env.routes.deversity-frontend")
-  val hubFrontend               = config.getString(s"$env.routes.hub-frontend")
+  val accountsMicroservice      = config.buildServiceUrl("accounts-microservice")
+  val authMicroservice          = config.buildServiceUrl("auth-microservice")
+  val sessionStore              = config.buildServiceUrl("session-store")
+  val diagnosticsFrontend       = config.buildServiceUrl("diagnostics-frontend")
+  val deversityFrontend         = config.buildServiceUrl("deversity-frontend")
+  val hubFrontend               = config.buildServiceUrl("hub-frontend")
 }

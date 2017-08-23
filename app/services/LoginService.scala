@@ -56,7 +56,7 @@ class LoginService @Inject()(userLogin: AuthMicroserviceConnector, sessionStoreC
     userLogin.getUser(credentials) flatMap { context =>
       val session = Session(sessionMap(context))
       sessionStoreConnector.cache[AuthContext](session("cookieId"), context) map {
-        case SessionCache.cached       => Some(session)
+        case SessionCache.cached => Some(session)
       } recover {
         case e: Throwable => throw e
       }

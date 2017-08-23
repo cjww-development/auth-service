@@ -20,7 +20,8 @@ import javax.inject.{Inject, Singleton}
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import enums.{HttpResponse, Registration}
+import com.cjwwdev.config.ConfigurationLoader
+import enums.Registration
 import forms.OrgRegisterForm
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
@@ -35,9 +36,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Singleton
 class OrgRegisterController @Inject()(messagesApi: MessagesApi,
                                       userRegister : RegisterService,
-                                      authConnect: AuthConnector) extends FrontendController with Actions {
-
-  val authConnector = authConnect
+                                      val authConnector: AuthConnector,
+                                      val config: ConfigurationLoader) extends FrontendController with Actions {
 
   def show: Action[AnyContent] = Action.async {
     implicit request =>

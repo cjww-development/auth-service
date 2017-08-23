@@ -19,6 +19,7 @@ import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
+import com.cjwwdev.config.ConfigurationLoader
 import com.google.inject.Singleton
 import connectors.SessionStoreConnector
 import forms.UserLoginForm
@@ -26,16 +27,19 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.LoginService
 import utils.application.FrontendController
+import utils.url.UrlParser
 import views.html.login.UserLoginView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class LoginController @Inject()(messagesApi: MessagesApi, userLogin : LoginService,
-                                sessionStoreConnector: SessionStoreConnector, authConnect: AuthConnector) extends FrontendController with Actions {
-
-  val authConnector = authConnect
+class LoginController @Inject()(messagesApi: MessagesApi,
+                                userLogin : LoginService,
+                                sessionStoreConnector: SessionStoreConnector,
+                                urlParser: UrlParser,
+                                val authConnector: AuthConnector,
+                                val config: ConfigurationLoader) extends FrontendController with Actions {
 
   def show(redirect : Option[String]) : Action[AnyContent] = Action.async {
     implicit request =>

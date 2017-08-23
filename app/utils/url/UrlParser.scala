@@ -16,21 +16,22 @@
 
 package utils.url
 
+import com.cjwwdev.config.ConfigurationLoader
 import com.google.inject.{Inject, Singleton}
 import config.ApplicationConfiguration
 import play.api.Logger
 import play.api.mvc.Request
 
 @Singleton
-class UrlParser @Inject()() extends ApplicationConfiguration{
+class UrlParser @Inject()(val config: ConfigurationLoader) extends ApplicationConfiguration {
 
   def serviceDirector(implicit request: Request[_]) : String = {
-    Logger.info(s"[UrlParse] - [serviceDirector] ${request.getQueryString("redirect").getOrElse("Redirecting to service selector")}")
+    Logger.info(s"[UrlParser] - [serviceDirector] ${request.getQueryString("redirect").getOrElse("Redirecting to service selector")}")
     request.getQueryString("redirect") match {
       case Some("diagnostics") => diagnosticsFrontend
-      case Some("deversity") => deversityFrontend
-      case Some("hub") => hubFrontend
-      case _ => controllers.redirect.routes.RedirectController.chooseService().url
+      case Some("deversity")   => deversityFrontend
+      case Some("hub")         => hubFrontend
+      case _                   => controllers.redirect.routes.RedirectController.chooseService().url
     }
   }
 }

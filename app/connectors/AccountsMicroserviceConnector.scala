@@ -18,6 +18,7 @@ package connectors
 import javax.inject.{Inject, Singleton}
 
 import com.cjwwdev.auth.models.AuthContext
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions.{ClientErrorException, ConflictException, HttpDecryptionException, NotFoundException, ServerErrorException}
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.security.encryption.DataSecurity
@@ -31,13 +32,12 @@ import models.registration.{OrgRegistration, UserRegistration}
 import play.api.http.Status._
 import play.api.libs.json.{JsArray, JsObject, JsValue}
 import play.api.mvc.Request
-import play.api.Logger
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
-class AccountsMicroserviceConnector @Inject()(http: Http) extends ApplicationConfiguration {
+class AccountsMicroserviceConnector @Inject()(http: Http, val config: ConfigurationLoader) extends ApplicationConfiguration {
   def updateProfile(userProfile: UserProfile)(implicit auth: AuthContext, request: Request[_]) : Future[HttpResponse.Value] = {
     http.PATCH[UserProfile](s"$accountsMicroservice/account/${auth.user.userId}/update-profile", userProfile) map {
       _.status match {
