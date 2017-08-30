@@ -33,12 +33,13 @@ import scala.concurrent.Future
 
 @Singleton
 class LoginService @Inject()(userLogin: AuthMicroserviceConnector, sessionStoreConnector: SessionStoreConnector) {
+
   private def sessionMap(context: AuthContext): Map[String, String] = {
     context.user.credentialType match {
       case "organisation" => Map(
         "cookieId"        -> s"session-${UUID.randomUUID()}",
         "contextId"       -> context.contextId,
-        "orgName"       -> context.user.orgName.get,
+        "orgName"         -> context.user.orgName.get,
         "credentialType"  -> context.user.credentialType
       )
       case "individual" => Map(

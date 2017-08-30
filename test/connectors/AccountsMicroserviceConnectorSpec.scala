@@ -21,6 +21,7 @@ import config.{InvalidOldPassword, PasswordUpdated}
 import enums.HttpResponse
 import mocks.CJWWSpec
 import models.accounts.{PasswordSet, Settings, UserProfile}
+import models.feed.FeedItem
 import org.mockito.Mockito.when
 import org.mockito.ArgumentMatchers
 import play.api.test.FakeRequest
@@ -39,7 +40,7 @@ class AccountsMicroserviceConnectorSpec extends CJWWSpec {
     "return a HttpResponse success" when {
       "a users profile has been successfully updated" in new Setup {
         when(mockHttpVerbs.PATCH[UserProfile](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(fakeHttpResponse(OK, "")))
+          .thenReturn(Future.successful(fakeHttpResponse(OK)))
 
         val result = await(testConnector.updateProfile(testProfile))
         result mustBe HttpResponse.success
@@ -61,7 +62,7 @@ class AccountsMicroserviceConnectorSpec extends CJWWSpec {
     "return a PasswordUpdated" when {
       "the users passwords has been updated" in new Setup {
         when(mockHttpVerbs.PATCH[PasswordSet](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(fakeHttpResponse(OK, "")))
+          .thenReturn(Future.successful(fakeHttpResponse(OK)))
 
         val result = await(testConnector.updatePassword(testPasswordSet))
         result mustBe PasswordUpdated
@@ -83,7 +84,7 @@ class AccountsMicroserviceConnectorSpec extends CJWWSpec {
     "return a HttpResponse success" when {
       "the users settings have been updated" in new Setup {
         when(mockHttpVerbs.PATCH[Settings](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(fakeHttpResponse(OK, "")))
+          .thenReturn(Future.successful(fakeHttpResponse(OK)))
 
         val result = await(testConnector.updateSettings(testSettings))
         result mustBe HttpResponse.success
@@ -98,6 +99,16 @@ class AccountsMicroserviceConnectorSpec extends CJWWSpec {
         val result = await(testConnector.updateSettings(testSettings))
         result mustBe HttpResponse.failed
       }
+    }
+  }
+
+  "createFeedItem" should {
+    "return a successful http response" in new Setup {
+      when(mockHttpVerbs.POST[FeedItem](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(fakeHttpResponse(OK)))
+
+      val result = await(testConnector.createFeedItem(testFeedItem))
+      result mustBe HttpResponse.success
     }
   }
 }

@@ -40,7 +40,7 @@ trait MockResponse extends MockitoSugar{
     m
   }
 
-  def fakeHttpResponse(statusCode: Int, bodyContents: String): WSResponse = new WSResponse {
+  def fakeHttpResponse(statusCode: Int, bodyContents: String = ""): WSResponse = new WSResponse {
     override def cookie(name: String): Option[WSCookie] = ???
     override def underlying[T]: T = ???
     override def body: String = bodyContents
