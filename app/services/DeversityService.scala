@@ -13,21 +13,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package services
 
-package models.deversity
+import javax.inject.{Inject, Singleton}
 
-import com.cjwwdev.json.JsonFormats
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
+import connectors.AccountsMicroserviceConnector
 
-case class TeacherDetails(userId: String, title: String, lastName: String, room: String, status: String)
+@Singleton
+class DeversityService @Inject()(accountsMicroserviceConnector: AccountsMicroserviceConnector) {
 
-object TeacherDetails extends JsonFormats[TeacherDetails] {
-  override implicit val standardFormat: OFormat[TeacherDetails] = (
-    (__ \ "userId").format[String] and
-    (__ \ "title").format[String] and
-    (__ \ "lastName").format[String] and
-    (__ \ "room").format[String] and
-    (__ \ "status").format[String]
-  )(TeacherDetails.apply, unlift(TeacherDetails.unapply))
 }

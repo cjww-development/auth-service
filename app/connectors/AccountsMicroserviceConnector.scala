@@ -39,7 +39,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Singleton
 class AccountsMicroserviceConnector @Inject()(http: Http, val config: ConfigurationLoader) extends ApplicationConfiguration {
   def updateProfile(userProfile: UserProfile)(implicit auth: AuthContext, request: Request[_]) : Future[HttpResponse.Value] = {
-    http.PATCH[UserProfile](s"$accountsMicroservice/account/${auth.user.userId}/update-profile", userProfile) map {
+    http.PATCH[UserProfile](s"$accountsMicroservice/account/${auth.user.id}/update-profile", userProfile) map {
       _.status match {
         case OK => HttpResponse.success
       }
@@ -49,7 +49,7 @@ class AccountsMicroserviceConnector @Inject()(http: Http, val config: Configurat
   }
 
   def updatePassword(passwordSet: PasswordSet)(implicit auth: AuthContext, request: Request[_]): Future[UpdatedPasswordResponse] = {
-    http.PATCH[PasswordSet](s"$accountsMicroservice/account/${auth.user.userId}/update-password", passwordSet) map {
+    http.PATCH[PasswordSet](s"$accountsMicroservice/account/${auth.user.id}/update-password", passwordSet) map {
       _.status match {
         case OK => PasswordUpdated
       }
@@ -59,7 +59,7 @@ class AccountsMicroserviceConnector @Inject()(http: Http, val config: Configurat
   }
 
   def updateSettings(settings: Settings)(implicit auth: AuthContext, request: Request[_]): Future[HttpResponse.Value] = {
-    http.PATCH[Settings](s"$accountsMicroservice/account/${auth.user.userId}/update-settings", settings) map { resp =>
+    http.PATCH[Settings](s"$accountsMicroservice/account/${auth.user.id}/update-settings", settings) map { resp =>
       resp.status match {
         case OK => HttpResponse.success
       }
@@ -77,7 +77,7 @@ class AccountsMicroserviceConnector @Inject()(http: Http, val config: Configurat
   }
 
   def getFeedItems(implicit auth: AuthContext, request: Request[_]) : Future[Option[List[FeedItem]]] = {
-    http.GET[JsObject](s"$accountsMicroservice/account/${auth.user.userId}/get-user-feed") map {
+    http.GET[JsObject](s"$accountsMicroservice/account/${auth.user.id}/get-user-feed") map {
       jsObj => Some(jsObj.value("feed-array").as[JsArray].as[List[FeedItem]])
     } recover {
       case _: HttpDecryptionException => None
@@ -87,7 +87,7 @@ class AccountsMicroserviceConnector @Inject()(http: Http, val config: Configurat
 
   def getBasicDetails(implicit auth: AuthContext, request: Request[_]) : Future[BasicDetails] = {
     http.GET[BasicDetails](s"$accountsMicroservice${auth.basicDetailsUri}") recover {
-      case _: ClientErrorException => throw new MissingBasicDetailsException(s"No basic details were found for user ${auth.user.userId}")
+      case _: ClientErrorException => throw new MissingBasicDetailsException(s"No basic details were found for user ${auth.user.id}")
     }
   }
 
@@ -105,35 +105,8 @@ class AccountsMicroserviceConnector @Inject()(http: Http, val config: Configurat
     }
   }
 
-  def getDeversityEnrolment(implicit authContext: AuthContext, request: Request[_]): Future[Option[DeversityEnrolment]] = {
-    http.GET[DeversityEnrolment](s"$accountsMicroservice/account/${authContext.user.userId}/deversity-info") map { devEnr =>
-      Some(devEnr)
-    } recover {
-      case _: NotFoundException => None
-    }
-  }
-
-  def getSchoolInfo(school: String)(implicit authContext: AuthContext, request: Request[_]): Future[Option[OrgDetails]] = {
-    val schoolEnc = DataSecurity.encryptString(school)
-    http.GET[OrgDetails](s"$accountsMicroservice/school/$schoolEnc/details") map {
-      orgDeets => Some(orgDeets)
-    } recover {
-      case _: NotFoundException => None
-    }
-  }
-
-  def getTeacherInfo(teacher: String, school: String)(implicit authContext: AuthContext, request: Request[_]): Future[Option[TeacherDetails]] = {
-    val teacherEnc  = DataSecurity.encryptString(teacher)
-    val schoolEnc   = DataSecurity.encryptString(school)
-    http.GET[TeacherDetails](s"$accountsMicroservice/teacher/$teacherEnc/school/$schoolEnc/details") map {
-      teacherDeets => Some(teacherDeets)
-    } recover {
-      case _: NotFoundException => None
-    }
-  }
-
   def getOrgBasicDetails(implicit authContext: AuthContext, request: Request[_]): Future[Option[OrgDetails]] = {
-    http.GET[OrgDetails](s"$accountsMicroservice/account/${authContext.user.userId}/org-basic-details") map {
+    http.GET[OrgDetails](s"$accountsMicroservice/account/${authContext.user.id}/org-basic-details") map {
       orgDeets => Some(orgDeets)
     } recover {
       case _: NotFoundException => None
@@ -141,7 +114,7 @@ class AccountsMicroserviceConnector @Inject()(http: Http, val config: Configurat
   }
 
   def getTeacherList(implicit authContext: AuthContext, request: Request[_]): Future[List[TeacherDetails]] = {
-    http.GET[List[TeacherDetails]](s"$accountsMicroservice/account/${authContext.user.userId}/teachers")
+    http.GET[List[TeacherDetails]](s"$accountsMicroservice/account/${authContext.user.id}/teachers")
   }
 
   def createNewIndividualUser(userDetails : UserRegistration)(implicit request: Request[_]) : Future[Registration.Value] = {
@@ -180,9 +153,5 @@ class AccountsMicroserviceConnector @Inject()(http: Http, val config: Configurat
     } recover {
       case _: ConflictException => true
     }
-  }
-
-  def getPendingEnrolmentCount(implicit authContext: AuthContext, request: Request[_]): Future[JsValue] = {
-    http.GET[JsValue](s"$accountsMicroservice/account/${authContext.user.userId}/pending-deversity-enrolments")
   }
 }

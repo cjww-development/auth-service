@@ -34,5 +34,6 @@ trait ApplicationConfiguration {
   val sessionStore              = config.buildServiceUrl("session-store")
   val diagnosticsFrontend       = config.buildServiceUrl("diagnostics-frontend")
   val deversityFrontend         = config.buildServiceUrl("deversity-frontend")
+  val deversityMicroservice     = config.buildServiceUrl("deversity")
   val hubFrontend               = config.buildServiceUrl("hub-frontend")
 }

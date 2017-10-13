@@ -36,7 +36,7 @@ class FeedService @Inject()(accountConnector: AccountsMicroserviceConnector,
 
   private[services] def buildFeedItem(location : String, desc : String)(implicit authContext : AuthContext) : FeedItem = {
     FeedItem(
-      authContext.user.userId,
+      authContext.user.id,
       SourceDetail(appName, location),
       EventDetail(TITLE, desc),
       DateTime.now

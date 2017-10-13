@@ -19,7 +19,7 @@ package services
 import javax.inject.{Inject, Singleton}
 
 import com.cjwwdev.auth.models.AuthContext
-import connectors.AccountsMicroserviceConnector
+import connectors.{AccountsMicroserviceConnector, DeversityMicroserviceConnector}
 import models.accounts.{BasicDetails, DeversityEnrolment, Settings}
 import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.FeedItem
@@ -30,7 +30,9 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
-class DashboardService @Inject()(accountConnector: AccountsMicroserviceConnector, feedService: FeedService) {
+class DashboardService @Inject()(accountConnector: AccountsMicroserviceConnector,
+                                 deversityConnector: DeversityMicroserviceConnector,
+                                 feedService: FeedService) {
 
   def getBasicDetails(implicit authContext: AuthContext, request: Request[_]): Future[BasicDetails] = {
     accountConnector.getBasicDetails
@@ -53,39 +55,41 @@ class DashboardService @Inject()(accountConnector: AccountsMicroserviceConnector
 
   def getDeversityEnrolment(implicit authContext: AuthContext, request: Request[_]): Future[Option[DeversityEnrolment]] = {
     for {
-      enrolment <- accountConnector.getDeversityEnrolment
+      enrolment <- deversityConnector.getDeversityEnrolment
       school    <- enrolment match {
-        case Some(enr) => accountConnector.getSchoolInfo(enr.schoolName)
-        case None => Future.successful(None)
+        case Some(enr) => deversityConnector.getSchoolInfo(enr.schoolName)
+        case None      => Future.successful(None)
       }
       teacher   <- enrolment match {
         case Some(enr) => enr.role match {
-          case "student" => accountConnector.getTeacherInfo(enr.teacher.get, enr.schoolName)
-          case _ => Future.successful(None)
+          case "student" => deversityConnector.getTeacherInfo(enr.teacher.get, enr.schoolName)
+          case _         => Future.successful(None)
         }
         case None => Future.successful(None)
       }
     } yield {
       enrolment match {
-        case Some(enr) => Some(enr.copy(schoolName = school.get.orgName, teacher = concatTeacherName(teacher)))
+        case Some(enr) => Some(
+          enr.copy(schoolName = school.get.orgName, teacher = concatTeacherName(teacher))
+        )
         case None => None
       }
     }
   }
+
+//  def getDeversityEnrolmentForConfirmation(userId: String)(implicit authContext: AuthContext, request: Request[_]): Future[DeversityEnrolment] = {
+//
+//  }
 
   def getOrgBasicDetails(implicit authContext: AuthContext, request: Request[_]): Future[Option[OrgDetails]] = {
     accountConnector.getOrgBasicDetails
   }
 
   def getTeacherList(implicit authContext: AuthContext, request: Request[_]): Future[List[TeacherDetails]] = {
-    accountConnector.getTeacherList map {
-      list =>
-        Logger.debug(s"LIST SIZE => ${list.size}")
-        list
-    }
+    accountConnector.getTeacherList
   }
 
   def getPendingEnrolmentCount(implicit authContext: AuthContext, request: Request[_]): Future[Int] = {
-    accountConnector.getPendingEnrolmentCount map(_.\("pendingCount").as[Int])
+    deversityConnector.getPendingEnrolmentCount map(_.\("pendingCount").as[Int])
   }
 }

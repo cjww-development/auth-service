@@ -50,7 +50,7 @@ class AccountsMicroserviceConnectorSpec extends CJWWSpec {
     "return a HttpResponse failed" when {
       "there was a problem updating the users profile" in new Setup {
         when(mockHttpVerbs.PATCH[UserProfile](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.failed(new ServerErrorException("test message")))
+          .thenReturn(Future.failed(new ServerErrorException("test message", 500)))
 
         val result = await(testConnector.updateProfile(testProfile))
         result mustBe HttpResponse.failed
@@ -94,7 +94,7 @@ class AccountsMicroserviceConnectorSpec extends CJWWSpec {
     "return a HttpResponse failed" when {
       "there was a problem updating the users settings" in new Setup {
         when(mockHttpVerbs.PATCH[Settings](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.failed(new ServerErrorException("test message")))
+          .thenReturn(Future.failed(new ServerErrorException("test message", 500)))
 
         val result = await(testConnector.updateSettings(testSettings))
         result mustBe HttpResponse.failed
