@@ -28,9 +28,9 @@ import utils.application.FrontendController
 import scala.concurrent.Future
 
 @Singleton
-class DeversityConfirmationController @Inject()(messagesApi: MessagesApi,
-                                                val authConnector: AuthConnector,
-                                                val config: ConfigurationLoader) extends FrontendController with Actions {
+class DeversityConfirmationController @Inject()(val authConnector: AuthConnector,
+                                                val config: ConfigurationLoader,
+                                                implicit val messagesApi: MessagesApi) extends FrontendController with Actions {
 
   def deversityEnrolmentConfirmation(userId: String): Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>

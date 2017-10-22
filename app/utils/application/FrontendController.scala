@@ -14,13 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package utils.application
 
-import com.cjwwdev.auth.models.AuthContext
 import config.ApplicationConfiguration
+import play.api.i18n.{I18NSupportLowPriorityImplicits, I18nSupport}
 import play.api.mvc.Controller
 
-trait FrontendController extends Controller with ApplicationConfiguration {
-  implicit def optionUser(implicit user : AuthContext) : Option[AuthContext] = Some(user)
-}
+trait FrontendController extends Controller with ApplicationConfiguration with I18NSupportLowPriorityImplicits with I18nSupport

@@ -36,11 +36,11 @@ import views.html.user.EditProfile
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class EditProfileController @Inject()(messagesApi: MessagesApi,
-                                      accountConnector: AccountsMicroserviceConnector,
+class EditProfileController @Inject()(accountConnector: AccountsMicroserviceConnector,
                                       feedEventService : FeedService,
                                       val authConnector: AuthConnector,
-                                      val config: ConfigurationLoader) extends FrontendController with EditProfileService with Actions {
+                                      val config: ConfigurationLoader,
+                                      implicit val messagesApi: MessagesApi) extends FrontendController with EditProfileService with Actions {
 
   def show : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>

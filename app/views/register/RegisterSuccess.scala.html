@@ -1,33 +1,27 @@
-@(accType : String)(implicit request : Request[_])
+@import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
+@import com.cjwwdev.views.html.templates.MainTemplate
+
+@(accType : String)(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @individual = {
-    <p>You now have immediate access to</p>
+    <p>@messagesApi("pages.register-success.individual.top")</p>
     <ul class="list-bullet">
-        <li><p>CJWW Diagnostics</p></li>
-        <li><p>CJWW Hub</p></li>
+        <li><p>@messagesApi("pages.register-success.individual.list.one")</p></li>
+        <li><p>@messagesApi("pages.register-success.individual.list.two")</p></li>
     </ul>
-    <p>Further information may be needed to access CJWW Deversity</p>
+    <p>@messagesApi("pages.register-success.individual.bottom")</p>
 }
 
 @organisation = {
-    <p>You now have access to CJWW Deversity, meaning you are able to</p>
+    <p>@messagesApi("pages.register-success.organisation.top")</p>
     <ul class="list-bullet">
-        <li><p>Manage classes</p></li>
-        <li><p>Track student progress</p></li>
-        <li><p>Assess student work</p></li>
-        <li><p>Present lessons</p></li>
+        <li><p>@messagesApi("pages.register-success.organisation.list.one")</p></li>
+        <li><p>@messagesApi("pages.register-success.organisation.list.two")</p></li>
+        <li><p>@messagesApi("pages.register-success.organisation.list.three")</p></li>
     </ul>
 }
 
-@individualLogin = {
-    <a class="btn btn-success" href="@controllers.login.routes.LoginController.show(None)"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login</a>
-}
-
-@organisationLogin = {
-    <a class="btn btn-success" href="@controllers.login.routes.LoginController.show(None)"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login</a>
-}
-
-@main_template(title = "Welcome!") {
+@MainTemplate(title = messagesApi("pages.register-success.title"), links, navBarRoutes) {
     <div class="top-block-single">
         <div class="container">
             <div class="row">
@@ -42,21 +36,16 @@
                 </div>
 
                 <div class="col-md-8 col-sm-8 col-xs-12">
-                    <h1>Welcome, to CJWW</h1>
-                    <p>You have successfully registered with us</p>
+                    <h1>@messagesApi("pages.register-success.heading")</h1>
+                    <p>@messagesApi("pages.register-success.body.top")</p>
                     @if(accType == "individual"){
                         @individual
                     }
                     @if(accType == "organisation"){
                         @organisation
                     }
-                    <p>Click below to log into your account</p>
-                    @if(accType == "individual"){
-                        @individualLogin
-                    }
-                    @if(accType == "organisation"){
-                        @organisationLogin
-                    }
+                    <p>@messagesApi("pages.register-success.body.bottom")</p>
+                    <a class="btn btn-success" href="@controllers.login.routes.LoginController.show(None)"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> @messagesApi("app.common.login")</a>
                 </div>
             </div>
         </div>

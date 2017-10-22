@@ -34,12 +34,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class LoginController @Inject()(messagesApi: MessagesApi,
-                                userLogin : LoginService,
+class LoginController @Inject()(userLogin : LoginService,
                                 sessionStoreConnector: SessionStoreConnector,
                                 urlParser: UrlParser,
                                 val authConnector: AuthConnector,
-                                val config: ConfigurationLoader) extends FrontendController with Actions {
+                                val config: ConfigurationLoader,
+                                implicit val messagesApi: MessagesApi) extends FrontendController with Actions {
 
   def show(redirect : Option[String]) : Action[AnyContent] = Action.async {
     implicit request =>

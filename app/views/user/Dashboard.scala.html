@@ -1,14 +1,15 @@
 @import models.accounts.BasicDetails
 @import models.accounts.Settings
 @import models.accounts.DeversityEnrolment
-@import com.cjwwdev.auth.models.AuthContext
+@import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
+@import com.cjwwdev.views.html.templates.MainTemplate
 @import models.feed.FeedItem
-@import services.EditProfileService.{getDisplayImageURL, getDisplayNameColour, getDisplayOption}
+@import services.EditProfileService.{getDisplayImageURL, getDisplayNameColour}
 
 @(feed: Option[List[FeedItem]],
   basicDetails: BasicDetails,
   settings: Settings,
-  deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], authContext: Option[AuthContext])
+  deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @import controllers.user.{routes => userRoutes}
 @import views.html.helpers.feedItem
@@ -48,7 +49,7 @@
     }
 }
 
-@main_template(title = "CJWW Account - dashboard") {
+@MainTemplate(title = messagesApi("pages.dashboard.title"), links, navBarRoutes) {
     <div class="cjww-jumbo-background" style="background: url('@{getDisplayImageURL(settings)}') fixed center no-repeat;">
         <div class="container">
             <div class="row">
@@ -68,9 +69,7 @@
 
             <div class="row">
                 <div class="col-md-11">
-                    <h1 id="main-title" class="page-title" style="color: @{getDisplayNameColour(settings)}">Welcome
-                        @displayNameSelector(settings.displayName)
-                    </h1>
+                    <h1 id="main-title" class="page-title" style="color: @{getDisplayNameColour(settings)}">@messagesApi("pages.dashboard.heading", displayNameSelector(settings.displayName))</h1>
                 </div>
 
                 <div class="col-md-1">
@@ -79,9 +78,9 @@
                             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>  <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a href="#"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> Change cover picture</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> @messagesApi("pages.dashboard.cover-photo.dropdown.one")</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="@userRoutes.EditProfileController.show()"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Edit Profile</a></li>
+                            <li><a href="@userRoutes.EditProfileController.show()"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messagesApi("pages.dashboard.cover-photo.dropdown.two")</a></li>
                         </ul>
                     </div>
                 </div>
@@ -93,29 +92,29 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
-                    <h2>Quick links</h2>
+                    <h2>@messagesApi("pages.dashboard.quick-links.heading")</h2>
                     <hr>
                     <div class="list-group">
                         <a href="@userRoutes.EditProfileController.show()" class="list-group-item">
-                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Edit profile</h4>
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.one")</h4>
                         </a>
                         <a href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Messages <span class="badge">0</span></h4>
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.two") <span class="badge">0</span></h4>
                         </a>
                         <a href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> View saved work</h4>
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.three")</h4>
                         </a>
                         <a href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> View problem reports</h4>
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.four")</h4>
                         </a>
                     </div>
 
                     @if(deversityEnrolment.isDefined) {
-                        <h2>Deversity</h2>
+                        <h2>@messagesApi("pages.dashboard.enrolment-status.heading")</h2>
                         <hr>
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Deversity enrolment</h3>
+                                <h3 class="panel-title">@messagesApi("pages.dashboard.enrolment-status.heading-two")</h3>
                             </div>
 
                             @if(deversityEnrolment.map(_.statusConfirmed).contains("rejected")) {
@@ -138,7 +137,7 @@
                 </div>
 
                 <div class="col-md-9">
-                    <h2>Your feed</h2>
+                    <h2>@messagesApi("pages.dashboard.feed.heading")</h2>
                     <hr>
 
                     @feedItem(feed)

@@ -17,6 +17,12 @@
 package config
 
 import com.cjwwdev.config.ConfigurationLoader
+import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
+import controllers.register.{routes => registerRoutes}
+import controllers.login.{routes => loginRoutes}
+import controllers.user.{routes => userRoutes}
+import controllers.redirect.{routes => redirectRoutes}
+import play.api.mvc.Call
 
 trait ApplicationConfiguration {
 
@@ -36,4 +42,22 @@ trait ApplicationConfiguration {
   val deversityFrontend         = config.buildServiceUrl("deversity-frontend")
   val deversityMicroservice     = config.buildServiceUrl("deversity")
   val hubFrontend               = config.buildServiceUrl("hub-frontend")
+
+  implicit val serviceLinks: Seq[NavBarLinkBuilder] = Seq(
+    NavBarLinkBuilder("/", "glyphicon-home", "Home"),
+    NavBarLinkBuilder(redirectRoutes.RedirectController.redirectToDiagnostics().url, "glyphicon-wrench", "Diagnostics"),
+    NavBarLinkBuilder(redirectRoutes.RedirectController.redirectToDeversity().url, "glyphicon-education", "Deversity"),
+    NavBarLinkBuilder("/", "glyphicon-asterisk", "Hub")
+  )
+
+  implicit val standardNavBarRoutes: Map[String, Call] = Map(
+    "navBarLogo"    -> Call("GET", "/account-services/assets/images/logo.png"),
+    "globalAssets"  -> Call("GET", "/account-services/assets/stylesheets/global-assets.css"),
+    "favicon"       -> Call("GET", "/account-services/assets/images/favicon.ico"),
+    "userRegister"  -> registerRoutes.UserRegisterController.show(),
+    "orgRegister"   -> registerRoutes.OrgRegisterController.show(),
+    "login"         -> loginRoutes.LoginController.show(None),
+    "dashboard"     -> userRoutes.DashboardController.show(),
+    "signOut"       -> loginRoutes.LoginController.signOut()
+  )
 }
