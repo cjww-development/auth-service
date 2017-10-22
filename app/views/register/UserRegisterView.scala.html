@@ -1,11 +1,12 @@
+@import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
+@import com.cjwwdev.views.html.templates.MainTemplate
+@import com.cjwwdev.views.html.helpers.{errorPanel, textInput}
 @import models.registration.UserRegistration
-
-@(register: Form[UserRegistration])(implicit request: Request[_])
-
 @import controllers.register.{routes => registerRoutes}
-@import views.html.helpers._
 
-@main_template(title = "CJWW Account - Register"){
+@(register: Form[UserRegistration])(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+
+@MainTemplate(title = messagesApi("pages.user-register.title"), links, navBarRoutes) {
     <div class="top-block-single">
         <div class="container">
             <div class="row">
@@ -20,7 +21,7 @@
                             </p>
 
                             <div class="page-header">
-                                <h1 class="pageTitle text-center">New around here?</h1>
+                                <h1 class="pageTitle text-center">@messagesApi("pages.user-register.heading")</h1>
                             </div>
 
                             <div class="row">
@@ -32,29 +33,69 @@
                             </div>
 
                             <form action="@registerRoutes.UserRegisterController.submit()" method="post">
-                                @textInput(register("firstName"), "firstName", "First name", "First name", "text", "cjww-input-group-addon")
+                                @textInput(
+                                    register("firstName"),
+                                    false,
+                                    '_sassClass   -> "cjww-input-group-addon",
+                                    '_label       -> messagesApi("pages.user-register.text-entry.first-name.label"),
+                                    '_inputType   -> "text",
+                                    '_placeholder -> messagesApi("pages.user-register.text-entry.first-name.placeholder"),
+                                    '_fieldName   -> "firstName"
+                                )
 
-                                @textInput(register("lastName"), "lastName", "Last name", "Last name", "text", "cjww-input-group-addon")
+                                @textInput(
+                                    register("lastName"),
+                                    false,
+                                    '_sassClass   -> "cjww-input-group-addon",
+                                    '_label       -> messagesApi("pages.user-register.text-entry.last-name.label"),
+                                    '_inputType   -> "text",
+                                    '_placeholder -> messagesApi("pages.user-register.text-entry.last-name.placeholder"),
+                                    '_fieldName   -> "lastName"
+                                )
 
-                                @textInput(register("userName"), "userName", "User name", "User name", "text", "cjww-input-group-addon")
+                                @textInput(
+                                    register("userName"),
+                                    false,
+                                    '_sassClass   -> "cjww-input-group-addon",
+                                    '_label       -> messagesApi("pages.user-register.text-entry.user-name.label"),
+                                    '_inputType   -> "text",
+                                    '_placeholder -> messagesApi("pages.user-register.text-entry.user-name.placeholder"),
+                                    '_fieldName   -> "userName"
+                                )
 
-                                @textInput(register("email"), "email", "Email", "Email", "text", "cjww-input-group-addon")
+                                @textInput(
+                                    register("email"),
+                                    false,
+                                    '_sassClass   -> "cjww-input-group-addon",
+                                    '_label       -> messagesApi("pages.user-register.text-entry.email.label"),
+                                    '_inputType   -> "text",
+                                    '_placeholder -> messagesApi("pages.user-register.text-entry.email.placeholder"),
+                                    '_fieldName   -> "email"
+                                )
 
-                                @textInput(register("password"), "password", "Password", "Password", "password", "cjww-input-group-addon")
+                                @textInput(
+                                    register("password"),
+                                    false,
+                                    '_sassClass   -> "cjww-input-group-addon",
+                                    '_label       -> messagesApi("pages.user-register.text-entry.password.label"),
+                                    '_inputType   -> "password",
+                                    '_placeholder -> messagesApi("pages.user-register.text-entry.password.placeholder"),
+                                    '_fieldName   -> "password"
+                                )
 
-                                @textInput(register("confirmPassword"), "confirmPassword", "Confirm", "Confirm password", "password", "cjww-input-group-addon")
-
-                                <div id="js-password-validation" class="form-group hidden">
-                                    <h4 id="capital-letter" class="text-muted"><span id="capital-letter-glyph" class="glyphicon glyphicon-minus" aria-hidden="true"></span> must contain a capital letter</h4>
-                                    <h4 id="lower-case-letter" class="text-muted"><span id="lower-case-letter-glyph" class="glyphicon glyphicon-minus" aria-hidden="true"></span> must contain a lower case letter</h4>
-                                    <h4 id="number" class="text-muted"><span id="number-glyph" class="glyphicon glyphicon-minus" aria-hidden="true"></span> must contain a number</h4>
-                                    <h4 id="length" class="text-muted"><span id="length-glyph" class="glyphicon glyphicon-minus" aria-hidden="true"></span> must be at least 10 characters long</h4>
-                                    <h4 id="match" class="text-muted"><span id="match-glyph" class="glyphicon glyphicon-minus" aria-hidden="true"></span> must match your confirmed password</h4>
-                                </div>
+                                @textInput(
+                                    register("confirmPassword"),
+                                    false,
+                                    '_sassClass   -> "cjww-input-group-addon",
+                                    '_label       -> messagesApi("pages.user-register.text-entry.confirm-password.label"),
+                                    '_inputType   -> "password",
+                                    '_placeholder -> messagesApi("pages.user-register.text-entry.confirm-password.placeholder"),
+                                    '_fieldName   -> "confirmPassword"
+                                )
 
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <button type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Register</button>
+                                        <button type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> @messagesApi("app.common.register")</button>
                                     </div>
                                 </div>
                             </form>

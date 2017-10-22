@@ -22,6 +22,7 @@ import javax.inject.Inject
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
 import com.cjwwdev.config.ConfigurationLoader
+import com.cjwwdev.views.html.templates.errors.StandardErrorView
 import com.google.inject.Singleton
 import enums.Registration
 import forms.UserRegisterForm
@@ -29,17 +30,16 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.RegisterService
 import utils.application.FrontendController
-import views.html.error_template
 import views.html.register.{RegisterSuccess, UserRegisterView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class UserRegisterController @Inject()(messagesApi: MessagesApi,
-                                       userRegister : RegisterService,
+class UserRegisterController @Inject()(userRegister : RegisterService,
                                        val authConnector: AuthConnector,
-                                       val config: ConfigurationLoader) extends FrontendController with Actions {
+                                       val config: ConfigurationLoader,
+                                       implicit val messagesApi: MessagesApi) extends FrontendController with Actions {
 
   def show : Action[AnyContent] = Action.async {
     implicit request =>
@@ -63,7 +63,7 @@ class UserRegisterController @Inject()(messagesApi: MessagesApi,
           case Registration.userNameInUse => BadRequest(UserRegisterView(
             UserRegisterForm.RegisterUserForm.withError("userName", messagesApi("cjww.auth.register.generic.userName.inUse"))
           ))
-          case Registration.failed        => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
+          case Registration.failed        => InternalServerError(StandardErrorView(messagesApi("cjww.auth.error.generic")))
         }
       )
   }

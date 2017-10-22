@@ -1,13 +1,15 @@
-@import com.cjwwdev.auth.models.AuthContext
-@()(implicit request: Request[_], authContext : Option[AuthContext])
+@import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
+@import com.cjwwdev.views.html.templates.MainTemplate
 
-@main_template(title = "CJWW - Where do you want to go?"){
+@()(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+
+@MainTemplate(title = messagesApi("pages.service-selector.title"), links, navBarRoutes){
     <div class="top-block-single">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                        <h1 class="pageTitle">Where would you like to go?<small> Choose below</small></h1>
+                        <h1 class="pageTitle">@Html(messagesApi("pages.service-selector.heading"))</h1>
                     </div>
                 </div>
             </div>
@@ -17,9 +19,9 @@
                     <div class="thumbnail">
                         <img src="@routes.Assets.versioned("images/Diag_Black.png")" width="100%" alt="...">
                         <div class="caption">
-                            <h3>Diagnostics</h3>
+                            <h3>@messagesApi("pages.service-selector.diagnostics.heading")</h3>
                             <p>
-                                <a href="@controllers.redirect.routes.RedirectController.redirectToDiagnostics()" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Go to Diagnostics</a>
+                                <a href="@controllers.redirect.routes.RedirectController.redirectToDiagnostics()" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> @messagesApi("pages.service-selector.diagnostics.link")</a>
                             </p>
                         </div>
                     </div>
@@ -29,9 +31,9 @@
                     <div class="thumbnail">
                         <img src="@routes.Assets.versioned("images/Deversity_Black.png")" width="100%" alt="...">
                         <div class="caption">
-                            <h3>Deversity</h3>
+                            <h3>@messagesApi("pages.service-selector.deversity.heading")</h3>
                             <p>
-                                <a href="@controllers.redirect.routes.RedirectController.redirectToDeversity()" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> Go to Deversity</a>
+                                <a href="@controllers.redirect.routes.RedirectController.redirectToDeversity()" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> @messagesApi("pages.service-selector.deversity.link")</a>
                             </p>
                         </div>
                     </div>
@@ -41,9 +43,9 @@
                     <div class="thumbnail">
                         <img src="@routes.Assets.versioned("images/logo.png")" width="100%" alt="...">
                         <div class="caption">
-                            <h3>The Hub</h3>
+                            <h3>@messagesApi("pages.service-selector.hub.heading")</h3>
                             <p>
-                                <a href="@controllers.redirect.routes.RedirectController.redirectToHub" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> Go to The Hub</a>
+                                <a href="@controllers.redirect.routes.RedirectController.redirectToHub" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> @messagesApi("pages.service-selector.hub.link")</a>
                             </p>
                         </div>
                     </div>

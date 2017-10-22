@@ -30,10 +30,10 @@ import views.html.user.{Dashboard, OrgDashboard}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class DashboardController @Inject()(messagesApi: MessagesApi,
-                                    dashboardService: DashboardService,
+class DashboardController @Inject()(dashboardService: DashboardService,
                                     val authConnector: AuthConnector,
-                                    val config: ConfigurationLoader) extends FrontendController with Actions {
+                                    val config: ConfigurationLoader,
+                                    implicit val messagesApi: MessagesApi) extends FrontendController with Actions {
 
   def show : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>

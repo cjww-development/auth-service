@@ -21,23 +21,23 @@ import javax.inject.{Inject, Singleton}
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
 import com.cjwwdev.config.ConfigurationLoader
+import com.cjwwdev.views.html.templates.errors.StandardErrorView
 import enums.Registration
 import forms.OrgRegisterForm
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.RegisterService
 import utils.application.FrontendController
-import views.html.error_template
 import views.html.register.{OrgRegisterView, RegisterSuccess}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
-class OrgRegisterController @Inject()(messagesApi: MessagesApi,
-                                      userRegister : RegisterService,
+class OrgRegisterController @Inject()(userRegister : RegisterService,
                                       val authConnector: AuthConnector,
-                                      val config: ConfigurationLoader) extends FrontendController with Actions {
+                                      val config: ConfigurationLoader,
+                                      implicit val messagesApi: MessagesApi) extends FrontendController with Actions {
 
   def show: Action[AnyContent] = Action.async {
     implicit request =>
@@ -61,7 +61,7 @@ class OrgRegisterController @Inject()(messagesApi: MessagesApi,
           case Registration.emailInUse    => BadRequest(OrgRegisterView(
             OrgRegisterForm.orgRegisterForm.fill(newOrg).withError("orgEmail", messagesApi("cjww.auth.register.generic.email.inUse"))
           ))
-          case Registration.failed        => InternalServerError(error_template(messagesApi("cjww.auth.error.generic")))
+          case Registration.failed        => InternalServerError(StandardErrorView(messagesApi("cjww.auth.error.generic")))
         }
       )
   }

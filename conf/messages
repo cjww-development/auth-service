@@ -1,26 +1,161 @@
+#Common strings
+app.common.login                                                 = Login
+app.common.register                                              = Register
+app.common.save                                                  = Save
+app.common.delete-account                                        = Delete your account
+
 #Error messages
-cjww.auth.error.generic                                 =There was problem and we are working to resolve it. Please try again later!
+cjww.auth.error.generic                                          =There was problem and we are working to resolve it. Please try again later!
 
 #Login utilities.validation
-cjww.auth.login.username.error.notfound                 =You have not entered your username
-cjww.auth.login.password.error.notfound                 =You have not entered your password
-cjww.auth.login.error.invalid                           =Your username or password wasn''t correct
+cjww.auth.login.username.error.notfound                          =You have not entered your username
+cjww.auth.login.password.error.notfound                          =You have not entered your password
+cjww.auth.login.error.invalid                                    =Your username or password wasn''t correct
 
 #Update password
-cjww.auth.update.password.old.invalid                   =You have not entered your old password
+cjww.auth.update.password.old.invalid                            =You have not entered your old password
 
 #Registration validation messages
-cjww.auth.register.generic.userName.invalid             =You have not entered a valid user name
-cjww.auth.register.generic.userName.inUse               =You cannot have this user name
-cjww.auth.register.generic.email.invalid                =You have not entered a valid email address
-cjww.auth.register.generic.email.inUse                  =You cannot use this email address
-cjww.auth.register.generic.password.invalid             =You have not entered a password
-cjww.auth.register.generic.confirmPassword.invalid      =You have not confirmed your password
-cjww.auth.register.generic.password.match               =The passwords you have entered don''t match
+cjww.auth.register.generic.userName.invalid                      =You have not entered a valid user name
+cjww.auth.register.generic.userName.inUse                        =You cannot have this user name
+cjww.auth.register.generic.email.invalid                         =You have not entered a valid email address
+cjww.auth.register.generic.email.inUse                           =You cannot use this email address
+cjww.auth.register.generic.password.invalid                      =You have not entered a password
+cjww.auth.register.generic.confirmPassword.invalid               =You have not confirmed your password
+cjww.auth.register.generic.password.match                        =The passwords you have entered don''t match
 
-cjww.auth.register.user.firstName.invalid               =You have not entered a valid first name
-cjww.auth.register.user.lastName.invalid                =You have not entered a valid last name
+cjww.auth.register.user.firstName.invalid                        =You have not entered a valid first name
+cjww.auth.register.user.lastName.invalid                         =You have not entered a valid last name
 
-cjww.auth.register.org.orgName.invalid                  =You have not entered a valid organisation name
-cjww.auth.register.org.initials.length                  =Enter five characters or less for your initials
-cjww.auth.register.org.location.invalid                 =You have not entered a valid location
+cjww.auth.register.org.orgName.invalid                           =You have not entered a valid organisation name
+cjww.auth.register.org.initials.length                           =Enter five characters or less for your initials
+cjww.auth.register.org.location.invalid                          =You have not entered a valid location
+
+#UserLogin
+pages.user-login.title                                           = Login
+pages.user-login.heading                                         = Login here
+pages.user-login.text-entry.username.label                       = <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+pages.user-login.text-entry.username.placeholder                 = Your user name
+pages.user-login.text-entry.password.label                       = <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+pages.user-login.text-entry.password.placeholder                 = Your password
+
+#ServiceSelector
+pages.service-selector.title                                     = Where do you want to go?
+pages.service-selector.heading                                   = Where would you like to go?<small> Choose below</small>
+pages.service-selector.diagnostics.heading                       = Diagnostics
+pages.service-selector.diagnostics.link                          = Go to Diagnostics
+pages.service-selector.deversity.heading                         = Deversity
+pages.service-selector.deversity.link                            = Go to Deversity
+pages.service-selector.hub.heading                               = The Hub
+pages.service-selector.hub.link                                  = Go to The Hub
+
+#IndividualRegister
+pages.user-register.title                                        = Make an account
+pages.user-register.heading                                      = New around here?
+pages.user-register.text-entry.first-name.label                  = First name
+pages.user-register.text-entry.first-name.placeholder            = Your first name
+pages.user-register.text-entry.last-name.label                   = Last name
+pages.user-register.text-entry.last-name.placeholder             = Your last name
+pages.user-register.text-entry.user-name.label                   = User name
+pages.user-register.text-entry.user-name.placeholder             = Your user name
+pages.user-register.text-entry.email.label                       = Email
+pages.user-register.text-entry.email.placeholder                 = Your email address
+pages.user-register.text-entry.password.label                    = Password
+pages.user-register.text-entry.password.placeholder              = Your password
+pages.user-register.text-entry.confirm-password.label            = Confirm
+pages.user-register.text-entry.confirm-password.placeholder      = Enter your password again
+
+#OrgRegister
+pages.org-register.title                                         = Register your school
+pages.org-register.heading                                       = New around here?
+pages.org-register.body                                          = Register your school with Deversity
+pages.org-register.text-entry.org-name.label                     = School name
+pages.org-register.text-entry.org-name.placeholder               = Your schools name
+pages.org-register.text-entry.initials.label                     = Initials
+pages.org-register.text-entry.initials.placeholder               = Your schools initials
+pages.org-register.text-entry.org-user-name.label                = School user name
+pages.org-register.text-entry.org-user-name.placeholder          = Your schools user name
+pages.org-register.text-entry.location.label                     = Location
+pages.org-register.text-entry.location.placeholder               = Your schools location
+pages.org-register.text-entry.org-email.label                    = Email
+pages.org-register.text-entry.org-email.placeholder              = Email address to represent your school
+pages.org-register.text-entry.password.label                     = Password
+pages.org-register.text-entry.password.placeholder               = Your password
+pages.org-register.text-entry.confirm-password.label             = Confirm
+pages.org-register.text-entry.confirm-password.placeholder       = Enter your password again
+
+#RegisterSuccess
+pages.register-success.title                                     = Welcome!
+pages.register-success.heading                                   = Welcome, to CJWW
+pages.register-success.body.top                                  = You''ve successfully registered
+pages.register-success.body.bottom                               = Click below to log into your account
+pages.register-success.individual.top                            = You now have immediate access to
+pages.register-success.individual.list.one                       = CJWW Diagnostics
+pages.register-success.individual.list.two                       = CJWW Hub
+pages.register-success.individual.bottom                         = Further information may be needed to access CJWW Deversity
+pages.register-success.organisation.top                          = You now have access to CJWW Deversity, meaning you are able to
+pages.register-success.organisation.list.one                     = Manage classes
+pages.register-success.organisation.list.two                     = Track student progress
+pages.register-success.organisation.list.three                   = Assess student work
+
+#Dashboard
+pages.dashboard.title                                            = Dashboard
+pages.dashboard.heading                                          = Welcome {0}
+pages.dashboard.cover-photo.dropdown.one                         = Change your cover photo
+pages.dashboard.cover-photo.dropdown.two                         = Edit profile
+pages.dashboard.quick-links.heading                              = Quick links
+pages.dashboard.quick-links.list.one                             = Edit profile
+pages.dashboard.quick-links.list.two                             = Messages
+pages.dashboard.quick-links.list.three                           = View saved work
+pages.dashboard.quick-links.list.four                            = View problem reports
+pages.dashboard.enrolment-status.heading                         = Deversity
+pages.dashboard.enrolment-status.heading-two                     = Deversity enrolment
+pages.dashboard.feed.heading                                     = Your feed
+pages.dashboard.feed.no-content                                  = There is nothing to report at the moment
+
+#OrgDashboard
+pages.org-dashboard.title                                        = Dashboard
+pages.org-dashboard.heading                                      = Welcome {0}
+pages.org-dashboard.cover-photo.dropdown.one                     = Change your cover photo
+pages.org-dashboard.cover-photo.dropdown.two                     = Edit profile
+pages.org-dashboard.quick-links.heading                          = Quick links
+pages.org-dashboard.quick-links.list.one                         = Review enrolments
+pages.org-dashboard.quick-links.list.two                         = Edit profile
+pages.org-dashboard.quick-links.list.three                       = Messages
+pages.org-dashboard.teacher-list.heading                         = Your teachers
+pages.org-dashboard.teacher-list.body                            = {0} currently has no enrolled teachers
+
+#UserEditProfile
+pages.user-edit-profile.title                                    = Edit your profile
+pages.user-edit-profile.heading                                  = {0} {1}'s <small>profile</small>
+pages.user-edit-profile.basics.heading                           = Basic information
+pages.user-edit-profile.basics.text-entry.first-name.label       = First name
+pages.user-edit-profile.basics.text-entry.first-name.placeholder = Your first name
+pages.user-edit-profile.basics.text-entry.last-name.label        = Last name
+pages.user-edit-profile.basics.text-entry.last-name.placeholder  = Your last name
+pages.user-edit-profile.basics.text-entry.user-name.label        = User name
+pages.user-edit-profile.basics.text-entry.user-name.placeholder  = Your user name
+pages.user-edit-profile.basics.text-entry.email.label            = Email
+pages.user-edit-profile.basics.text-entry.email.placeholder      = Your email address
+pages.user-edit-profile.password.heading                         = Change your password
+pages.user-edit-profile.password.text-entry.old.label            = Old password
+pages.user-edit-profile.password.text-entry.old.placeholder      = Your old password
+pages.user-edit-profile.password.text-entry.new.label            = New password
+pages.user-edit-profile.password.text-entry.new.placeholder      = Your new password
+pages.user-edit-profile.password.text-entry.confirm.label        = Confirm
+pages.user-edit-profile.password.text-entry.confirm.placeholder  = Enter your password again
+pages.user-edit-profile.password.button.label                    = Update your password
+pages.user-edit-profile.settings.heading                         = Dashboard settings
+pages.user-edit-profile.settings.image.body                      = This is your dashboard image (paste the url to your image here)
+pages.user-edit-profile.settings.text-entry.url.label            = Image URL
+pages.user-edit-profile.settings.text-entry.url.placeholder      = The URL to the image you''d like on your dashboard
+pages.user-edit-profile.settings.name-style.body                 = This is the name displayed on your dashboard
+pages.user-edit-profile.settings.name-style.radio.full.label     = Full name
+pages.user-edit-profile.settings.name-style.radio.short.label    = First name only
+pages.user-edit-profile.settings.name-style.radio.user.label     = User name
+pages.user-edit-profile.settings.name-colour.body                = This is the text colour of your display name
+pages.user-edit-profile.settings.name-colour.picker.label        = Choose your colour
+pages.user-edit-profile.delete.heading                           = Delete your account
+pages.user-edit-profile.delete.body.one                          = DANGER! This action <strong>can''t</strong> be reversed
+pages.user-edit-profile.delete.body.two                          = You will be asked to enter your user name and password to confirm
+
