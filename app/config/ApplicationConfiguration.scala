@@ -52,9 +52,9 @@ trait ApplicationConfiguration {
   )
 
   implicit def standardNavBarRoutes(implicit requestHeader: RequestHeader): Map[String, Call] = Map(
-    "navBarLogo"    -> Call("GET", assetRoutes.Assets.versioned("images/logo.png").absoluteURL()),
-    "globalAssets"  -> Call("GET", assetRoutes.Assets.versioned("stylesheets/global-assets.css").absoluteURL()),
-    "favicon"       -> Call("GET", assetRoutes.Assets.versioned("images/favicon.ico").absoluteURL()),
+    "navBarLogo"    -> assetRoutes.Assets.versioned("images/logo.png"),
+    "globalAssets"  -> assetRoutes.Assets.versioned("stylesheets/global-assets.css"),
+    "favicon"       -> assetRoutes.Assets.versioned("images/favicon.ico"),
     "userRegister"  -> Call("GET", registerRoutes.UserRegisterController.show().absoluteURL()),
     "orgRegister"   -> Call("GET", registerRoutes.OrgRegisterController.show().absoluteURL()),
     "login"         -> Call("GET", loginRoutes.LoginController.show(None).absoluteURL()),
