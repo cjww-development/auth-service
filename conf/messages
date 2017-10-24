@@ -12,6 +12,11 @@ cjww.auth.login.username.error.notfound                          =You have not e
 cjww.auth.login.password.error.notfound                          =You have not entered your password
 cjww.auth.login.error.invalid                                    =Your username or password wasn''t correct
 
+#Service outage
+misc.unavailable.title                                           = This service is unavailable
+misc.unavailable.heading                                         = This service is currently not available
+misc.unavailable.body                                            = Please try again later
+
 #Update password
 cjww.auth.update.password.old.invalid                            =You have not entered your old password
 

@@ -26,6 +26,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import utils.application.FrontendController
 import views.html.redirect.ServiceSelector
+import views.html.misc.ServiceUnavailableView
 
 import scala.concurrent.Future
 
@@ -53,5 +54,10 @@ class RedirectController @Inject()(implicit val authConnector: AuthConnector,
   def redirectToHub: Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(Redirect(hubFrontend))
+  }
+
+  def redirectToServiceOutage: Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(ServiceUnavailable(ServiceUnavailableView()))
   }
 }

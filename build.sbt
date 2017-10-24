@@ -49,6 +49,7 @@ val testDep : Seq[ModuleID] = Seq(
 
 libraryDependencies ++= cjwwDep
 libraryDependencies ++= testDep
+libraryDependencies +=  filters
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 resolvers += "cjww-dev" at "http://dl.bintray.com/cjww-development/releases"
