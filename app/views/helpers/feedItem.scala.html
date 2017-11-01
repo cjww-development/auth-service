@@ -1,5 +1,5 @@
 @import models.feed.FeedItem
-@import models.feed.FeedItem
+
 @(feed : Option[List[FeedItem]])(implicit messagesApi: MessagesApi)
 
 @image(source : String) = {
@@ -18,7 +18,7 @@
 
 @if(feed.isDefined) {
     @for((feedItem, count) <- feed.get.zipWithIndex) {
-        <div class="media">
+        <div id="feed-item-@count" class="media">
             <div class="media-left">
                 <img class="media-object" src="@routes.Assets.versioned(s"images/${image(feedItem.sourceDetail.service).toString.replace(" ", "")}.png")" width="100px" alt="">
             </div>
@@ -33,5 +33,5 @@
         <hr>
     }
 } else {
-    <p class="text-center">@messagesApi("pages.dashboard.feed.no-content")</p>
+    <p id="no-feed-content" class="text-center">@messagesApi("pages.dashboard.feed.no-content")</p>
 }

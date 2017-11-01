@@ -1,0 +1,62 @@
+@import com.cjwwdev.views.html.templates.MainTemplate
+@import com.cjwwdev.views.html.helpers.{textInput, errorPanel}
+@import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
+@import models.test.TearDownUser
+
+@(tearDownUserForm: Form[TearDownUser])(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+
+@MainTemplate(title = "Tear down test user", links, navBarRoutes) {
+<div class="top-block-single">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3"></div>
+
+            <div class="col-md-6">
+                <div class="page-header">
+                    <h1 id="main-heading" class="pageTitle text-center">Tear down user</h1>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6">
+                    @errorPanel(tearDownUserForm)
+                    </div>
+                    <div class="col-md-3"></div>
+                </div>
+
+                <form action="@controllers.test.routes.TeardownController.tearDownTestUserSubmit()" method="POST">
+                    @textInput(
+                        tearDownUserForm("testUserName"),
+                        false,
+                        '_sassClass   -> "cjww-input-group-addon",
+                        '_label       -> "Test user name",
+                        '_inputType   -> "text",
+                        '_placeholder -> "Enter the test user name to teardown",
+                        '_fieldName   -> "testUserName",
+                        '_spanId      -> "test-user-name-span"
+                    )
+
+                    @textInput(
+                        tearDownUserForm("credentialType"),
+                        false,
+                        '_sassClass   -> "cjww-input-group-addon",
+                        '_label       -> "Credential type",
+                        '_inputType   -> "text",
+                        '_placeholder -> "Enter the users credential type",
+                        '_fieldName   -> "credentialType",
+                        '_spanId      -> "credential-type-name-span"
+                    )
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <button id="tear-down-user-button" type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Tear down</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-md-3"></div>
+        </div>
+    </div>
+</div>
+}

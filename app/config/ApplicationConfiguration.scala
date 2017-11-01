@@ -45,10 +45,10 @@ trait ApplicationConfiguration {
   val hubFrontend               = config.buildServiceUrl("hub-frontend")
 
   implicit def serviceLinks(implicit requestHeader: RequestHeader): Seq[NavBarLinkBuilder] = Seq(
-    NavBarLinkBuilder("/", "glyphicon-home", "Home"),
-    NavBarLinkBuilder(redirectRoutes.RedirectController.redirectToDiagnostics().absoluteURL(), "glyphicon-wrench", "Diagnostics"),
-    NavBarLinkBuilder(redirectRoutes.RedirectController.redirectToDeversity().absoluteURL(), "glyphicon-education", "Deversity"),
-    NavBarLinkBuilder("/", "glyphicon-asterisk", "Hub")
+    NavBarLinkBuilder("/", "glyphicon-home", "Home", "home"),
+    NavBarLinkBuilder(redirectRoutes.RedirectController.redirectToDiagnostics().absoluteURL(), "glyphicon-wrench", "Diagnostics", "diagnostics"),
+    NavBarLinkBuilder(redirectRoutes.RedirectController.redirectToDeversity().absoluteURL(), "glyphicon-education", "Deversity", "deversity"),
+    NavBarLinkBuilder("/", "glyphicon-asterisk", "Hub", "the-hub")
   )
 
   implicit def standardNavBarRoutes(implicit requestHeader: RequestHeader): Map[String, Call] = Map(

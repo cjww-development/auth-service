@@ -4,53 +4,53 @@
 @()(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @MainTemplate(title = messagesApi("pages.service-selector.title"), links, navBarRoutes){
-    <div class="top-block-single">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="page-header">
-                        <h1 class="pageTitle">@Html(messagesApi("pages.service-selector.heading"))</h1>
+<div class="top-block-single">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="page-header">
+                    <h1 id="main-heading" class="pageTitle">@Html(messagesApi("pages.service-selector.heading"))</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6 col-md-4">
+                <div class="thumbnail">
+                    <img src="@routes.Assets.versioned("images/Diag_Black.png")" width="100%" alt="CJWW Diagnostics logo">
+                    <div class="caption">
+                        <h3>@messagesApi("pages.service-selector.diagnostics.heading")</h3>
+                        <p>
+                            <a id="diagnostics-body-link" href="@controllers.redirect.routes.RedirectController.redirectToDiagnostics()" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> @messagesApi("pages.service-selector.diagnostics.link")</a>
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-sm-6 col-md-4">
-                    <div class="thumbnail">
-                        <img src="@routes.Assets.versioned("images/Diag_Black.png")" width="100%" alt="...">
-                        <div class="caption">
-                            <h3>@messagesApi("pages.service-selector.diagnostics.heading")</h3>
-                            <p>
-                                <a href="@controllers.redirect.routes.RedirectController.redirectToDiagnostics()" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> @messagesApi("pages.service-selector.diagnostics.link")</a>
-                            </p>
-                        </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="thumbnail">
+                    <img src="@routes.Assets.versioned("images/Deversity_Black.png")" width="100%" alt="...">
+                    <div class="caption">
+                        <h3>@messagesApi("pages.service-selector.deversity.heading")</h3>
+                        <p>
+                            <a id="deversity-body-link" href="@controllers.redirect.routes.RedirectController.redirectToDeversity()" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> @messagesApi("pages.service-selector.deversity.link")</a>
+                        </p>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-sm-6 col-md-4">
-                    <div class="thumbnail">
-                        <img src="@routes.Assets.versioned("images/Deversity_Black.png")" width="100%" alt="...">
-                        <div class="caption">
-                            <h3>@messagesApi("pages.service-selector.deversity.heading")</h3>
-                            <p>
-                                <a href="@controllers.redirect.routes.RedirectController.redirectToDeversity()" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> @messagesApi("pages.service-selector.deversity.link")</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-md-4">
-                    <div class="thumbnail">
-                        <img src="@routes.Assets.versioned("images/logo.png")" width="100%" alt="...">
-                        <div class="caption">
-                            <h3>@messagesApi("pages.service-selector.hub.heading")</h3>
-                            <p>
-                                <a href="@controllers.redirect.routes.RedirectController.redirectToHub" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> @messagesApi("pages.service-selector.hub.link")</a>
-                            </p>
-                        </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="thumbnail">
+                    <img src="@routes.Assets.versioned("images/logo.png")" width="100%" alt="...">
+                    <div class="caption">
+                        <h3>@messagesApi("pages.service-selector.hub.heading")</h3>
+                        <p>
+                            <a id="the-hub-body-link" href="@controllers.redirect.routes.RedirectController.redirectToHub" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> @messagesApi("pages.service-selector.hub.link")</a>
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 }

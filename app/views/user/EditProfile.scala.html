@@ -7,238 +7,241 @@
 @(profile : Form[UserProfile], passwords : Form[PasswordSet], displayname : Form[Settings], basicDetails : BasicDetails)(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @MainTemplate(title = messagesApi("pages.user-edit-profile.title"), links, navBarRoutes) {
-    <div class="top-block-single">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="page-header">
-                        <h1>@Html(messagesApi("pages.user-edit-profile.heading", basicDetails.firstName, basicDetails.lastName))</h1>
+<div class="top-block-single">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="page-header">
+                    <h1>@Html(messagesApi("pages.user-edit-profile.heading", basicDetails.firstName, basicDetails.lastName))</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <h2>@messagesApi("pages.user-edit-profile.basics.heading")</h2>
+                <hr>
+
+                <form action="@controllers.user.routes.EditProfileController.updateProfile()" method="post">
+                    @textInput(
+                        profile("firstName"),
+                        false,
+                        '_sassClass   -> "cjww-input-group-addon-oversized",
+                        '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.first-name.label"),
+                        '_inputType   -> "text",
+                        '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.first-name.placeholder"),
+                        '_fieldName   -> "firstName",
+                        '_spanId      -> "first-name-span"
+                    )
+
+                    @textInput(
+                        profile("lastName"),
+                        false,
+                        '_sassClass   -> "cjww-input-group-addon-oversized",
+                        '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.last-name.label"),
+                        '_inputType   -> "text",
+                        '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.last-name.placeholder"),
+                        '_fieldName   -> "lastName",
+                        '_spanId      -> "last-name-span"
+                    )
+
+                    @textInput(
+                        profile("userName"),
+                        true,
+                        '_sassClass   -> "cjww-input-group-addon-oversized",
+                        '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.user-name.label"),
+                        '_inputType   -> "text",
+                        '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.user-name.placeholder"),
+                        '_fieldName   -> "userName",
+                        '_spanId      -> "user-name-span"
+                    )
+
+                    @textInput(
+                        profile("email"),
+                        false,
+                        '_sassClass   -> "cjww-input-group-addon-oversized",
+                        '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.email.label"),
+                        '_inputType   -> "text",
+                        '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.email.placeholder"),
+                        '_fieldName   -> "email",
+                        '_spanId      -> "email-span"
+                    )
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <button id="basic-details-save-submit" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("app.common.save")</button>
+                        </div>
                     </div>
-                </div>
+                    <hr>
+                </form>
             </div>
 
-            <div class="row">
-                <div class="col-md-8">
-                    <h2>@messagesApi("pages.user-edit-profile.basics.heading")</h2>
-                    <hr>
+            <div class="col-md-4">
+                @errorPanel(profile)
+            </div>
+        </div>
 
-                    <form action="@controllers.user.routes.EditProfileController.updateProfile()" method="post">
-                        @textInput(
-                            profile("firstName"),
-                            false,
-                            '_sassClass   -> "cjww-input-group-addon-oversized",
-                            '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.first-name.label"),
-                            '_inputType   -> "text",
-                            '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.first-name.placeholder"),
-                            '_fieldName   -> "firstName"
-                        )
+        <div class="row">
+            <div class="col-md-8">
+                <h2>@messagesApi("pages.user-edit-profile.password.heading")</h2>
+                <hr>
 
-                        @textInput(
-                            profile("lastName"),
-                            false,
-                            '_sassClass   -> "cjww-input-group-addon-oversized",
-                            '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.last-name.label"),
-                            '_inputType   -> "text",
-                            '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.last-name.placeholder"),
-                            '_fieldName   -> "lastName"
-                        )
+                <form id="password" action="@controllers.user.routes.EditProfileController.updatePassword()" method="post">
+                    @textInput(
+                        profile("oldPassword"),
+                        false,
+                        '_sassClass   -> "cjww-input-group-addon-oversized",
+                        '_label       -> messagesApi("pages.user-edit-profile.password.text-entry.old.label"),
+                        '_inputType   -> "password",
+                        '_placeholder -> messagesApi("pages.user-edit-profile.password.text-entry.old.placeholder"),
+                        '_fieldName   -> "oldPassword",
+                        '_spanId      -> "old-password-span"
+                    )
 
-                        @textInput(
-                            profile("userName"),
-                            true,
-                            '_sassClass   -> "cjww-input-group-addon-oversized",
-                            '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.user-name.label"),
-                            '_inputType   -> "text",
-                            '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.user-name.placeholder"),
-                            '_fieldName   -> "userName"
-                        )
+                    @textInput(
+                        profile("newPassword"),
+                        false,
+                        '_sassClass   -> "cjww-input-group-addon-oversized",
+                        '_label       -> messagesApi("pages.user-edit-profile.password.text-entry.new.label"),
+                        '_inputType   -> "password",
+                        '_placeholder -> messagesApi("pages.user-edit-profile.password.text-entry.new.placeholder"),
+                        '_fieldName   -> "newPassword",
+                        '_spanId      -> "new-password-span"
+                    )
 
-                        @textInput(
-                            profile("email"),
-                            false,
-                            '_sassClass   -> "cjww-input-group-addon-oversized",
-                            '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.email.label"),
-                            '_inputType   -> "text",
-                            '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.email.placeholder"),
-                            '_fieldName   -> "email"
-                        )
+                    @textInput(
+                        profile("confirmPassword"),
+                        false,
+                        '_sassClass   -> "cjww-input-group-addon-oversized",
+                        '_label       -> messagesApi("pages.user-edit-profile.password.text-entry.confirm.label"),
+                        '_inputType   -> "password",
+                        '_placeholder -> messagesApi("pages.user-edit-profile.password.text-entry.confirm.placeholder"),
+                        '_fieldName   -> "confirmPassword",
+                        '_spanId      -> "confirm-password-span"
+                    )
 
-                        <div class="form-group">
-                            <div class="input-group">
-                                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("app.common.save")</button>
-                            </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <button id="update-password-submit" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("pages.user-edit-profile.password.button.label")</button>
                         </div>
-                        <hr>
-                    </form>
-                </div>
-
-                <div class="col-md-4">
-                    @errorPanel(profile)
-                </div>
+                    </div>
+                    <hr>
+                </form>
             </div>
 
-            <div class="row">
-                <div class="col-md-8">
-                    <h2>@messagesApi("pages.user-edit-profile.password.heading")</h2>
-                    <hr>
-
-                    <form id="password" action="@controllers.user.routes.EditProfileController.updatePassword()" method="post">
-                        @textInput(
-                            profile("oldPassword"),
-                            false,
-                            '_sassClass   -> "cjww-input-group-addon-oversized",
-                            '_label       -> messagesApi("pages.user-edit-profile.password.text-entry.old.label"),
-                            '_inputType   -> "password",
-                            '_placeholder -> messagesApi("pages.user-edit-profile.password.text-entry.old.placeholder"),
-                            '_fieldName   -> "oldPassword"
-                        )
-
-                        @textInput(
-                            profile("newPassword"),
-                            false,
-                            '_sassClass   -> "cjww-input-group-addon-oversized",
-                            '_label       -> messagesApi("pages.user-edit-profile.password.text-entry.new.label"),
-                            '_inputType   -> "password",
-                            '_placeholder -> messagesApi("pages.user-edit-profile.password.text-entry.new.placeholder"),
-                            '_fieldName   -> "newPassword"
-                        )
-
-                        @textInput(
-                            profile("confirmPassword"),
-                            false,
-                            '_sassClass   -> "cjww-input-group-addon-oversized",
-                            '_label       -> messagesApi("pages.user-edit-profile.password.text-entry.confirm.label"),
-                            '_inputType   -> "password",
-                            '_placeholder -> messagesApi("pages.user-edit-profile.password.text-entry.confirm.placeholder"),
-                            '_fieldName   -> "confirmPassword"
-                        )
-
-                        <div class="form-group">
-                            <div class="input-group">
-                                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("pages.user-edit-profile.password.button.label")</button>
-                            </div>
-                        </div>
-                        <hr>
-                    </form>
-                </div>
-
-                <div class="col-md-4">
-                    @errorPanel(passwords)
-                </div>
+            <div class="col-md-4">
+                @errorPanel(passwords)
             </div>
+        </div>
 
-            <div class="row">
-                <div class="col-md-8">
-                    <h2>Account settings</h2>
-                    <hr>
+        <div class="row">
+            <div class="col-md-8">
+                <h2>Account settings</h2>
+                <hr>
 
-                    <form action="@controllers.user.routes.EditProfileController.updateSettings()" method="post">
-                        <div class="well">
-                            <h3>@messagesApi("pages.user-edit-profile.settings.heading")</h3>
+                <form action="@controllers.user.routes.EditProfileController.updateSettings()" method="post">
+                    <div class="well">
+                        <h3>@messagesApi("pages.user-edit-profile.settings.heading")</h3>
 
-                            <p>@messagesApi("pages.user-edit-profile.settings.image.body")</p>
-                            @textInput(
-                                displayname("displayImageURL"),
-                                false,
-                                '_sassClass   -> "cjww-input-group-addon-oversized",
-                                '_label       -> messagesApi("pages.user-edit-profile.settings.text-entry.url.label"),
-                                '_inputType   -> "text",
-                                '_placeholder -> messagesApi("pages.user-edit-profile.settings.text-entry.url.placeholder"),
-                                '_fieldName   -> "displayImageURL"
+                        <p>@messagesApi("pages.user-edit-profile.settings.image.body")</p>
+                        @textInput(
+                            displayname("displayImageURL"),
+                            false,
+                            '_sassClass   -> "cjww-input-group-addon-oversized",
+                            '_label       -> messagesApi("pages.user-edit-profile.settings.text-entry.url.label"),
+                            '_inputType   -> "text",
+                            '_placeholder -> messagesApi("pages.user-edit-profile.settings.text-entry.url.placeholder"),
+                            '_fieldName   -> "displayImageURL",
+                            '_spanId      -> "display-image-url-span"
+                        )
+
+                        <p>@messagesApi("pages.user-edit-profile.settings.name-style.body")</p>
+                        <div class="form-group form-inline">
+                            @radioButton(
+                                displayname("displayName"),
+                                "full",
+                                '_name  -> "displayName",
+                                '_id    -> "displayName1",
+                                '_label -> messagesApi("pages.user-edit-profile.settings.name-style.radio.full.label")
                             )
 
-                            <p>@messagesApi("pages.user-edit-profile.settings.name-style.body")</p>
-                            <div class="form-group form-inline">
-                                @radioButton(
-                                    displayname("displayName"),
-                                    "full",
-                                    '_name  -> "displayName",
-                                    '_id    -> "displayName1",
-                                    '_label -> messagesApi("pages.user-edit-profile.settings.name-style.radio.full.label")
-                                )
+                            @radioButton(
+                                displayname("displayName"),
+                                "short",
+                                '_name  -> "displayName",
+                                '_id    -> "displayName2",
+                                '_label -> messagesApi("pages.user-edit-profile.settings.name-style.radio.short.label")
+                            )
 
-                                @radioButton(
-                                    displayname("displayName"),
-                                    "short",
-                                    '_name  -> "displayName",
-                                    '_id    -> "displayName2",
-                                    '_label -> messagesApi("pages.user-edit-profile.settings.name-style.radio.short.label")
-                                )
+                            @radioButton(
+                                displayname("displayName"),
+                                "suser",
+                                '_name  -> "displayName",
+                                '_id    -> "displayName3",
+                                '_label -> messagesApi("pages.user-edit-profile.settings.name-style.radio.user.label")
+                            )
+                        </div>
 
-                                @radioButton(
-                                    displayname("displayName"),
-                                    "suser",
-                                    '_name  -> "displayName",
-                                    '_id    -> "displayName3",
-                                    '_label -> messagesApi("pages.user-edit-profile.settings.name-style.radio.user.label")
-                                )
-                            </div>
+                        <p>@messagesApi("pages.user-edit-profile.settings.name-colour.body")</p>
+                        <div class="form-group">
+                            <label class="btn btn-primary" for="displayNameColour">
+                                <span class="glyphicon glyphicon-tint" aria-hidden="true"></span>
+                                @messagesApi("pages.user-edit-profile.settings.name-colour.picker.label")
+                                <input id="displayNameColour" type="color" name="displayNameColour" value="@{displayname("displayNameColour").value.get}">
+                            </label>
+                        </div>
 
-                            <p>@messagesApi("pages.user-edit-profile.settings.name-colour.body")</p>
-                            <div class="form-group">
-                                <label class="btn btn-primary" for="displayNameColour">
-                                    <span class="glyphicon glyphicon-tint" aria-hidden="true"></span>
-                                    @messagesApi("pages.user-edit-profile.settings.name-colour.picker.label")
-                                    <input id="displayNameColour" type="color" name="displayNameColour">
-                                </label>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("app.common.save")</button>
-                                </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <button id="settings-submit" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("app.common.save")</button>
                             </div>
                         </div>
-                    </form>
-                </div>
-
-                <div class="col-md-4">
-                    @errorPanel(displayname)
-                </div>
+                    </div>
+                </form>
             </div>
 
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="panel panel-danger">
-                        <div class="panel-heading"><strong>@messagesApi("pages.user-edit-profile.delete.heading")</strong></div>
-                        <div class="panel-body">
-                            <p class="text-danger">@Html(messagesApi("pages.user-edit-profile.delete.body.one"))</p>
-                            <p class="text-danger">@messagesApi("pages.user-edit-profile.delete.body.two")</p>
+            <div class="col-md-4">
+                @errorPanel(displayname)
+            </div>
+        </div>
 
-                            <div class="form-group">
-                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-account-modal">
-                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> @messagesApi("app.common.delete-account")
-                                </button>
-                            </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="panel panel-danger">
+                    <div class="panel-heading"><strong>@messagesApi("pages.user-edit-profile.delete.heading")</strong></div>
+                    <div class="panel-body">
+                        <p class="text-danger">@Html(messagesApi("pages.user-edit-profile.delete.body.one"))</p>
+                        <p class="text-danger">@messagesApi("pages.user-edit-profile.delete.body.two")</p>
+
+                        <div class="form-group">
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-account-modal">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> @messagesApi("app.common.delete-account")
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="modal fade" id="delete-account-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-                </div>
-                <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Close</button>
-                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-account-modal">
-                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> @messagesApi("app.common.delete-account")
-                    </button>
-                </div>
+<div class="modal fade" id="delete-account-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Close</button>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-account-modal">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> @messagesApi("app.common.delete-account")
+                </button>
             </div>
         </div>
     </div>
-
-    @*<script>*@
-        @*console.log("@displayname("displayNameColour").value.get");*@
-        @*document.getElementById("displayNameColour").value = "@{displayname("displayNameColour").value.get}";*@
-    @*</script>*@
+</div>
 }

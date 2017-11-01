@@ -1,0 +1,3 @@
+#This is the main test routes file for this microservice
+->      /account-services                  app.Routes
+->      /account-services/test-only        test.Routes

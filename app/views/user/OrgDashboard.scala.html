@@ -27,80 +27,80 @@
 }
 
 @MainTemplate(title = messagesApi("pages.org-dashboard.title"), links, navBarRoutes) {
-    <div class="cjww-jumbo-background" style="background: url('/account-services/assets/images/background.jpg') fixed center no-repeat;">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <object>
-                        <svg viewBox="0 0 140 140" preserveAspectRatio="xMinYMin meet">
-                            <g>
-                                <circle fill="@colourSwitcher(scala.util.Random.nextInt(4))" r="50%" cx="50%" cy="50%" class="circle-back" />
-                                <text fill="#ffffff" font-size="45" font-family="Verdana" x="50%" y="60%">
-                                    <tspan text-anchor="middle">@basicDetails.initials</tspan>
-                                </text>
-                            </g>
-                        </svg>
-                    </object>
-                </div>
+<div class="cjww-jumbo-background" style="background: url('/account-services/assets/images/background.jpg') fixed center no-repeat;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <object>
+                    <svg viewBox="0 0 140 140" preserveAspectRatio="xMinYMin meet">1
+                        <g>
+                            <circle fill="@colourSwitcher(scala.util.Random.nextInt(4))" r="50%" cx="50%" cy="50%" class="circle-back" />
+                            <text fill="#ffffff" font-size="45" font-family="Verdana" x="50%" y="60%">
+                                <tspan text-anchor="middle">@basicDetails.initials</tspan>
+                            </text>
+                        </g>
+                    </svg>
+                </object>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-11">
+                <h1 id="main-heading" class="page-title" style="">@messagesApi("pages.org-dashboard.heading", basicDetails.orgName)</h1>
             </div>
 
-            <div class="row">
-                <div class="col-md-11">
-                    <h1 id="main-title" class="page-title" style="">@messagesApi("pages.org-dashboard.heading", basicDetails.orgName)</h1>
-                </div>
-
-                <div class="col-md-1">
-                    <div class="btn-group cjww-button">
-                        <button class="btn btn-default btn-lg dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>  <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a href="#"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.cover-photo.dropdown.one")</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href=""><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.cover-photo.dropdown.two")</a></li>
-                        </ul>
-                    </div>
+            <div class="col-md-1">
+                <div class="btn-group cjww-button">
+                    <button class="btn btn-default btn-lg dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>  <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.cover-photo.dropdown.one")</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href=""><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.cover-photo.dropdown.two")</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="top-block-single">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <h2>@messagesApi("pages.org-dashboard.quick-links.heading")</h2>
-                    <hr>
-                    <div class="list-group">
-                        <a href="" class="list-group-item">
-                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.quick-links.list.one") <span class="badge">@enrolmentCount</span></h4>
-                        </a>
-                        <a href="" class="list-group-item">
-                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.quick-links.list.two")</h4>
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.quick-links.list.three") <span class="badge">0</span></h4>
-                        </a>
-                    </div>
+<div class="top-block-single">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <h2>@messagesApi("pages.org-dashboard.quick-links.heading")</h2>
+                <hr>
+                <div class="list-group">
+                    <a id="review-enrolments-link" href="" class="list-group-item">
+                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.quick-links.list.one") <span class="badge">@enrolmentCount</span></h4>
+                    </a>
+                    <a id="edit-profile-link" href="" class="list-group-item">
+                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.quick-links.list.two")</h4>
+                    </a>
+                    <a id="messages-link" href="#" class="list-group-item">
+                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.quick-links.list.three") <span class="badge">0</span></h4>
+                    </a>
                 </div>
+            </div>
 
-                <div class="col-md-9">
-                    <h2>@messagesApi("pages.org-dashboard.teacher-list.heading")</h2>
-                    <hr>
+            <div class="col-md-9">
+                <h2>@messagesApi("pages.org-dashboard.teacher-list.heading")</h2>
+                <hr>
 
-                    <div class="row">
-                        @if(teacherList.isEmpty) {
-                            <p class="text-center">@messagesApi("pages.org-dashboard.teacher-list.body", basicDetails.orgName)</p>
-                        } else {
-                            @for(teacher <- teacherList) {
-                                <div class="col-md-3">
-                                    @teacherLink(teacher)
-                                </div>
-                            }
+                <div class="row">
+                    @if(teacherList.isEmpty) {
+                    <p class="text-center">@messagesApi("pages.org-dashboard.teacher-list.body", basicDetails.orgName)</p>
+                    } else {
+                        @for(teacher <- teacherList) {
+                            <div class="col-md-3">
+                                @teacherLink(teacher)
+                            </div>
                         }
-                    </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
+</div>
 }

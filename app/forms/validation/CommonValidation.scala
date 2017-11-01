@@ -21,7 +21,17 @@ import play.api.data.Forms.text
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
+object CommonValidation extends CommonValidation
+
 trait CommonValidation extends RegexPack {
+
+  def hasTextBeenEntered(key: String): Mapping[String] = {
+    val enteredTextConstraint: Constraint[String] = Constraint(s"constraints.$key")({ formValue =>
+      if(formValue.isEmpty) Invalid(Seq(ValidationError(s"You have not entered the form value for key $key"))) else Valid
+    })
+    text.verifying(enteredTextConstraint)
+  }
+
   def userNameValidation: Mapping[String] = {
     val userNameConstraint: Constraint[String] = Constraint("constraints.userName")({ userName =>
       val errors = userName match {

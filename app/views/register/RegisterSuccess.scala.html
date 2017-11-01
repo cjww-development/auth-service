@@ -4,50 +4,54 @@
 @(accType : String)(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @individual = {
+<div id="individual-success">
     <p>@messagesApi("pages.register-success.individual.top")</p>
     <ul class="list-bullet">
         <li><p>@messagesApi("pages.register-success.individual.list.one")</p></li>
         <li><p>@messagesApi("pages.register-success.individual.list.two")</p></li>
     </ul>
     <p>@messagesApi("pages.register-success.individual.bottom")</p>
+</div>
 }
 
 @organisation = {
+<div id="organisation-success">
     <p>@messagesApi("pages.register-success.organisation.top")</p>
     <ul class="list-bullet">
         <li><p>@messagesApi("pages.register-success.organisation.list.one")</p></li>
         <li><p>@messagesApi("pages.register-success.organisation.list.two")</p></li>
         <li><p>@messagesApi("pages.register-success.organisation.list.three")</p></li>
     </ul>
+</div>
 }
 
 @MainTemplate(title = messagesApi("pages.register-success.title"), links, navBarRoutes) {
-    <div class="top-block-single">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 col-sm-4 col-xs-12">
-                    <div class="responsive-container">
-                        <div class="dummy"></div>
+<div class="top-block-single">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="responsive-container">
+                    <div class="dummy"></div>
 
-                        <div class="img-container">
-                            <img src="@routes.Assets.versioned("images/logo.png")" width="100%" alt="">
-                        </div>
+                    <div class="img-container">
+                        <img src="@routes.Assets.versioned("images/logo.png")" width="100%" alt="CJWW main logo">
                     </div>
                 </div>
+            </div>
 
-                <div class="col-md-8 col-sm-8 col-xs-12">
-                    <h1>@messagesApi("pages.register-success.heading")</h1>
-                    <p>@messagesApi("pages.register-success.body.top")</p>
-                    @if(accType == "individual"){
-                        @individual
-                    }
-                    @if(accType == "organisation"){
-                        @organisation
-                    }
-                    <p>@messagesApi("pages.register-success.body.bottom")</p>
-                    <a class="btn btn-success" href="@controllers.login.routes.LoginController.show(None)"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> @messagesApi("app.common.login")</a>
-                </div>
+            <div class="col-md-8 col-sm-8 col-xs-12">
+                <h1 id="main-heading">@messagesApi("pages.register-success.heading")</h1>
+                <p>@messagesApi("pages.register-success.body.top")</p>
+                @if(accType == "individual"){
+                    @individual
+                }
+                @if(accType == "organisation"){
+                    @organisation
+                }
+                <p>@messagesApi("pages.register-success.body.bottom")</p>
+                <a id="login-submit" class="btn btn-success" href="@controllers.login.routes.LoginController.show(None)"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> @messagesApi("app.common.login")</a>
             </div>
         </div>
     </div>
+</div>
 }
