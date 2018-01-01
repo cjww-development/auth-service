@@ -6,10 +6,11 @@
 @import models.feed.FeedItem
 @import services.EditProfileService.{getDisplayImageURL, getDisplayNameColour}
 
+@import com.cjwwdev.auth.models.AuthContext
 @(feed: Option[List[FeedItem]],
   basicDetails: BasicDetails,
   settings: Settings,
-  deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+  deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], authContext: AuthContext, messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @import controllers.user.{routes => userRoutes}
 @import views.html.helpers.feedItem
@@ -107,6 +108,11 @@
                         <a id="problem-reports-link" href="#" class="list-group-item">
                             <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.four")</h4>
                         </a>
+                        @if(authContext.user.role.contains("teacher")) {
+                            <a href="@controllers.user.routes.GenerateCodeController.getRegistrationCodeShow()" id="registration-code-link" class="list-group-item">
+                                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-qrcode"></span> @messagesApi("pages.org-dashboard.quick-links.list.four")</h4>
+                            </a>
+                        }
                     </div>
 
                     @if(deversityEnrolment.isDefined) {

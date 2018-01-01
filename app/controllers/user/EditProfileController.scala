@@ -21,33 +21,33 @@ import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import com.cjwwdev.config.ConfigurationLoader
-import config.{InvalidOldPassword, PasswordUpdated}
+import common.{FrontendController, InvalidOldPassword, PasswordUpdated}
 import connectors.AccountsMicroserviceConnector
 import enums.HttpResponse
 import forms.{NewPasswordForm, SettingsForm, UserProfileForm}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import play.api.Logger
 import services.{EditProfileService, FeedService}
-import utils.application.FrontendController
 import views.html.user.EditProfile
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class EditProfileController @Inject()(accountConnector: AccountsMicroserviceConnector,
-                                      feedEventService : FeedService,
-                                      val authConnector: AuthConnector,
-                                      val config: ConfigurationLoader,
-                                      implicit val messagesApi: MessagesApi) extends FrontendController with EditProfileService with Actions {
+class EditProfileControllerImpl @Inject()(val accountsConnector: AccountsMicroserviceConnector,
+                                          val feedService : FeedService,
+                                          val authConnector: AuthConnector,
+                                          implicit val messagesApi: MessagesApi) extends EditProfileController
+
+trait EditProfileController extends FrontendController with Actions with EditProfileService {
+  val accountsConnector: AccountsMicroserviceConnector
+  val feedService: FeedService
 
   def show : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>
         for {
-          basicDetails    <- accountConnector.getBasicDetails
-          settings        <- accountConnector.getSettings
+          basicDetails    <- accountsConnector.getBasicDetails
+          settings        <- accountsConnector.getSettings
         } yield {
           Ok(
             EditProfile(
@@ -66,8 +66,8 @@ class EditProfileController @Inject()(accountConnector: AccountsMicroserviceConn
         UserProfileForm.form.bindFromRequest.fold(
           errors => {
             for {
-              basicDetails   <- accountConnector.getBasicDetails
-              settings       <- accountConnector.getSettings
+              basicDetails   <- accountsConnector.getBasicDetails
+              settings       <- accountsConnector.getSettings
             } yield {
               BadRequest(
                 EditProfile(
@@ -79,9 +79,9 @@ class EditProfileController @Inject()(accountConnector: AccountsMicroserviceConn
               )
             }
           },
-          valid => accountConnector.updateProfile(valid) flatMap {
+          valid => accountsConnector.updateProfile(valid) flatMap {
             case HttpResponse.success => for {
-              _ <- feedEventService.basicDetailsFeedEvent
+              _ <- feedService.basicDetailsFeedEvent
             } yield {
               Redirect(routes.EditProfileController.show()).withSession(request.session. +("firstName" -> valid.firstName) +("lastName" -> valid.lastName))
             }
@@ -95,8 +95,8 @@ class EditProfileController @Inject()(accountConnector: AccountsMicroserviceConn
         NewPasswordForm.form.bindFromRequest.fold(
           errors => {
             for {
-              basicDetails    <- accountConnector.getBasicDetails
-              settings        <- accountConnector.getSettings
+              basicDetails    <- accountsConnector.getBasicDetails
+              settings        <- accountsConnector.getSettings
             } yield {
               BadRequest(
                 EditProfile(
@@ -108,14 +108,14 @@ class EditProfileController @Inject()(accountConnector: AccountsMicroserviceConn
               )
             }
           },
-          valid => accountConnector.updatePassword(valid) flatMap {
-            case PasswordUpdated => feedEventService.passwordUpdateFeedEvent map {
+          valid => accountsConnector.updatePassword(valid) flatMap {
+            case PasswordUpdated => feedService.passwordUpdateFeedEvent map {
               _ => Redirect(s"${routes.EditProfileController.show().url}#password")
             }
             case InvalidOldPassword =>
-              accountConnector.getBasicDetails flatMap {
+              accountsConnector.getBasicDetails flatMap {
                 basicDetails =>
-                  accountConnector.getSettings map {
+                  accountsConnector.getSettings map {
                     settings =>
                       BadRequest(
                         EditProfile(
@@ -137,7 +137,7 @@ class EditProfileController @Inject()(accountConnector: AccountsMicroserviceConn
         SettingsForm.form.bindFromRequest.fold(
           errors => {
             for {
-              basicDetails    <- accountConnector.getBasicDetails
+              basicDetails    <- accountsConnector.getBasicDetails
             } yield {
               BadRequest(
                 EditProfile(
@@ -150,10 +150,9 @@ class EditProfileController @Inject()(accountConnector: AccountsMicroserviceConn
             }
           },
           valid => {
-            Logger.debug(s"SETTINGS = $valid")
-            accountConnector.updateSettings(valid) flatMap {
+            accountsConnector.updateSettings(valid) flatMap {
               case HttpResponse.success =>
-                feedEventService.accountSettingsFeedEvent map {
+                feedService.accountSettingsFeedEvent map {
                   _ => Redirect(routes.EditProfileController.show())
                 }
               case HttpResponse.failed => Future.successful(InternalServerError)

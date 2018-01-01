@@ -17,6 +17,7 @@
 package services
 
 import models.accounts.{BasicDetails, Settings, UserProfile}
+
 import scala.language.implicitConversions
 
 object EditProfileService extends EditProfileService
@@ -25,9 +26,9 @@ trait EditProfileService {
 
   implicit def basicDetailsToUserProfile(basicDetails: BasicDetails): UserProfile = UserProfile(
     firstName = basicDetails.firstName,
-    lastName = basicDetails.lastName,
-    userName = basicDetails.userName,
-    email = basicDetails.email
+    lastName  = basicDetails.lastName,
+    userName  = basicDetails.userName,
+    email     = basicDetails.email
   )
 
   def getDisplayOption(settings: Settings): String = {

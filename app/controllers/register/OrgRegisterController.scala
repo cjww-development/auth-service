@@ -16,28 +16,28 @@
 
 package controllers.register
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.views.html.templates.errors.StandardErrorView
+import common.FrontendController
 import enums.Registration
 import forms.OrgRegisterForm
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.RegisterService
-import utils.application.FrontendController
 import views.html.register.{OrgRegisterView, RegisterSuccess}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-@Singleton
-class OrgRegisterController @Inject()(userRegister : RegisterService,
-                                      val authConnector: AuthConnector,
-                                      val config: ConfigurationLoader,
-                                      implicit val messagesApi: MessagesApi) extends FrontendController with Actions {
+class OrgRegisterControllerImpl @Inject()(val registrationService : RegisterService,
+                                          val authConnector: AuthConnector,
+                                          implicit val messagesApi: MessagesApi) extends OrgRegisterController
+
+trait OrgRegisterController extends FrontendController with Actions {
+  val registrationService: RegisterService
 
   def show: Action[AnyContent] = Action.async {
     implicit request =>
@@ -48,7 +48,7 @@ class OrgRegisterController @Inject()(userRegister : RegisterService,
     implicit request =>
       OrgRegisterForm.orgRegisterForm.bindFromRequest.fold(
         errors => Future.successful(BadRequest(OrgRegisterView(errors))),
-        newOrg => userRegister.registerOrg(newOrg) map {
+        newOrg => registrationService.registerOrg(newOrg) map {
           case Registration.success       => Ok(RegisterSuccess("organisation"))
           case Registration.bothInUse     => BadRequest(OrgRegisterView(
             OrgRegisterForm.orgRegisterForm.fill(newOrg)

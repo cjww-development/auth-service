@@ -19,27 +19,25 @@ import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import com.cjwwdev.config.ConfigurationLoader
-import com.google.inject.Singleton
+import common.FrontendController
 import connectors.SessionStoreConnector
 import forms.UserLoginForm
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.LoginService
-import utils.application.FrontendController
-import utils.url.UrlParser
 import views.html.login.UserLoginView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Singleton
-class LoginController @Inject()(userLogin : LoginService,
-                                sessionStoreConnector: SessionStoreConnector,
-                                urlParser: UrlParser,
-                                val authConnector: AuthConnector,
-                                val config: ConfigurationLoader,
-                                implicit val messagesApi: MessagesApi) extends FrontendController with Actions {
+class LoginControllerImpl @Inject()(val loginService : LoginService,
+                                    val sessionStoreConnector: SessionStoreConnector,
+                                    val authConnector: AuthConnector,
+                                    implicit val messagesApi: MessagesApi) extends LoginController
+
+trait LoginController extends FrontendController with Actions {
+  val loginService: LoginService
+  val sessionStoreConnector: SessionStoreConnector
 
   def show(redirect : Option[String]) : Action[AnyContent] = Action.async {
     implicit request =>
@@ -50,8 +48,8 @@ class LoginController @Inject()(userLogin : LoginService,
     implicit request =>
       UserLoginForm.loginForm.bindFromRequest.fold(
         errors => Future.successful(BadRequest(UserLoginView(errors))),
-        valid => userLogin.processLoginAttempt(valid) map {
-          case Some(session) => Redirect(urlParser.serviceDirector).withSession(session)
+        valid => loginService.processLoginAttempt(valid) map {
+          case Some(session) => Redirect(serviceDirector).withSession(session)
           case None => Ok(
             UserLoginView(
               UserLoginForm.loginForm.fill(valid).withError("userName", messagesApi("cjww.auth.login.error.invalid")).withError("password", "")

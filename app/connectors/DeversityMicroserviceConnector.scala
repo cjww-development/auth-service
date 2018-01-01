@@ -15,24 +15,28 @@
 // limitations under the License.
 package connectors
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import com.cjwwdev.auth.models.AuthContext
-import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions.NotFoundException
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.security.encryption.DataSecurity
-import config.ApplicationConfiguration
+import common.ApplicationConfiguration
+import enums.HttpResponse
+import models.RegistrationCode
 import models.accounts.DeversityEnrolment
 import models.deversity.{OrgDetails, TeacherDetails}
 import play.api.libs.json.JsValue
 import play.api.mvc.Request
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-@Singleton
-class DeversityMicroserviceConnector @Inject()(http: Http, val config: ConfigurationLoader) extends ApplicationConfiguration {
+class DeversityMicroserviceConnectorImpl @Inject()(val http: Http) extends DeversityMicroserviceConnector
+
+trait DeversityMicroserviceConnector extends ApplicationConfiguration {
+  val http: Http
+
   def getDeversityEnrolment(implicit authContext: AuthContext, request: Request[_]): Future[Option[DeversityEnrolment]] = {
     http.GET[DeversityEnrolment](s"$deversityMicroservice/enrolment/${authContext.user.id}/deversity") map { devEnr =>
       Some(devEnr)
@@ -69,6 +73,16 @@ class DeversityMicroserviceConnector @Inject()(http: Http, val config: Configura
       orgDeets => Some(orgDeets)
     } recover {
       case _: NotFoundException => None
+    }
+  }
+
+  def getRegistrationCode(implicit authContext: AuthContext, request: Request[_]): Future[RegistrationCode] = {
+    http.GET[RegistrationCode](s"$deversityMicroservice/user/${authContext.user.id}/fetch-registration-code")
+  }
+
+  def generateRegistrationCode(implicit authContext: AuthContext, request: Request[_]): Future[HttpResponse.Value] = {
+    http.HEAD(s"$deversityMicroservice/user/${authContext.user.id}/generate-registration-code") map {
+      _ => HttpResponse.success
     }
   }
 }

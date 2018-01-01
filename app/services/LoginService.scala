@@ -18,21 +18,31 @@
 package services
 
 import java.util.UUID
+import javax.inject.Inject
 
 import com.cjwwdev.auth.models.AuthContext
-import com.google.inject.{Inject, Singleton}
+import common.Logging
 import connectors._
 import enums.SessionCache
 import models.UserLogin
-import models.accounts.UserProfile
-import play.api.libs.json.{JsValue, Json, OWrites}
+import play.api.libs.json.{DefaultFormat, Json, OWrites}
 import play.api.mvc.{Request, Session}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Singleton
-class LoginService @Inject()(userLogin: AuthMicroserviceConnector, sessionStoreConnector: SessionStoreConnector) {
+class LoginServiceImpl @Inject()(val authConnector: AuthMicroserviceConnector,
+                                 val sessionStoreConnector: SessionStoreConnector) extends LoginService
+
+trait LoginService extends Logging with DefaultFormat {
+  val authConnector: AuthMicroserviceConnector
+  val sessionStoreConnector: SessionStoreConnector
+
+  private val contextIdWriter: OWrites[String] = new OWrites[String] {
+    override def writes(o: String) = Json.obj(
+      "contextId" -> o
+    )
+  }
 
   private def sessionMap(context: AuthContext): Map[String, String] = {
     context.user.credentialType match {
@@ -54,9 +64,10 @@ class LoginService @Inject()(userLogin: AuthMicroserviceConnector, sessionStoreC
   }
 
   def processLoginAttempt(credentials : UserLogin)(implicit request: Request[_]) : Future[Option[Session]] = {
-    userLogin.getUser(credentials) flatMap { context =>
+    authConnector.getUser(credentials) flatMap { context =>
       val session = Session(sessionMap(context))
-      sessionStoreConnector.cache[AuthContext](session("cookieId"), context) map {
+      logger.info(s"##################### ${session("cookieId")}")
+      sessionStoreConnector.cache[String](session("cookieId"), context.contextId)(contextIdWriter, request) map {
         case SessionCache.cached => Some(session)
       } recover {
         case e: Throwable => throw e

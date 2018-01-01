@@ -17,7 +17,7 @@
 package connectors
 
 import com.cjwwdev.http.exceptions.{ConflictException, ServerErrorException}
-import config.{InvalidOldPassword, PasswordUpdated}
+import common.{InvalidOldPassword, PasswordUpdated}
 import enums.HttpResponse
 import mocks.CJWWSpec
 import models.accounts.{PasswordSet, Settings, UserProfile}
@@ -33,7 +33,9 @@ class AccountsMicroserviceConnectorSpec extends CJWWSpec {
 
   class Setup {
     implicit val request = FakeRequest()
-    val testConnector = new AccountsMicroserviceConnector(mockHttpVerbs, mockConfig)
+    val testConnector = new AccountsMicroserviceConnector {
+      override val http = mockHttpVerbs
+    }
   }
 
   "updateProfile" should {

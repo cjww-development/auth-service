@@ -15,21 +15,24 @@
 // limitations under the License.
 package connectors
 
+import javax.inject.Inject
+
 import com.cjwwdev.auth.models.AuthContext
-import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions.ForbiddenException
 import com.cjwwdev.http.verbs.Http
-import com.google.inject.{Inject, Singleton}
-import config._
-import models.UserLogin
 import com.cjwwdev.security.encryption.DataSecurity
+import common._
+import models.UserLogin
 import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Singleton
-class AuthMicroserviceConnector @Inject()(http: Http, val config: ConfigurationLoader) extends ApplicationConfiguration {
+class AuthMicroserviceConnectorImpl @Inject()(val http: Http) extends AuthMicroserviceConnector
+
+trait AuthMicroserviceConnector extends ApplicationConfiguration {
+  val http: Http
+
   def getUser(loginDetails : UserLogin)(implicit request: Request[_]) : Future[AuthContext] = {
     val enc = DataSecurity.encryptType[UserLogin](loginDetails)
     http.GET[AuthContext](s"$authMicroservice/login/user?enc=$enc") recover {

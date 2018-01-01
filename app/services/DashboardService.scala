@@ -16,23 +16,27 @@
 
 package services
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import com.cjwwdev.auth.models.AuthContext
+import common.MissingOrgDetailsException
 import connectors.{AccountsMicroserviceConnector, DeversityMicroserviceConnector}
 import models.accounts.{BasicDetails, DeversityEnrolment, Settings}
 import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.FeedItem
-import play.api.Logger
 import play.api.mvc.Request
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-@Singleton
-class DashboardService @Inject()(accountConnector: AccountsMicroserviceConnector,
-                                 deversityConnector: DeversityMicroserviceConnector,
-                                 feedService: FeedService) {
+class DashboardServiceImpl @Inject()(val accountConnector: AccountsMicroserviceConnector,
+                                     val deversityConnector: DeversityMicroserviceConnector,
+                                     val feedService: FeedService) extends DashboardService
+
+trait DashboardService {
+  val accountConnector: AccountsMicroserviceConnector
+  val deversityConnector: DeversityMicroserviceConnector
+  val feedService: FeedService
 
   def getBasicDetails(implicit authContext: AuthContext, request: Request[_]): Future[BasicDetails] = {
     accountConnector.getBasicDetails
@@ -53,6 +57,12 @@ class DashboardService @Inject()(accountConnector: AccountsMicroserviceConnector
     }
   }
 
+  def getSchoolInfo(schoolName: String)(implicit authContext: AuthContext, request: Request[_]): Future[OrgDetails] = {
+    deversityConnector.getSchoolInfo(schoolName) map {
+      _.getOrElse(throw new MissingOrgDetailsException(s"Couldn't find org details for org name $schoolName"))
+    }
+  }
+
   def getDeversityEnrolment(implicit authContext: AuthContext, request: Request[_]): Future[Option[DeversityEnrolment]] = {
     for {
       enrolment <- deversityConnector.getDeversityEnrolment
@@ -70,16 +80,15 @@ class DashboardService @Inject()(accountConnector: AccountsMicroserviceConnector
     } yield {
       enrolment match {
         case Some(enr) => Some(
-          enr.copy(schoolName = school.get.orgName, teacher = concatTeacherName(teacher))
+          enr.copy(
+            schoolName = school.get.orgName,
+            teacher = concatTeacherName(teacher)
+          )
         )
         case None => None
       }
     }
   }
-
-//  def getDeversityEnrolmentForConfirmation(userId: String)(implicit authContext: AuthContext, request: Request[_]): Future[DeversityEnrolment] = {
-//
-//  }
 
   def getOrgBasicDetails(implicit authContext: AuthContext, request: Request[_]): Future[Option[OrgDetails]] = {
     accountConnector.getOrgBasicDetails

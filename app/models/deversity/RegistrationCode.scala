@@ -13,11 +13,21 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+package models
 
-package utils.application
+import com.cjwwdev.json.TimeFormat
+import org.joda.time.DateTime
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
-import config.ApplicationConfiguration
-import play.api.i18n.{I18NSupportLowPriorityImplicits, I18nSupport}
-import play.api.mvc.Controller
+case class RegistrationCode(identifier: String,
+                            code: String,
+                            createdAt: DateTime)
 
-trait FrontendController extends Controller with ApplicationConfiguration with I18NSupportLowPriorityImplicits with I18nSupport
+object RegistrationCode extends TimeFormat {
+  implicit val format: OFormat[RegistrationCode] = (
+    (__ \ "identifier").format[String] and
+    (__ \ "code").format[String] and
+    (__ \ "createdAt").format(dateTimeRead)(dateTimeWrite)
+  )(RegistrationCode.apply, unlift(RegistrationCode.unapply))
+}

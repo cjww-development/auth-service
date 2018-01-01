@@ -20,20 +20,20 @@ import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import com.cjwwdev.config.ConfigurationLoader
-import play.api.Logger
+import common.FrontendController
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.DashboardService
-import utils.application.FrontendController
 import views.html.user.{Dashboard, OrgDashboard}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class DashboardController @Inject()(dashboardService: DashboardService,
-                                    val authConnector: AuthConnector,
-                                    val config: ConfigurationLoader,
-                                    implicit val messagesApi: MessagesApi) extends FrontendController with Actions {
+class DashboardControllerImpl @Inject()(val dashboardService: DashboardService,
+                                        val authConnector: AuthConnector,
+                                        implicit val messagesApi: MessagesApi) extends DashboardController
+
+trait DashboardController extends FrontendController with Actions {
+  val dashboardService: DashboardService
 
   def show : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>

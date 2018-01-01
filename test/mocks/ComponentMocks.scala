@@ -32,7 +32,6 @@ trait ComponentMocks {
   val mockFeedEventService : FeedService = mock[FeedService]
   val mockHttpVerbs : Http = mock[Http]
   val mockLoginService : LoginService = mock[LoginService]
-  val mockConfig = mock[ConfigurationLoader]
 
   def resetMocks() : Unit = {
     reset(mockSessionStoreConnector)

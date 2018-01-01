@@ -15,29 +15,30 @@
 // limitations under the License.
 package connectors
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import com.cjwwdev.auth.models.AuthContext
-import com.cjwwdev.config.ConfigurationLoader
-import com.cjwwdev.http.exceptions.{ClientErrorException, ConflictException, HttpDecryptionException, NotFoundException, ServerErrorException}
+import com.cjwwdev.http.exceptions._
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.security.encryption.DataSecurity
-import config._
-import config.MissingBasicDetailsException
+import common.{MissingBasicDetailsException, _}
 import enums.{HttpResponse, Registration}
 import models.accounts._
 import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.FeedItem
 import models.registration.{OrgRegistration, UserRegistration}
 import play.api.http.Status._
-import play.api.libs.json.{JsArray, JsObject, JsValue}
+import play.api.libs.json.{JsArray, JsObject}
 import play.api.mvc.Request
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-@Singleton
-class AccountsMicroserviceConnector @Inject()(http: Http, val config: ConfigurationLoader) extends ApplicationConfiguration {
+class AccountsMicroserviceConnectorImpl @Inject()(val http: Http) extends AccountsMicroserviceConnector
+
+trait AccountsMicroserviceConnector extends ApplicationConfiguration {
+  val http: Http
+
   def updateProfile(userProfile: UserProfile)(implicit auth: AuthContext, request: Request[_]) : Future[HttpResponse.Value] = {
     http.PATCH[UserProfile](s"$accountsMicroservice/account/${auth.user.id}/update-profile", userProfile) map {
       _.status match {

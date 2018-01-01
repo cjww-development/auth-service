@@ -15,23 +15,23 @@
 // limitations under the License.
 package controllers.test
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
-import com.cjwwdev.config.ConfigurationLoader
+import common.FrontendController
 import connectors.test.TeardownConnector
 import forms.test.TearDownUserForm
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import utils.application.FrontendController
 import views.html.test.{ActionCompleteView, TearDownUserView}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-@Singleton
-class TeardownController @Inject()(implicit val messagesApi: MessagesApi,
-                                   val config: ConfigurationLoader,
-                                   tearDownConnector: TeardownConnector) extends FrontendController {
+class TeardownControllerImpl @Inject()(implicit val messagesApi: MessagesApi,
+                                       val tearDownConnector: TeardownConnector) extends TeardownController
+
+trait TeardownController extends FrontendController {
+  val tearDownConnector: TeardownConnector
 
   def tearDownTestUserShow: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(TearDownUserView(TearDownUserForm.form)))

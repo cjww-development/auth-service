@@ -18,5 +18,5 @@ package enums
 
 object HttpResponse extends Enumeration {
   val success = Value
-  val failed = Value
+  val failed  = Value
 }

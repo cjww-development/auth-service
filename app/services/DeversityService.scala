@@ -15,11 +15,12 @@
 // limitations under the License.
 package services
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import connectors.AccountsMicroserviceConnector
 
-@Singleton
-class DeversityService @Inject()(accountsMicroserviceConnector: AccountsMicroserviceConnector) {
+class DeversityServiceImpl @Inject()(val accountsConnector: AccountsMicroserviceConnector) extends DeversityService
+
+trait DeversityService {
 
 }

@@ -127,6 +127,7 @@ pages.org-dashboard.quick-links.heading                          = Quick links
 pages.org-dashboard.quick-links.list.one                         = Review enrolments
 pages.org-dashboard.quick-links.list.two                         = Edit profile
 pages.org-dashboard.quick-links.list.three                       = Messages
+pages.org-dashboard.quick-links.list.four                        = Generate code
 pages.org-dashboard.teacher-list.heading                         = Your teachers
 pages.org-dashboard.teacher-list.body                            = {0} currently has no enrolled teachers
 
@@ -163,4 +164,12 @@ pages.user-edit-profile.settings.name-colour.picker.label        = Choose your c
 pages.user-edit-profile.delete.heading                           = Delete your account
 pages.user-edit-profile.delete.body.one                          = DANGER! This action <strong>can''t</strong> be reversed
 pages.user-edit-profile.delete.body.two                          = You will be asked to enter your user name and password to confirm
+
+pages.generate-code.title                                        = Generate a registration code
+pages.generate-code.body.organisation                            = Present this code to your teachers when they are registering, this code is valid for 15 minutes
+pages.generate-code.body.individual                              = Present this code to your students when they are registering, this code is valid for 15 minutes
+pages.generate-code.button                                       = Generate registration code
+pages.generate-code.teacher-org.heading                          = Your schools registration code
+pages.generate-code.teacher.heading                              = Your teachers registration code
+
 

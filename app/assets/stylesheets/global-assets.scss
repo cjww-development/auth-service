@@ -350,3 +350,15 @@ svg {
 .list-group > a:active {
   border-left: 5px solid #124AA0;
 }
+
+.generated-registration-code-well {
+  @extend .well;
+  @extend .well-lg;
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+.registration-code-expired {
+  @extend .status-badge;
+  background-color: #9A090C;
+}

@@ -20,21 +20,18 @@ import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import com.cjwwdev.config.ConfigurationLoader
-import com.google.inject.Singleton
+import common.{ApplicationConfiguration, FrontendController}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import utils.application.FrontendController
-import views.html.redirect.ServiceSelector
 import views.html.misc.ServiceUnavailableView
+import views.html.redirect.ServiceSelector
 
 import scala.concurrent.Future
 
-@Singleton
-class RedirectController @Inject()(implicit val authConnector: AuthConnector,
-                                   val config: ConfigurationLoader,
-                                   implicit val messagesApi: MessagesApi) extends FrontendController with Actions {
+class RedirectControllerImpl @Inject()(val authConnector: AuthConnector,
+                                       implicit val messagesApi: MessagesApi) extends RedirectController
 
+trait RedirectController extends FrontendController with Actions with ApplicationConfiguration {
   def chooseService : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>
       implicit request =>

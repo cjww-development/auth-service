@@ -21,50 +21,47 @@ import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.views.html.templates.errors.StandardErrorView
-import com.google.inject.Singleton
+import common.FrontendController
 import enums.Registration
 import forms.UserRegisterForm
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.RegisterService
-import utils.application.FrontendController
 import views.html.register.{RegisterSuccess, UserRegisterView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Singleton
-class UserRegisterController @Inject()(userRegister : RegisterService,
-                                       val authConnector: AuthConnector,
-                                       val config: ConfigurationLoader,
-                                       implicit val messagesApi: MessagesApi) extends FrontendController with Actions {
+class UserRegisterControllerImpl @Inject()(val registrationService : RegisterService,
+                                           val authConnector: AuthConnector,
+                                           implicit val messagesApi: MessagesApi) extends UserRegisterController
 
-  def show : Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(Ok(UserRegisterView(UserRegisterForm.RegisterUserForm)))
+trait UserRegisterController extends FrontendController with Actions {
+  val registrationService: RegisterService
+
+  def show : Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(UserRegisterView(UserRegisterForm.RegisterUserForm)))
   }
 
-  def submit : Action[AnyContent] = Action.async {
-    implicit request =>
-      UserRegisterForm.RegisterUserForm.bindFromRequest.fold(
-        errors => Future.successful(BadRequest(UserRegisterView(errors))),
-        newUser => userRegister.registerIndividual(newUser) map {
-          case Registration.success       => Ok(RegisterSuccess("individual"))
-          case Registration.bothInUse     => BadRequest(UserRegisterView(
-            UserRegisterForm.RegisterUserForm.fill(newUser)
-              .withError("userName", messagesApi("cjww.auth.register.generic.userName.inUse"))
-              .withError("orgEmail", messagesApi("cjww.auth.register.generic.email.inUse"))
-          ))
-          case Registration.emailInUse    => BadRequest(UserRegisterView(
-            UserRegisterForm.RegisterUserForm.fill(newUser).withError("orgEmail", messagesApi("cjww.auth.register.generic.email.inUse"))
-          ))
-          case Registration.userNameInUse => BadRequest(UserRegisterView(
-            UserRegisterForm.RegisterUserForm.withError("userName", messagesApi("cjww.auth.register.generic.userName.inUse"))
-          ))
-          case Registration.failed        => InternalServerError(StandardErrorView(messagesApi("cjww.auth.error.generic")))
-        }
-      )
+  def submit : Action[AnyContent] = Action.async { implicit request =>
+    UserRegisterForm.RegisterUserForm.bindFromRequest.fold(
+      errors  => Future.successful(BadRequest(UserRegisterView(errors))),
+      newUser => registrationService.registerIndividual(newUser) map {
+        case Registration.success       => Ok(RegisterSuccess("individual"))
+        case Registration.bothInUse     => BadRequest(UserRegisterView(
+          UserRegisterForm.RegisterUserForm.fill(newUser)
+            .withError("userName", messagesApi("cjww.auth.register.generic.userName.inUse"))
+            .withError("orgEmail", messagesApi("cjww.auth.register.generic.email.inUse"))
+        ))
+        case Registration.emailInUse    => BadRequest(UserRegisterView(
+          UserRegisterForm.RegisterUserForm.fill(newUser).withError("orgEmail", messagesApi("cjww.auth.register.generic.email.inUse"))
+        ))
+        case Registration.userNameInUse => BadRequest(UserRegisterView(
+          UserRegisterForm.RegisterUserForm.withError("userName", messagesApi("cjww.auth.register.generic.userName.inUse"))
+        ))
+        case Registration.failed        => InternalServerError(StandardErrorView(messagesApi("cjww.auth.error.generic")))
+      }
+    )
   }
 }

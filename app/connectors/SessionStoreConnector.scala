@@ -16,23 +16,25 @@
 
 package connectors
 
-import com.cjwwdev.config.ConfigurationLoader
-import com.cjwwdev.http.exceptions.{ForbiddenException, NotFoundException, ServerErrorException}
+import com.cjwwdev.http.exceptions.{ClientErrorException, ForbiddenException, NotFoundException, ServerErrorException}
 import com.cjwwdev.http.utils.SessionUtils
-import com.google.inject.{Inject, Singleton}
-import config.ApplicationConfiguration
+import com.cjwwdev.http.verbs.Http
+import com.google.inject.Inject
+import common.ApplicationConfiguration
+import enums.SessionCache
 import models.SessionUpdateSet
+import play.api.http.Status.{CREATED, OK}
 import play.api.libs.json.{OWrites, Reads}
 import play.api.mvc.Request
-import play.api.http.Status.{CREATED, OK}
-import com.cjwwdev.http.verbs.Http
-import enums.SessionCache
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Singleton
-class SessionStoreConnector @Inject()(http : Http, val config: ConfigurationLoader) extends ApplicationConfiguration with SessionUtils {
+class SessionStoreConnectorImpl @Inject()(val http : Http) extends SessionStoreConnector
+
+trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils {
+  val http: Http
+
   def cache[T](sessionId : String, data : T)(implicit writes: OWrites[T], request: Request[_]) : Future[SessionCache.Value] = {
     http.POST[T](s"$sessionStore/session/$sessionId/cache", data) map {
       _.status match {
@@ -40,7 +42,7 @@ class SessionStoreConnector @Inject()(http : Http, val config: ConfigurationLoad
       }
     } recover {
       case _: ServerErrorException => SessionCache.cacheFailure
-      case e: ForbiddenException  => throw e
+      case e: ForbiddenException   => throw e
     }
   }
 
@@ -69,6 +71,7 @@ class SessionStoreConnector @Inject()(http : Http, val config: ConfigurationLoad
         case OK => SessionCache.cacheDestroyed
       }
     } recover {
+      case _: ClientErrorException => SessionCache.cacheDestroyed
       case _: ServerErrorException => SessionCache.cacheDestructionFailure
     }
   }

@@ -13,23 +13,28 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package connectors.test
+package services
 
 import javax.inject.Inject
 
-import com.cjwwdev.http.verbs.Http
-import common.ApplicationConfiguration
-import play.api.libs.ws.WSResponse
+import com.cjwwdev.auth.models.AuthContext
+import connectors.DeversityMicroserviceConnector
+import enums.HttpResponse
+import models.RegistrationCode
 import play.api.mvc.Request
 
 import scala.concurrent.Future
 
-class TeardownConnectorImpl @Inject()(val http: Http) extends TeardownConnector
+class RegistrationCodeServiceImpl @Inject()(val deversityMicroserviceConnector: DeversityMicroserviceConnector) extends RegistrationCodeService
 
-trait TeardownConnector extends ApplicationConfiguration {
-  val http: Http
+trait RegistrationCodeService {
+  val deversityMicroserviceConnector: DeversityMicroserviceConnector
 
-  def deleteTestAccountInstance(userName: String, credentialType: String)(implicit request: Request[_]): Future[WSResponse] = {
-    http.DELETE(s"$accountsMicroservice/test-only/test-user/$userName/credential-type/$credentialType/tear-down")
+  def getGeneratedCode(implicit authContext: AuthContext, request: Request[_]): Future[RegistrationCode] = {
+    deversityMicroserviceConnector.getRegistrationCode
+  }
+
+  def generateRegistrationCode(implicit authContext: AuthContext, request: Request[_]): Future[HttpResponse.Value] = {
+    deversityMicroserviceConnector.generateRegistrationCode
   }
 }

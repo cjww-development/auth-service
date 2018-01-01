@@ -16,17 +16,19 @@
 
 package services
 
-import com.google.inject.{Inject, Singleton}
+import com.google.inject.Inject
 import connectors.AccountsMicroserviceConnector
-import enums.{HttpResponse, Registration}
+import enums.Registration
 import models.registration.{OrgRegistration, UserRegistration}
 import play.api.mvc.Request
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-@Singleton
-class RegisterService @Inject()(accountsConnector: AccountsMicroserviceConnector) {
+class RegisterServiceImpl @Inject()(val accountsConnector: AccountsMicroserviceConnector) extends RegisterService
+
+trait RegisterService {
+  val accountsConnector: AccountsMicroserviceConnector
 
   def registerIndividual(user : UserRegistration)(implicit request: Request[_]): Future[Registration.Value] = {
     for {

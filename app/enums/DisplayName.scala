@@ -17,7 +17,7 @@
 package enums
 
 object DisplayName extends Enumeration {
-  val full = Value
+  val full  = Value
   val short = Value
-  val user = Value
+  val user  = Value
 }
