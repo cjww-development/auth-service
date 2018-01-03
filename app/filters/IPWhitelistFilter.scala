@@ -27,7 +27,7 @@ import play.api.mvc.{Call, Filter, RequestHeader, Result}
 
 import scala.concurrent.Future
 
-class IPWhitelistFilter @Inject()(implicit val mat: Materializer) extends Filter with ConfigurationLoader {
+class IPWhitelistFilter @Inject()(implicit val mat: Materializer, configLoader: ConfigurationLoader) extends Filter {
 
   private val headerKey = "X-Forwarded-For"
 
@@ -35,15 +35,15 @@ class IPWhitelistFilter @Inject()(implicit val mat: Materializer) extends Filter
     Some(new String(Base64.getDecoder.decode(encodedString), "UTF-8")).map(_.split(",")).getOrElse(Array.empty).toSeq
   }
 
-  private lazy val whitelistSeq = decodeIntoList(loadedConfig.getString("whitelist.ip"))
+  private lazy val whitelistSeq = decodeIntoList(configLoader.loadedConfig.underlying.getString("whitelist.ip"))
 
-  private lazy val excludedPathSeq: Seq[Call] = decodeIntoList(loadedConfig.getString("whitelist.excluded")) map(Call("GET", _))
+  private lazy val excludedPathSeq: Seq[Call] = decodeIntoList(configLoader.loadedConfig.underlying.getString("whitelist.excluded")) map(Call("GET", _))
 
   private def uriIsWhitelisted(rh: RequestHeader): Boolean = excludedPathSeq contains Call(rh.method, rh.uri)
   private def isAssetRoute(rh: RequestHeader): Boolean     = rh.uri contains "/account-services/assets/"
 
   def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
-    if(loadedConfig.getBoolean("whitelist.enabled")) {
+    if(configLoader.loadedConfig.underlying.getBoolean("whitelist.enabled")) {
       if(uriIsWhitelisted(rh) | isAssetRoute(rh)) {
         f(rh)
       } else {

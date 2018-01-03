@@ -34,7 +34,7 @@ class AccountsMicroserviceConnectorSpec extends CJWWSpec {
   class Setup {
     implicit val request = FakeRequest()
     val testConnector = new AccountsMicroserviceConnector {
-      override val http = mockHttpVerbs
+      override val http                = mockHttpVerbs
     }
   }
 

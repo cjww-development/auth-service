@@ -16,6 +16,7 @@
 
 package connectors
 
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions.{ClientErrorException, ForbiddenException, NotFoundException, ServerErrorException}
 import com.cjwwdev.http.utils.SessionUtils
 import com.cjwwdev.http.verbs.Http
@@ -30,7 +31,8 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class SessionStoreConnectorImpl @Inject()(val http : Http) extends SessionStoreConnector
+class SessionStoreConnectorImpl @Inject()(val http : Http,
+                                          val configurationLoader: ConfigurationLoader) extends SessionStoreConnector
 
 trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils {
   val http: Http

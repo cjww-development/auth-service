@@ -28,10 +28,11 @@ trait ComponentMocks {
   this: MockitoSugar =>
 
   val mockSessionStoreConnector : SessionStoreConnector = mock[SessionStoreConnector]
-  val mockEditProfileService : EditProfileService = mock[EditProfileService]
-  val mockFeedEventService : FeedService = mock[FeedService]
-  val mockHttpVerbs : Http = mock[Http]
-  val mockLoginService : LoginService = mock[LoginService]
+  val mockEditProfileService : EditProfileService       = mock[EditProfileService]
+  val mockFeedEventService : FeedService                = mock[FeedService]
+  val mockHttpVerbs : Http                              = mock[Http]
+  val mockLoginService : LoginService                   = mock[LoginService]
+  val mockConfiguration: ConfigurationLoader            = mock[ConfigurationLoader]
 
   def resetMocks() : Unit = {
     reset(mockSessionStoreConnector)
@@ -39,5 +40,6 @@ trait ComponentMocks {
     reset(mockFeedEventService)
     reset(mockHttpVerbs)
     reset(mockLoginService)
+    reset(mockConfiguration)
   }
 }

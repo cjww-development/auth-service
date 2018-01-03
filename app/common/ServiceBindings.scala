@@ -16,6 +16,8 @@
 
 package common
 
+import com.cjwwdev.auth.connectors.AuthConnector
+import com.cjwwdev.config.{ConfigurationLoader, ConfigurationLoaderImpl}
 import com.google.inject.AbstractModule
 import connectors._
 import connectors.test._
@@ -28,6 +30,7 @@ import controllers.user._
 
 class ServiceBindings extends AbstractModule {
   override def configure(): Unit = {
+    bindOther()
     bindConnectors()
     bindServices()
     bindControllers()
@@ -59,5 +62,9 @@ class ServiceBindings extends AbstractModule {
     bind(classOf[DashboardController]).to(classOf[DashboardControllerImpl]).asEagerSingleton()
     bind(classOf[EditProfileController]).to(classOf[EditProfileControllerImpl]).asEagerSingleton()
     bind(classOf[GenerateCodeController]).to(classOf[GenerateCodeControllerImpl]).asEagerSingleton()
+  }
+
+  private def bindOther(): Unit = {
+    bind(classOf[ConfigurationLoader]).to(classOf[ConfigurationLoaderImpl]).asEagerSingleton()
   }
 }

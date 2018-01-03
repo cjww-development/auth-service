@@ -18,6 +18,7 @@ package connectors
 import javax.inject.Inject
 
 import com.cjwwdev.auth.models.AuthContext
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions.NotFoundException
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.security.encryption.DataSecurity
@@ -32,7 +33,8 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class DeversityMicroserviceConnectorImpl @Inject()(val http: Http) extends DeversityMicroserviceConnector
+class DeversityMicroserviceConnectorImpl @Inject()(val http: Http,
+                                                   val configurationLoader: ConfigurationLoader) extends DeversityMicroserviceConnector
 
 trait DeversityMicroserviceConnector extends ApplicationConfiguration {
   val http: Http

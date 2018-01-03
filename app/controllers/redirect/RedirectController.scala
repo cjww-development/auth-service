@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
+import com.cjwwdev.config.ConfigurationLoader
 import common.{ApplicationConfiguration, FrontendController}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}

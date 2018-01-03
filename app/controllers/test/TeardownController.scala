@@ -17,6 +17,7 @@ package controllers.test
 
 import javax.inject.Inject
 
+import com.cjwwdev.config.ConfigurationLoader
 import common.FrontendController
 import connectors.test.TeardownConnector
 import forms.test.TearDownUserForm

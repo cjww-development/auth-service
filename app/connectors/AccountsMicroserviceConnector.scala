@@ -18,6 +18,7 @@ package connectors
 import javax.inject.Inject
 
 import com.cjwwdev.auth.models.AuthContext
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions._
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.security.encryption.DataSecurity
@@ -34,7 +35,8 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AccountsMicroserviceConnectorImpl @Inject()(val http: Http) extends AccountsMicroserviceConnector
+class AccountsMicroserviceConnectorImpl @Inject()(val http: Http,
+                                                  val configurationLoader: ConfigurationLoader) extends AccountsMicroserviceConnector
 
 trait AccountsMicroserviceConnector extends ApplicationConfiguration {
   val http: Http

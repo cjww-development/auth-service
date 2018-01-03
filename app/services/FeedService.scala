@@ -19,6 +19,7 @@ package services
 import javax.inject.Inject
 
 import com.cjwwdev.auth.models.AuthContext
+import com.cjwwdev.config.ConfigurationLoader
 import common.ApplicationConfiguration
 import connectors.AccountsMicroserviceConnector
 import enums.HttpResponse
@@ -28,8 +29,9 @@ import play.api.mvc.Request
 
 import scala.concurrent.Future
 
-class FeedServiceImpl @Inject()(val accountConnector: AccountsMicroserviceConnector) extends FeedService {
-  override val appName = loadedConfig.getString("appName")
+class FeedServiceImpl @Inject()(val accountConnector: AccountsMicroserviceConnector,
+                                val configurationLoader: ConfigurationLoader) extends FeedService {
+  override val appName = configurationLoader.loadedConfig.underlying.getString("appName")
 }
 
 trait FeedService extends ApplicationConfiguration {

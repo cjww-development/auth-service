@@ -17,6 +17,7 @@ package connectors.test
 
 import javax.inject.Inject
 
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.verbs.Http
 import common.ApplicationConfiguration
 import play.api.libs.ws.WSResponse
@@ -24,7 +25,8 @@ import play.api.mvc.Request
 
 import scala.concurrent.Future
 
-class TeardownConnectorImpl @Inject()(val http: Http) extends TeardownConnector
+class TeardownConnectorImpl @Inject()(val http: Http,
+                                      val configurationLoader: ConfigurationLoader) extends TeardownConnector
 
 trait TeardownConnector extends ApplicationConfiguration {
   val http: Http

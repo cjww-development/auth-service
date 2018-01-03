@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.views.html.templates.errors.StandardErrorView
 import common.FrontendController
 import enums.Registration

@@ -24,6 +24,7 @@ import com.cjwwdev.filters.RequestLoggingFilter
 import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
 import com.cjwwdev.views.html.templates.errors.{NotFoundView, ServerErrorView, StandardErrorView}
 import com.kenshoo.play.metrics.MetricsFilter
+import com.typesafe.config.ConfigFactory
 import controllers.login.{routes => loginRoutes}
 import controllers.redirect.{routes => redirectRoutes}
 import controllers.register.{routes => registerRoutes}
@@ -41,7 +42,7 @@ import play.api.routing.Router
 
 import scala.concurrent.Future
 
-trait ApplicationConfiguration extends ConfigurationLoader {
+trait ApplicationConfiguration {
   //FeedServiceConfig
   val EDIT_PROFILE              = "edit-profile"
   val TITLE                     = "Your profile has been updated"
@@ -51,6 +52,10 @@ trait ApplicationConfiguration extends ConfigurationLoader {
   //Account types
   val ORGANISATION              = "organisation"
   val INDIVIDUAL                = "individual"
+
+  def buildServiceUrl(service: String): String = {
+    ConfigFactory.load.getString(s"microservice.external-services.$service.domain")
+  }
 
   //routes
   val accountsMicroservice      = buildServiceUrl("accounts-microservice")
@@ -123,6 +128,7 @@ trait RequestBuilder {
 class ErrorHandler @Inject()(env: Environment,
                              sm: OptionalSourceMapper,
                              router: Provider[Router],
+                             val configurationLoader: ConfigurationLoader,
                              implicit val messagesApi: MessagesApi)
   extends HttpErrorHandler with RequestBuilder with ApplicationConfiguration with Logging {
 
