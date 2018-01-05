@@ -40,25 +40,28 @@ trait LoginController extends FrontendController with Actions {
   val loginService: LoginService
   val sessionStoreConnector: SessionStoreConnector
 
-  def show(redirect : Option[String]) : Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(Ok(UserLoginView(UserLoginForm.loginForm)))
+  def show(redirect : Option[String]) : Action[AnyContent] = Action { implicit request =>
+    Ok(UserLoginView(UserLoginForm.loginForm))
   }
 
   def submit : Action[AnyContent] = Action.async {
     implicit request =>
       UserLoginForm.loginForm.bindFromRequest.fold(
         errors => Future.successful(BadRequest(UserLoginView(errors))),
-        valid => loginService.processLoginAttempt(valid) map {
-          case Some(session) => Redirect(serviceDirector).withSession(session)
-          case None => Ok(
-            UserLoginView(
-              UserLoginForm.loginForm.fill(valid).withError("userName", messagesApi("cjww.auth.login.error.invalid")).withError("password", "")
-            )
-          )
+        valid  => loginService.processLoginAttempt(valid) map {
+          case Some(session) => Redirect(routes.LoginController.activateAuthServiceSession()).withSession(session)
+          case None          => Ok(UserLoginView(
+            UserLoginForm.loginForm.fill(valid).withError("userName", messagesApi("cjww.auth.login.error.invalid")).withError("password", "")
+          ))
         }
       )
   }
+
+  def activateAuthServiceSession: Action[AnyContent] = Action { implicit request =>
+    Redirect(s"$deversityFrontend/private/build-deversity-session/${request.session("cookieId")}")
+  }
+
+  def redirectToServiceSelector: Action[AnyContent] = Action(implicit request => Redirect(serviceDirector))
 
   def signOut : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
     implicit user =>

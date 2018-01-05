@@ -12,6 +12,7 @@ POST    /create-an-organisation-account       controllers.register.OrgRegisterCo
 
 GET     /login                                controllers.login.LoginController.show(redirect : Option[String])
 POST    /login                                controllers.login.LoginController.submit
+GET     /session                              controllers.login.LoginController.activateAuthServiceSession
 
 GET     /where-do-you-want-to-go              controllers.redirect.RedirectController.chooseService()
 GET     /go-to-deversity                      controllers.redirect.RedirectController.redirectToDeversity

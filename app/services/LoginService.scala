@@ -48,13 +48,11 @@ trait LoginService extends Logging with DefaultFormat {
     context.user.credentialType match {
       case "organisation" => Map(
         "cookieId"        -> s"session-${UUID.randomUUID()}",
-        "contextId"       -> context.contextId,
         "orgName"         -> context.user.orgName.get,
         "credentialType"  -> context.user.credentialType
       )
       case "individual" => Map(
         "cookieId"        -> s"session-${UUID.randomUUID()}",
-        "contextId"       -> context.contextId,
         "firstName"       -> context.user.firstName.get,
         "lastName"        -> context.user.lastName.get,
         "credentialType"  -> context.user.credentialType,
