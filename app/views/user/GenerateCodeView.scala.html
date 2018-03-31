@@ -1,8 +1,8 @@
 @import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
 @import com.cjwwdev.views.html.templates.MainTemplate
-@import com.cjwwdev.auth.models.AuthContext
 
-@(regCode: RegistrationCode)(implicit request: Request[_], authContext: AuthContext, messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@import com.cjwwdev.auth.models.CurrentUser
+@(regCode: RegistrationCode)(implicit request: Request[_], user: CurrentUser, messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @MainTemplate(title = messagesApi("pages.generate-code.title"), links, navBarRoutes) {
 <script>
@@ -34,7 +34,7 @@
                 </div>
 
                 <div class="form-group">
-                    <p class="text-center">@messagesApi(s"pages.generate-code.body.${authContext.user.credentialType}")</p>
+                    <p class="text-center">@messagesApi(s"pages.generate-code.body.${user.credentialType}")</p>
                 </div>
 
                 <hr>

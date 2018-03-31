@@ -6,11 +6,11 @@
 @import models.feed.FeedItem
 @import services.EditProfileService.{getDisplayImageURL, getDisplayNameColour}
 
-@import com.cjwwdev.auth.models.AuthContext
+@import com.cjwwdev.auth.models.CurrentUser
 @(feed: Option[List[FeedItem]],
   basicDetails: BasicDetails,
   settings: Settings,
-  deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], authContext: AuthContext, messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+  deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], user: CurrentUser, messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @import controllers.user.{routes => userRoutes}
 @import views.html.helpers.feedItem
@@ -43,7 +43,6 @@
         case "short" => {
             @basicDetails.firstName
         }
-
         case "user" => {
             @basicDetails.userName
         }
@@ -99,46 +98,49 @@
                         <a id="edit-profile-link" href="@userRoutes.EditProfileController.show()" class="list-group-item">
                             <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.one")</h4>
                         </a>
-                        <a id="message-link" href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.two") <span class="badge">0</span></h4>
-                        </a>
-                        <a id="saved-work-link" href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.three")</h4>
-                        </a>
-                        <a id="problem-reports-link" href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.four")</h4>
-                        </a>
-                        @if(authContext.user.role.contains("teacher")) {
+                        @*<a id="message-link" href="#" class="list-group-item">*@
+                        @*<h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.two") <span class="badge">0</span></h4>*@
+                        @*</a>*@
+                        @*<a id="saved-work-link" href="#" class="list-group-item">*@
+                        @*<h4 class="list-group-item-heading"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.three")</h4>*@
+                        @*</a>*@
+                        @*<a id="problem-reports-link" href="#" class="list-group-item">*@
+                        @*<h4 class="list-group-item-heading"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.four")</h4>*@
+                        @*</a>*@
+                        @if(user.role.contains("teacher")) {
                             <a href="@controllers.user.routes.GenerateCodeController.getRegistrationCodeShow()" id="registration-code-link" class="list-group-item">
-                                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-qrcode"></span> @messagesApi("pages.org-dashboard.quick-links.list.four")</h4>
+                                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-qrcode"></span> @messagesApi("pages.dashboard.quick-links.list.five")</h4>
+                            </a>
+                            <a href="@controllers.user.deversity.routes.ClassroomController.manageClassRooms()" id="manage-classroom-link" class="list-group-item">
+                                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-list-alt"></span> @messages("pages.dashboard.quick-links.list.six")</h4>
                             </a>
                         }
                     </div>
 
                     @if(deversityEnrolment.isDefined) {
-                    <h2>@messagesApi("pages.dashboard.enrolment-status.heading")</h2>
-                    <hr>
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">@messagesApi("pages.dashboard.enrolment-status.heading-two")</h3>
-                        </div>
+                        <h2>@messagesApi("pages.dashboard.enrolment-status.heading")</h2>
+                        <hr>
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">@messagesApi("pages.dashboard.enrolment-status.heading-two")</h3>
+                            </div>
 
-                        @if(deversityEnrolment.map(_.statusConfirmed).contains("rejected")) {
-                            <h4 class="@deversityEnrolment.map(_.statusConfirmed) text-center">@deversityEnrolment.map(_.statusConfirmed.capitalize)</h4>
-                        } else {
-                            <ul class="list-group">
-                                <li id="enrolment-status" class="list-group-item text-center"><h4 class="@deversityEnrolment.map(_.statusConfirmed)">@deversityEnrolment.map(_.statusConfirmed.capitalize)</h4></li>
-                                <li id="deversity-role" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.role.capitalize)</h4></li>
-                                <li id="school-name" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.schoolName.capitalize)</h4></li>
-                                @if(deversityEnrolment.get.teacher.isDefined) {
-                                    <li id="deversity-teacher" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.teacher.map(_.capitalize))</h4></li>
-                                }
-                                @if(deversityEnrolment.get.room.isDefined) {
-                                    <li id="teacher-room" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.room.map(_.capitalize))</h4></li>
-                                }
-                            </ul>
-                        }
-                    </div>
+                            @if(deversityEnrolment.map(_.statusConfirmed).contains("rejected")) {
+                                <h4 class="@deversityEnrolment.map(_.statusConfirmed) text-center">@deversityEnrolment.map(_.statusConfirmed.capitalize)</h4>
+                            } else {
+                                <ul class="list-group">
+                                    <li id="enrolment-status" class="list-group-item text-center"><h4 class="@deversityEnrolment.map(_.statusConfirmed)">@deversityEnrolment.map(_.statusConfirmed.capitalize)</h4></li>
+                                    <li id="deversity-role" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.role.capitalize)</h4></li>
+                                    <li id="school-name" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.schoolName.capitalize)</h4></li>
+                                    @if(deversityEnrolment.get.teacher.isDefined) {
+                                        <li id="deversity-teacher" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.teacher.map(_.capitalize))</h4></li>
+                                    }
+                                    @if(deversityEnrolment.get.room.isDefined) {
+                                        <li id="teacher-room" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.room.map(_.capitalize))</h4></li>
+                                    }
+                                </ul>
+                            }
+                        </div>
                     }
                 </div>
 
