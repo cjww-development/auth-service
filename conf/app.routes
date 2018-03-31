@@ -31,5 +31,10 @@ POST    /update-settings                      controllers.user.EditProfileContro
 GET     /registration-code                    controllers.user.GenerateCodeController.getRegistrationCodeShow
 GET     /generate-registration-code           controllers.user.GenerateCodeController.generateRegistrationCode
 
+GET     /manage-classrooms                    controllers.user.deversity.ClassroomController.manageClassRooms
+POST    /create-classroom                     controllers.user.deversity.ClassroomController.createClassRoom
+GET     /delete-classroom                     controllers.user.deversity.ClassroomController.deleteClassRoom(classId: String ?= "")
+GET     /manage-classroom                     controllers.user.deversity.ClassroomController.manageClassRoom(classId: String ?= "")
+
 # Map static resources from the /public folderto the /assets URL path
 GET     /assets/*file                         controllers.Assets.versioned(path="/public", file: Asset)

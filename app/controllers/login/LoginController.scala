@@ -1,28 +1,25 @@
-// Copyright (C) 2016-2017 the original author or authors.
-// See the LICENCE.txt file distributed with this work for additional
-// information regarding copyright ownership.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/*
+ * Copyright 2018 CJWW Development
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package controllers.login
 
-import javax.inject.Inject
-
-import com.cjwwdev.auth.actions.Actions
 import com.cjwwdev.auth.connectors.AuthConnector
-import com.cjwwdev.config.ConfigurationLoader
 import common.FrontendController
 import connectors.SessionStoreConnector
 import forms.UserLoginForm
+import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.LoginService
@@ -36,7 +33,7 @@ class LoginControllerImpl @Inject()(val loginService : LoginService,
                                     val authConnector: AuthConnector,
                                     implicit val messagesApi: MessagesApi) extends LoginController
 
-trait LoginController extends FrontendController with Actions {
+trait LoginController extends FrontendController {
   val loginService: LoginService
   val sessionStoreConnector: SessionStoreConnector
 
@@ -63,11 +60,9 @@ trait LoginController extends FrontendController with Actions {
 
   def redirectToServiceSelector: Action[AnyContent] = Action(implicit request => Redirect(serviceDirector))
 
-  def signOut : Action[AnyContent] = authorisedFor(LOGIN_CALLBACK).async {
-    implicit user =>
-      implicit request =>
-        sessionStoreConnector.destroySession map {
-          _ => Redirect(routes.LoginController.show(None)).withNewSession
-        }
+  def signOut : Action[AnyContent] = isAuthorised { implicit user => implicit request =>
+    sessionStoreConnector.destroySession map {
+      _ => Redirect(routes.LoginController.show(None)).withNewSession
+    }
   }
 }

@@ -113,6 +113,8 @@ pages.dashboard.quick-links.list.one                             = Edit profile
 pages.dashboard.quick-links.list.two                             = Messages
 pages.dashboard.quick-links.list.three                           = View saved work
 pages.dashboard.quick-links.list.four                            = View problem reports
+pages.dashboard.quick-links.list.five                            = Generate code
+pages.dashboard.quick-links.list.six                             = Manage classrooms
 pages.dashboard.enrolment-status.heading                         = Deversity
 pages.dashboard.enrolment-status.heading-two                     = Deversity enrolment
 pages.dashboard.feed.heading                                     = Your feed
@@ -165,11 +167,32 @@ pages.user-edit-profile.delete.heading                           = Delete your a
 pages.user-edit-profile.delete.body.one                          = DANGER! This action <strong>can''t</strong> be reversed
 pages.user-edit-profile.delete.body.two                          = You will be asked to enter your user name and password to confirm
 
+#Generate code
 pages.generate-code.title                                        = Generate a registration code
 pages.generate-code.body.organisation                            = Present this code to your teachers when they are registering, this code is valid for 15 minutes
 pages.generate-code.body.individual                              = Present this code to your students when they are registering, this code is valid for 15 minutes
 pages.generate-code.button                                       = Generate registration code
 pages.generate-code.teacher-org.heading                          = Your schools registration code
 pages.generate-code.teacher.heading                              = Your teachers registration code
+
+#Manage classrooms
+pages.manage-classrooms.title                                    = Manage your classrooms
+pages.manage-classrooms.heading                                  = Manage your classrooms
+pages.manage-classrooms.side-heading                             = Classroom links
+pages.manage-classrooms.no-classrooms                            = You haven''t created any classrooms for your students yet
+pages.manage-classrooms.delete-classroom                         = Delete
+pages.manage-classrooms.manage-classroom                         = Manage
+pages.manage-classrooms.create-classroom                         = Create classroom
+pages.manage-classrooms.create-classroom.label                   = Name
+pages.manage-classrooms.create-classroom.placeholder             = Classroom name
+pages.manage-classrooms.create-classroom.error.too-long          = Enter a classroom name using 20 characters or less
+pages.manage-classrooms.create-classroom.error.no-entry          = Enter a classroom name
+
+#Manage individual classroom
+pages.manage-individual-classroom.title                          = Manage {0}
+pages.manage-individual.classroom.heading                        = Manage {0}
+pages.manage-individual.classroom.details                        = Classroom details
+pages.manage-individual.classroom.enrolled-students              = Enrolled students
+
 
 
