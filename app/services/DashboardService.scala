@@ -67,12 +67,12 @@ trait DashboardService {
     for {
       enrolment <- deversityConnector.getDeversityEnrolment
       school    <- enrolment match {
-        case Some(enr) => deversityConnector.getSchoolInfo(enr.schoolName)
+        case Some(enr) => deversityConnector.getSchoolInfo(enr.schoolDevId)
         case None      => Future.successful(None)
       }
       teacher   <- enrolment match {
         case Some(enr) => enr.role match {
-          case "student" => deversityConnector.getTeacherInfo(enr.teacher.get, enr.schoolName)
+          case "student" => deversityConnector.getTeacherInfo(enr.teacher.get, enr.schoolDevId)
           case _         => Future.successful(None)
         }
         case None => Future.successful(None)
@@ -80,8 +80,8 @@ trait DashboardService {
     } yield {
       enrolment match {
         case Some(enr) => Some(enr.copy(
-          schoolName = school.get.orgName,
-          teacher    = concatTeacherName(teacher)
+          schoolDevId = school.get.orgName,
+          teacher     = concatTeacherName(teacher)
         ))
         case None => None
       }
@@ -94,9 +94,5 @@ trait DashboardService {
 
   def getTeacherList(implicit user: CurrentUser, request: Request[_]): Future[List[TeacherDetails]] = {
     accountConnector.getTeacherList
-  }
-
-  def getPendingEnrolmentCount(implicit user: CurrentUser, request: Request[_]): Future[Int] = {
-    deversityConnector.getPendingEnrolmentCount
   }
 }

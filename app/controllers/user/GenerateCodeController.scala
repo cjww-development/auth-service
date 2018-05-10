@@ -20,8 +20,10 @@ import common.FrontendController
 import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import services.{DashboardService, RegistrationCodeService}
+import services.{DashboardService, DeversityService, RegistrationCodeService}
 import views.html.user.GenerateCodeView
+import com.cjwwdev.views.html.templates.errors.{NotFoundView, ServerErrorView, StandardErrorView}
+import connectors.DeversityMicroserviceConnector
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -29,22 +31,31 @@ import scala.concurrent.Future
 class GenerateCodeControllerImpl @Inject()(val authConnector: AuthConnector,
                                            val registrationCodeService: RegistrationCodeService,
                                            val dashboardService: DashboardService,
+                                           val deversityConnector: DeversityMicroserviceConnector,
                                            implicit val messagesApi: MessagesApi) extends GenerateCodeController
 
 trait GenerateCodeController extends FrontendController {
   val registrationCodeService: RegistrationCodeService
   val dashboardService: DashboardService
+  val deversityConnector: DeversityMicroserviceConnector
 
   def getRegistrationCodeShow: Action[AnyContent] = isAuthorised {
     implicit request =>
       implicit user =>
         user.credentialType match {
+          case INDIVIDUAL => deversityConnector.getDeversityEnrolment map { enr =>
+
+          }
+        }
+
+
+        user.credentialType match {
           case INDIVIDUAL   => user.role match {
             case Some("teacher") => registrationCodeService.getGeneratedCode map(regCode => Ok(GenerateCodeView(regCode)))
-            case _               => Future.successful(NotFound)
+            case _               => Future.successful(NotFound(NotFoundView()))
           }
           case ORGANISATION => registrationCodeService.getGeneratedCode map(regCode => Ok(GenerateCodeView(regCode)))
-          case _            => Future.successful(NotFound)
+          case _            => Future.successful(NotFound(NotFoundView()))
         }
   }
 
@@ -54,10 +65,10 @@ trait GenerateCodeController extends FrontendController {
         user.credentialType match {
           case INDIVIDUAL   => user.role match {
             case Some("teacher") => registrationCodeService.generateRegistrationCode map(_ => Redirect(routes.GenerateCodeController.getRegistrationCodeShow()))
-            case _               => Future.successful(NotFound)
+            case _               => Future.successful(NotFound(NotFoundView()))
           }
           case ORGANISATION => registrationCodeService.generateRegistrationCode map(_ => Redirect(routes.GenerateCodeController.getRegistrationCodeShow()))
-          case _            => Future.successful(NotFound)
+          case _            => Future.successful(NotFound(NotFoundView()))
         }
   }
 }

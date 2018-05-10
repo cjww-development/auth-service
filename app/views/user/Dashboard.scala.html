@@ -107,7 +107,7 @@
                         @*<a id="problem-reports-link" href="#" class="list-group-item">*@
                         @*<h4 class="list-group-item-heading"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.four")</h4>*@
                         @*</a>*@
-                        @if(user.role.contains("teacher")) {
+                        @if(deversityEnrolment.fold(false)(_.role == "teacher")) {
                             <a href="@controllers.user.routes.GenerateCodeController.getRegistrationCodeShow()" id="registration-code-link" class="list-group-item">
                                 <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-qrcode"></span> @messagesApi("pages.dashboard.quick-links.list.five")</h4>
                             </a>
@@ -125,13 +125,10 @@
                                 <h3 class="panel-title">@messagesApi("pages.dashboard.enrolment-status.heading-two")</h3>
                             </div>
 
-                            @if(deversityEnrolment.map(_.statusConfirmed).contains("rejected")) {
-                                <h4 class="@deversityEnrolment.map(_.statusConfirmed) text-center">@deversityEnrolment.map(_.statusConfirmed.capitalize)</h4>
-                            } else {
+                            @if(deversityEnrolment.isDefined) {
                                 <ul class="list-group">
-                                    <li id="enrolment-status" class="list-group-item text-center"><h4 class="@deversityEnrolment.map(_.statusConfirmed)">@deversityEnrolment.map(_.statusConfirmed.capitalize)</h4></li>
                                     <li id="deversity-role" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.role.capitalize)</h4></li>
-                                    <li id="school-name" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.schoolName.capitalize)</h4></li>
+                                    <li id="school-name" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.schoolDevId)</h4></li>
                                     @if(deversityEnrolment.get.teacher.isDefined) {
                                         <li id="deversity-teacher" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.teacher.map(_.capitalize))</h4></li>
                                     }

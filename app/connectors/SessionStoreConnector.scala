@@ -18,6 +18,7 @@ package connectors
 
 import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions.{ClientErrorException, ForbiddenException, NotFoundException, ServerErrorException}
+import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.session.SessionUtils
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.security.encryption.DataSecurity
@@ -25,7 +26,7 @@ import com.google.inject.Inject
 import common.ApplicationConfiguration
 import enums.SessionCache
 import models.SessionUpdateSet
-import play.api.libs.json.{OFormat, OWrites, Reads}
+import play.api.libs.json.{Json, OFormat, OWrites, Reads}
 import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -34,11 +35,11 @@ import scala.concurrent.Future
 class SessionStoreConnectorImpl @Inject()(val http : Http,
                                           val configurationLoader: ConfigurationLoader) extends SessionStoreConnector
 
-trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils {
+trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils with WsResponseHelpers {
   val http: Http
 
-  def cache[T](sessionId : String, data : T)(implicit format: OFormat[T], request: Request[_]) : Future[SessionCache.Value] = {
-    http.post[T](s"$sessionStore/session/$sessionId/cache", data) map {
+  def cache(sessionId : String)(implicit request: Request[_]) : Future[SessionCache.Value] = {
+    http.postString(s"$sessionStore/session/$sessionId", "") map {
       _ => SessionCache.cached
     } recover {
       case _: ServerErrorException => SessionCache.cacheFailure
@@ -46,15 +47,17 @@ trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils {
   }
 
   def getDataElement[T](key : String)(implicit reads: Reads[T], request: Request[_]) : Future[Option[T]] = {
-    http.get(s"$sessionStore/session/$getCookieId/data/$key") map { resp =>
-      Some(resp.body.decryptType[T])
+    http.get(s"$sessionStore/session/$getCookieId/data?key=$key") map { resp =>
+      Some(resp.toDataType[T](needsDecrypt = true))
     } recover {
       case _: NotFoundException => None
     }
   }
 
-  def updateSession(updateSet : SessionUpdateSet)(implicit format: OFormat[SessionUpdateSet], request: Request[_]) : Future[SessionCache.Value] = {
-    http.put[SessionUpdateSet](s"$sessionStore/session/$getCookieId", updateSet) map {
+  def updateSession(updateSet : SessionUpdateSet, sessionId: Option[String])(implicit format: OFormat[SessionUpdateSet], request: Request[_]) : Future[SessionCache.Value] = {
+    val id = sessionId.getOrElse(getCookieId)
+    println(Json.prettyPrint(Json.toJson(updateSet)))
+    http.patch[SessionUpdateSet](s"$sessionStore/session/$id", updateSet, secure = false) map {
       _ => SessionCache.cacheUpdated
     } recover {
       case _: ServerErrorException => SessionCache.cacheUpdateFailure
@@ -62,7 +65,7 @@ trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils {
   }
 
   def destroySession(implicit request: Request[_]) : Future[SessionCache.Value] = {
-    http.delete(s"$sessionStore/session/$getCookieId/destroy") map {
+    http.delete(s"$sessionStore/session/$getCookieId") map {
       _ => SessionCache.cacheDestroyed
     } recover {
       case _: ClientErrorException => SessionCache.cacheDestroyed

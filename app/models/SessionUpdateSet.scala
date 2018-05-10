@@ -22,10 +22,7 @@ case class SessionUpdateSet(key : String, data : String)
 
 object SessionUpdateSet {
   implicit val sessionUpdateSetWrites: OWrites[SessionUpdateSet] = new OWrites[SessionUpdateSet] {
-    override def writes(o: SessionUpdateSet): JsObject = Json.obj(
-      "key" -> o.key,
-      "data" -> o.data
-    )
+    override def writes(o: SessionUpdateSet): JsObject = Json.obj(o.key -> o.data)
   }
 
   implicit val sessionUpdateSetReads: Reads[SessionUpdateSet] = Json.reads[SessionUpdateSet]

@@ -18,6 +18,7 @@ package connectors
 
 import com.cjwwdev.http.exceptions.NotFoundException
 import com.cjwwdev.security.encryption.DataSecurity
+import com.cjwwdev.implicits.ImplicitDataSecurity._
 import enums.HttpResponse
 import helpers.connectors.ConnectorSpec
 
@@ -56,16 +57,6 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
         awaitAndAssert(testConnector.getDeversityEnrolment) {
           _ mustBe None
         }
-      }
-    }
-  }
-
-  "getPendingEnrolmentCount" should {
-    "return 1" in {
-      mockHttpGet(response = Future(fakeHttpResponse(NO_CONTENT, "1".encrypt)))
-
-      awaitAndAssert(testConnector.getPendingEnrolmentCount) {
-        _ mustBe 1
       }
     }
   }

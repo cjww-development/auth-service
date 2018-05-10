@@ -16,10 +16,11 @@
 package connectors
 
 import javax.inject.Inject
-
 import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.config.ConfigurationLoader
+import com.cjwwdev.implicits.ImplicitDataSecurity._
 import com.cjwwdev.http.exceptions.NotFoundException
+import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.verbs.Http
 import common.ApplicationConfiguration
 import enums.HttpResponse
@@ -36,13 +37,13 @@ import scala.concurrent.Future
 class DeversityMicroserviceConnectorImpl @Inject()(val http: Http,
                                                    val configurationLoader: ConfigurationLoader) extends DeversityMicroserviceConnector
 
-trait DeversityMicroserviceConnector extends ApplicationConfiguration {
+trait DeversityMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers {
   val http: Http
 
   def getDeversityEnrolment(implicit user: CurrentUser, request: Request[_]): Future[Option[DeversityEnrolment]] = {
-    http.get(s"$deversityMicroservice/enrolment/${user.id}/deversity") map { resp =>
+    http.get(s"$deversityMicroservice/user/${user.id}/enrolment") map { resp =>
       resp.status match {
-        case OK         => Some(resp.body.decryptType[DeversityEnrolment])
+        case OK         => Some(resp.toDataType[DeversityEnrolment](needsDecrypt = true))
         case NO_CONTENT => None
       }
     } recover {
@@ -50,15 +51,9 @@ trait DeversityMicroserviceConnector extends ApplicationConfiguration {
     }
   }
 
-  def getPendingEnrolmentCount(implicit user: CurrentUser, request: Request[_]): Future[Int] = {
-    http.get(s"$deversityMicroservice/utilities/${user.id}/pending-deversity-enrolments") map {
-      _.body.decrypt.toInt
-    }
-  }
-
   def getTeacherInfo(teacher: String, school: String)(implicit user: CurrentUser, request: Request[_]): Future[Option[TeacherDetails]] = {
     http.get(s"$deversityMicroservice/user/${user.id}/teacher/${teacher.encrypt}/school/${school.encrypt}/details") map { resp =>
-      Some(resp.body.decryptType[TeacherDetails])
+      Some(resp.toDataType[TeacherDetails](needsDecrypt = true))
     } recover {
       case _: NotFoundException => None
     }
@@ -66,7 +61,7 @@ trait DeversityMicroserviceConnector extends ApplicationConfiguration {
 
   def getSchoolInfo(school: String)(implicit user: CurrentUser, request: Request[_]): Future[Option[OrgDetails]] = {
     http.get(s"$deversityMicroservice/user/${user.id}/school/${school.encrypt}/details") map { resp =>
-      Some(resp.body.decryptType[OrgDetails])
+      Some(resp.toDataType[OrgDetails](needsDecrypt = true))
     } recover {
       case _: NotFoundException => None
     }
@@ -74,7 +69,7 @@ trait DeversityMicroserviceConnector extends ApplicationConfiguration {
 
   def getRegistrationCode(implicit user: CurrentUser, request: Request[_]): Future[RegistrationCode] = {
     http.get(s"$deversityMicroservice/user/${user.id}/fetch-registration-code") map {
-      _.body.decryptType[RegistrationCode]
+      _.toDataType[RegistrationCode](needsDecrypt = true)
     }
   }
 
@@ -96,13 +91,13 @@ trait DeversityMicroserviceConnector extends ApplicationConfiguration {
 
   def getClassrooms(implicit user: CurrentUser, request: Request[_]): Future[Seq[Classroom]] = {
     http.get(s"$deversityMicroservice/teacher/${user.id}/classrooms") map {
-      _.body.decryptType[Seq[Classroom]]
+      _.toDataType[Seq[Classroom]](needsDecrypt = true)
     }
   }
 
   def getClassroom(classId: String)(implicit user: CurrentUser, request: Request[_]): Future[Classroom] = {
     http.get(s"$deversityMicroservice/teacher/${user.id}/classroom/$classId") map {
-      _.body.decryptType[Classroom]
+      _.toDataType[Classroom](needsDecrypt = true)
     }
   }
 

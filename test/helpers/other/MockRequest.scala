@@ -17,12 +17,15 @@
 package helpers.other
 
 import akka.util.ByteString
-import play.api.libs.json.JsValue
+import com.cjwwdev.responses.ApiResponse
+import org.joda.time.LocalDateTime
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSCookie, WSResponse}
+import play.api.mvc.Request
 
 import scala.xml.Elem
 
-trait MockRequest {
+trait MockRequest extends ApiResponse {
   def fakeHttpResponse(statusCode: Int, bodyContents: String = ""): WSResponse = new WSResponse {
     override def cookie(name: String): Option[WSCookie] = ???
     override def underlying[T]: T                       = ???
@@ -32,8 +35,26 @@ trait MockRequest {
     override def allHeaders: Map[String, Seq[String]]   = ???
     override def xml: Elem                              = ???
     override def statusText: String                     = ???
-    override def json: JsValue                          = ???
+    override def json: JsValue                          = {
+      requestProperties(statusCode) ++
+      Json.obj(bodyKey(statusCode) -> bodyContents) ++
+      requestStats
+    }
     override def header(key: String): Option[String]    = ???
     override def status: Int                            = statusCode
   }
+
+  private def requestProperties(statusCode: Int): JsObject = Json.obj(
+    "uri"    -> "/test/uri",
+    "method" -> s"GET",
+    "status" -> statusCode
+  )
+
+  private def requestStats: JsObject = Json.obj(
+    "stats" -> Json.obj(
+      "requestCompletedAt" -> s"${LocalDateTime.now}"
+    )
+  )
+
+  private val bodyKey: Int => String = statusCode => if(statusCode.isBetween(200 to 299)) "body" else "errorMessage"
 }
