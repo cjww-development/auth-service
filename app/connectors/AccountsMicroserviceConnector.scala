@@ -18,8 +18,11 @@ package connectors
 import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions._
+import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.security.encryption.DataSecurity
+import com.cjwwdev.implicits.ImplicitJsValues._
+import com.cjwwdev.implicits.ImplicitDataSecurity._
 import common.{MissingBasicDetailsException, _}
 import enums.{HttpResponse, Registration}
 import javax.inject.Inject
@@ -37,7 +40,7 @@ import scala.concurrent.Future
 class AccountsMicroserviceConnectorImpl @Inject()(val http: Http,
                                                   val configurationLoader: ConfigurationLoader) extends AccountsMicroserviceConnector
 
-trait AccountsMicroserviceConnector extends ApplicationConfiguration {
+trait AccountsMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers {
   val http: Http
 
   def updateProfile(userProfile: UserProfile)(implicit user: CurrentUser, request: Request[_]) : Future[HttpResponse.Value] = {
@@ -81,8 +84,7 @@ trait AccountsMicroserviceConnector extends ApplicationConfiguration {
 
   def getFeedItems(implicit user: CurrentUser, request: Request[_]) : Future[Option[List[FeedItem]]] = {
     http.get(s"$accountsMicroservice/account/${user.id}/get-user-feed") map { resp =>
-      val json = resp.body.decryptType[JsObject]
-      Some(json.value("feed-array").as[JsArray].as[List[FeedItem]])
+      Some(resp.toDataType[JsObject](needsDecrypt = true).get[List[FeedItem]]("feed-array"))
     } recover {
       case _: NotFoundException => None
     }
@@ -90,7 +92,7 @@ trait AccountsMicroserviceConnector extends ApplicationConfiguration {
 
   def getBasicDetails(implicit user: CurrentUser, request: Request[_]) : Future[BasicDetails] = {
     http.get(s"$accountsMicroservice/account/${user.id}/basic-details") map {
-      _.body.decryptType[BasicDetails]
+      _.toDataType[BasicDetails](needsDecrypt = true)
     } recover {
       case _: ClientErrorException =>
         throw new MissingBasicDetailsException(s"No basic details were found for user ${user.id}")
@@ -99,7 +101,7 @@ trait AccountsMicroserviceConnector extends ApplicationConfiguration {
 
   def getEnrolments(implicit user: CurrentUser, request: Request[_]) : Future[Option[Enrolments]] = {
     http.get(s"$accountsMicroservice/account/${user.id}/enrolments") map { resp =>
-      Some(resp.body.decryptType[Enrolments])
+      Some(resp.toDataType[Enrolments](needsDecrypt = true))
     } recover {
       case _: NotFoundException => None
     }
@@ -107,7 +109,7 @@ trait AccountsMicroserviceConnector extends ApplicationConfiguration {
 
   def getSettings(implicit user: CurrentUser, request: Request[_]) : Future[Settings] = {
     http.get(s"$accountsMicroservice/account/${user.id}/settings") map {
-      _.body.decryptType[Settings]
+      _.toDataType[Settings](needsDecrypt = true)
     } recover {
       case _: NotFoundException => Settings.default
     }
@@ -115,15 +117,15 @@ trait AccountsMicroserviceConnector extends ApplicationConfiguration {
 
   def getOrgBasicDetails(implicit user: CurrentUser, request: Request[_]): Future[Option[OrgDetails]] = {
     http.get(s"$accountsMicroservice/account/${user.id}/org-basic-details") map { resp =>
-      Some(resp.body.decryptType[OrgDetails])
+      Some(resp.toDataType[OrgDetails](needsDecrypt = true))
     } recover {
       case _: NotFoundException => None
     }
   }
 
   def getTeacherList(implicit user: CurrentUser, request: Request[_]): Future[List[TeacherDetails]] = {
-    http.get(s"$accountsMicroservice/account/${user.id}/teachers") map { resp =>
-      resp.body.decryptType[List[TeacherDetails]]
+    http.get(s"$accountsMicroservice/account/${user.id}/teachers") map {
+      _.toDataType[List[TeacherDetails]](needsDecrypt = true)
     }
   }
 
@@ -144,8 +146,7 @@ trait AccountsMicroserviceConnector extends ApplicationConfiguration {
   }
 
   def checkUserName(username : String)(implicit request: Request[_]) : Future[Boolean] = {
-    val encUsername = DataSecurity.encryptString(username)
-    http.head(s"$accountsMicroservice/validate/user-name/$encUsername") map {
+    http.head(s"$accountsMicroservice/validate/user-name/${username.encrypt}") map {
       _.status match {
         case OK => false
       }
@@ -155,8 +156,7 @@ trait AccountsMicroserviceConnector extends ApplicationConfiguration {
   }
 
   def checkEmailAddress(email : String)(implicit request: Request[_]) : Future[Boolean] = {
-    val encEmailAddress = DataSecurity.encryptString(email)
-    http.head(s"$accountsMicroservice/validate/email/$encEmailAddress") map {
+    http.head(s"$accountsMicroservice/validate/email/${email.encrypt}") map {
       _.status match {
         case OK => false
       }

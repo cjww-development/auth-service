@@ -16,7 +16,6 @@
 package helpers.other
 
 import com.cjwwdev.auth.models.CurrentUser
-import com.cjwwdev.implicits.ImplicitHandlers
 import models.{RegistrationCode, UserLogin}
 import models.accounts._
 import models.deversity.{Classroom, OrgDetails, TeacherDetails}
@@ -25,7 +24,7 @@ import models.registration.OrgRegistration
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 
-trait Fixtures extends TestDataGenerator with ImplicitHandlers with MockRequest {
+trait Fixtures extends TestDataGenerator with MockRequest {
   val testOrgDevId = generateTestSystemId(DEVERSITY)
 
   val testOrgCurrentUser = CurrentUser(

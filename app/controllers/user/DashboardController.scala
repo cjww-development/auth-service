@@ -40,8 +40,7 @@ trait DashboardController extends FrontendController {
           case "organisation" => for {
             Some(basicDetails)  <- dashboardService.getOrgBasicDetails
             teacherList         <- dashboardService.getTeacherList
-            pendingCount        <- dashboardService.getPendingEnrolmentCount
-          } yield Ok(OrgDashboard(basicDetails, teacherList, pendingCount))
+          } yield Ok(OrgDashboard(basicDetails, teacherList))
           case "individual" => for {
             basicDetails        <- dashboardService.getBasicDetails
             settings            <- dashboardService.getSettings

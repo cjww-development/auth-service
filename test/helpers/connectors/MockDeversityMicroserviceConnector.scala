@@ -55,11 +55,6 @@ trait MockDeversityMicroserviceConnector extends BeforeAndAfterEach with Mockito
       .thenReturn(Future(if(fetched) Some(testStudentEnrolment) else None))
   }
 
-  def mockGetPendingEnrolmentCount(notZero: Boolean): OngoingStubbing[Future[Int]] = {
-    when(mockDeversityMicroserviceConnector.getPendingEnrolmentCount(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future(if(notZero) ENROLMENTS else NO_ENROLMENTS))
-  }
-
   def mockGetTeacherInfo(fetched: Boolean): OngoingStubbing[Future[Option[TeacherDetails]]] = {
     when(mockDeversityMicroserviceConnector.getTeacherInfo(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future(if(fetched) Some(testTeacherDetails) else None))

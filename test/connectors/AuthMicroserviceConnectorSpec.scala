@@ -17,6 +17,7 @@
 package connectors
 
 import com.cjwwdev.http.exceptions.ForbiddenException
+import com.cjwwdev.implicits.ImplicitDataSecurity._
 import helpers.connectors.ConnectorSpec
 
 import scala.concurrent.Future
