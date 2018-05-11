@@ -121,7 +121,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "createClassroom" should {
     "return the name of the created classroom" in {
-      mockHttpPost(response = Future(fakeHttpResponse(OK)))
+      mockHttpPostString(response = Future(fakeHttpResponse(OK)))
 
       awaitAndAssert(testConnector.createClassroom("testClassRoom")) {
         _ mustBe "testClassRoom"

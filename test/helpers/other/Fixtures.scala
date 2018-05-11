@@ -55,8 +55,7 @@ trait Fixtures extends TestDataGenerator with MockRequest {
 
   val testTeacherEnrolment: DeversityEnrolment = {
     DeversityEnrolment(
-      statusConfirmed = "pending",
-      schoolName      = testOrgDevId,
+      schoolDevId     = testOrgDevId,
       role            = "teacher",
       title           = Some("testTitle"),
       room            = Some("testRoom"),
@@ -66,8 +65,7 @@ trait Fixtures extends TestDataGenerator with MockRequest {
 
   val testStudentEnrolment: DeversityEnrolment = {
     DeversityEnrolment(
-      statusConfirmed = "pending",
-      schoolName      = testOrgDevId,
+      schoolDevId     = testOrgDevId,
       role            = "student",
       title           = None,
       room            = None,

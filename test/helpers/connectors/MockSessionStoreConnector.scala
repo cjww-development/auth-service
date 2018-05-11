@@ -40,7 +40,7 @@ trait MockSessionStoreConnector extends BeforeAndAfterEach with MockitoSugar wit
   }
 
   def mockCache(cached: Boolean): OngoingStubbing[Future[SessionCache.Value]] = {
-    when(mockSessionStoreConnector.cache(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockSessionStoreConnector.cache(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(Future(if(cached) SessionCache.cached else SessionCache.cacheFailure))
   }
 
@@ -50,7 +50,7 @@ trait MockSessionStoreConnector extends BeforeAndAfterEach with MockitoSugar wit
   }
 
   def mockUpdateSession(updated: Boolean): OngoingStubbing[Future[SessionCache.Value]] = {
-    when(mockSessionStoreConnector.updateSession(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockSessionStoreConnector.updateSession(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future(if(updated) SessionCache.cacheUpdated else SessionCache.cacheUpdateFailure))
   }
 

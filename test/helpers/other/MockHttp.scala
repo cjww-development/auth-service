@@ -52,6 +52,11 @@ trait MockHttp extends BeforeAndAfterEach with MockitoSugar with TestDataGenerat
       .thenReturn(response)
   }
 
+  def mockHttpPostString(response: Future[WSResponse]): OngoingStubbing[Future[WSResponse]] = {
+    when(mockHttp.postString(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(response)
+  }
+
   def mockHttpPut(response: Future[WSResponse]): OngoingStubbing[Future[WSResponse]] = {
     when(mockHttp.put(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(response)
