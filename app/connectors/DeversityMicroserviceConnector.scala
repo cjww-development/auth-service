@@ -15,21 +15,20 @@
  */
 package connectors
 
-import javax.inject.Inject
 import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.config.ConfigurationLoader
-import com.cjwwdev.implicits.ImplicitDataSecurity._
 import com.cjwwdev.http.exceptions.NotFoundException
 import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.verbs.Http
-import common.ApplicationConfiguration
+import com.cjwwdev.implicits.ImplicitDataSecurity._
+import common.{ApplicationConfiguration, Logging}
 import enums.HttpResponse
+import javax.inject.Inject
 import models.RegistrationCode
 import models.accounts.DeversityEnrolment
 import models.deversity.{Classroom, OrgDetails, TeacherDetails}
-import play.api.libs.json._
-import play.api.mvc.Request
 import play.api.http.Status._
+import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -37,7 +36,7 @@ import scala.concurrent.Future
 class DeversityMicroserviceConnectorImpl @Inject()(val http: Http,
                                                    val configurationLoader: ConfigurationLoader) extends DeversityMicroserviceConnector
 
-trait DeversityMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers {
+trait DeversityMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers with Logging {
   val http: Http
 
   def getDeversityEnrolment(implicit user: CurrentUser, request: Request[_]): Future[Option[DeversityEnrolment]] = {
@@ -80,18 +79,17 @@ trait DeversityMicroserviceConnector extends ApplicationConfiguration with WsRes
   }
 
   def createClassroom(classRoomName: String)(implicit user: CurrentUser, request: Request[_]): Future[String] = {
-    val stringWriter: OWrites[String] = OWrites[String](str => Json.obj("classRoomName" -> JsString(str)))
-    val stringReader: Reads[String]   = Reads[String](json => JsSuccess(json.\("classRoomName").as[String](stringReads)))
-    implicit val stringFormat: OFormat[String] = OFormat(stringReader, stringWriter)
-
-    http.post[String](s"$deversityMicroservice/teacher/${user.id}/create-classroom", classRoomName) map {
+    http.postString(s"$deversityMicroservice/teacher/${user.id}/create-classroom", classRoomName) map {
       _ => classRoomName
     }
   }
 
   def getClassrooms(implicit user: CurrentUser, request: Request[_]): Future[Seq[Classroom]] = {
-    http.get(s"$deversityMicroservice/teacher/${user.id}/classrooms") map {
-      _.toDataType[Seq[Classroom]](needsDecrypt = true)
+    http.get(s"$deversityMicroservice/teacher/${user.id}/classrooms") map { resp =>
+      resp.status match {
+        case OK         => resp.toDataType[Seq[Classroom]](needsDecrypt = true)
+        case NO_CONTENT => Seq.empty[Classroom]
+      }
     }
   }
 

@@ -43,19 +43,16 @@ trait GenerateCodeController extends FrontendController {
     implicit request =>
       implicit user =>
         user.credentialType match {
-          case INDIVIDUAL => deversityConnector.getDeversityEnrolment map { enr =>
-
+          case INDIVIDUAL => for {
+            enr <- deversityConnector.getDeversityEnrolment
+            res <- enr.fold(Future(NotFound(NotFoundView())))(_ => registrationCodeService.getGeneratedCode map(
+              regCode => Ok(GenerateCodeView(regCode))
+            ))
+          } yield res
+          case ORGANISATION => registrationCodeService.getGeneratedCode map {
+            regCode => Ok(GenerateCodeView(regCode))
           }
-        }
-
-
-        user.credentialType match {
-          case INDIVIDUAL   => user.role match {
-            case Some("teacher") => registrationCodeService.getGeneratedCode map(regCode => Ok(GenerateCodeView(regCode)))
-            case _               => Future.successful(NotFound(NotFoundView()))
-          }
-          case ORGANISATION => registrationCodeService.getGeneratedCode map(regCode => Ok(GenerateCodeView(regCode)))
-          case _            => Future.successful(NotFound(NotFoundView()))
+          case _ => Future(NotFound(NotFoundView()))
         }
   }
 
@@ -63,12 +60,16 @@ trait GenerateCodeController extends FrontendController {
     implicit request =>
       implicit user =>
         user.credentialType match {
-          case INDIVIDUAL   => user.role match {
-            case Some("teacher") => registrationCodeService.generateRegistrationCode map(_ => Redirect(routes.GenerateCodeController.getRegistrationCodeShow()))
-            case _               => Future.successful(NotFound(NotFoundView()))
+          case INDIVIDUAL => for {
+            enr <- deversityConnector.getDeversityEnrolment
+            res <- enr.fold(Future(NotFound(NotFoundView())))(_ => registrationCodeService.generateRegistrationCode map(
+              _ => Redirect(routes.GenerateCodeController.getRegistrationCodeShow())
+            ))
+          } yield res
+          case ORGANISATION => registrationCodeService.generateRegistrationCode map {
+            _ => Redirect(routes.GenerateCodeController.getRegistrationCodeShow())
           }
-          case ORGANISATION => registrationCodeService.generateRegistrationCode map(_ => Redirect(routes.GenerateCodeController.getRegistrationCodeShow()))
-          case _            => Future.successful(NotFound(NotFoundView()))
+          case _ => Future(NotFound(NotFoundView()))
         }
   }
 }
