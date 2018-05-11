@@ -138,6 +138,4 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
       }
     }
   }
-
-
 }

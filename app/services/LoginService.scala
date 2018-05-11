@@ -23,6 +23,7 @@ import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.implicits.ImplicitDataSecurity._
 import common.Logging
 import connectors._
+import enums.SessionCache
 import javax.inject.Inject
 import models.{SessionUpdateSet, UserLogin}
 import play.api.libs.json._
@@ -67,14 +68,14 @@ trait LoginService extends Logging {
     }
   }
 
-  def processLoginAttempt(credentials : UserLogin)(implicit request: Request[_]) : Future[Option[Session]] = {
-    (for {
-      user    <- authConnector.getUser(credentials)
-      session =  Session(sessionMap(user))
-      _       <- sessionStoreConnector.cache(session("cookieId"))
-      _       <- sessionStoreConnector.updateSession(SessionUpdateSet("contextId", user.contextId.encrypt), Some(session("cookieId")))
-    } yield Some(session)).recover {
-      case _ => None
+  def processLoginAttempt(credentials: UserLogin)(implicit request: Request[_]): Future[Option[Session]] = {
+    authConnector.getUser(credentials) flatMap { user =>
+      val session = Session(sessionMap(user))
+      sessionStoreConnector.cache(session("cookieId")) flatMap { _ =>
+        sessionStoreConnector.updateSession(SessionUpdateSet("contextId", user.contextId.encrypt), Some(session("cookieId"))) map {
+          _ => Some(session)
+        }
+      }
     }
   }
 }

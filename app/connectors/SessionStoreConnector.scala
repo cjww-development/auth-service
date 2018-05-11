@@ -54,9 +54,9 @@ trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils w
     }
   }
 
-  def updateSession(updateSet : SessionUpdateSet, sessionId: Option[String])(implicit format: OFormat[SessionUpdateSet], request: Request[_]) : Future[SessionCache.Value] = {
+  def updateSession(updateSet : SessionUpdateSet, sessionId: Option[String])
+                   (implicit format: OFormat[SessionUpdateSet], request: Request[_]) : Future[SessionCache.Value] = {
     val id = sessionId.getOrElse(getCookieId)
-    println(Json.prettyPrint(Json.toJson(updateSet)))
     http.patch[SessionUpdateSet](s"$sessionStore/session/$id", updateSet, secure = false) map {
       _ => SessionCache.cacheUpdated
     } recover {
