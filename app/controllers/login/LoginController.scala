@@ -55,6 +55,7 @@ trait LoginController extends FrontendController {
   }
 
   def activateAuthServiceSession: Action[AnyContent] = Action { implicit request =>
+    logger.info(s"###### session ${request.session}")
     Redirect(s"$deversityFrontend/private/build-deversity-session/${request.session("cookieId")}")
   }
 
