@@ -46,7 +46,7 @@ trait LoginController extends FrontendController {
       UserLoginForm.loginForm.bindFromRequest.fold(
         errors => Future.successful(BadRequest(UserLoginView(errors))),
         valid  => loginService.processLoginAttempt(valid) map {
-          case Some(session) => Redirect(routes.LoginController.activateAuthServiceSession()).withSession(session)
+          case Some(session) => Redirect(routes.LoginController.activateAuthServiceSession(session("cookieId"))).withSession(session)
           case None          => Ok(UserLoginView(
             UserLoginForm.loginForm.fill(valid).withError("userName", messagesApi("cjww.auth.login.error.invalid")).withError("password", "")
           ))
@@ -54,9 +54,8 @@ trait LoginController extends FrontendController {
       )
   }
 
-  def activateAuthServiceSession: Action[AnyContent] = Action { implicit request =>
-    logger.info(s"###### session ${request.session}")
-    Redirect(s"$deversityFrontend/private/build-deversity-session/${request.session("cookieId")}")
+  def activateAuthServiceSession(cookieId: String): Action[AnyContent] = Action { implicit request =>
+    Redirect(s"$deversityFrontend/private/build-deversity-session/$cookieId")
   }
 
   def redirectToServiceSelector: Action[AnyContent] = Action(implicit request => Redirect(serviceDirector))
