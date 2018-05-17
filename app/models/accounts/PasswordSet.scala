@@ -16,8 +16,8 @@
 
 package models.accounts
 
-import play.api.libs.json._
 import com.cjwwdev.security.encryption.SHA512
+import play.api.libs.json._
 
 case class PasswordSet(oldPassword : String, newPassword : String, confirmPassword : String)
 

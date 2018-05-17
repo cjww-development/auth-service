@@ -17,10 +17,10 @@
 
 package forms
 
+import forms.validation.RegistrationValidation._
 import models.registration.UserRegistration
 import play.api.data.Form
 import play.api.data.Forms._
-import forms.validation.RegistrationValidation._
 
 object UserRegisterForm{
   val RegisterUserForm = Form(

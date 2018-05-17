@@ -15,9 +15,8 @@
  */
 package services
 
-import javax.inject.Inject
-
 import connectors.AccountsMicroserviceConnector
+import javax.inject.Inject
 
 class DeversityServiceImpl @Inject()(val accountsConnector: AccountsMicroserviceConnector) extends DeversityService
 

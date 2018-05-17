@@ -16,18 +16,17 @@
 
 package common
 
-import com.cjwwdev.auth.connectors.AuthConnector
 import com.cjwwdev.config.{ConfigurationLoader, ConfigurationLoaderImpl}
 import com.google.inject.AbstractModule
 import connectors._
 import connectors.test._
-import services._
 import controllers.login._
 import controllers.redirect._
 import controllers.register._
 import controllers.test._
 import controllers.user._
 import controllers.user.deversity.{ClassroomController, ClassroomControllerImpl}
+import services._
 
 class ServiceBindings extends AbstractModule {
   override def configure(): Unit = {

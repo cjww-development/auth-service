@@ -16,10 +16,10 @@
 
 package forms
 
+import forms.validation.OrgRegistrationValidation._
 import models.registration.OrgRegistration
 import play.api.data.Form
 import play.api.data.Forms._
-import forms.validation.OrgRegistrationValidation._
 
 object OrgRegisterForm {
   val orgRegisterForm = Form(

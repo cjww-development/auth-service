@@ -17,13 +17,13 @@
 package connectors
 
 import com.cjwwdev.http.exceptions.NotFoundException
-import com.cjwwdev.security.encryption.DataSecurity
 import com.cjwwdev.implicits.ImplicitDataSecurity._
+import com.cjwwdev.security.encryption.DataSecurity
 import enums.HttpResponse
 import helpers.connectors.ConnectorSpec
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 

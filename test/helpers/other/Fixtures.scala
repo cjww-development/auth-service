@@ -16,11 +16,11 @@
 package helpers.other
 
 import com.cjwwdev.auth.models.CurrentUser
-import models.{RegistrationCode, UserLogin}
 import models.accounts._
 import models.deversity.{Classroom, OrgDetails, TeacherDetails}
 import models.feed.{EventDetail, FeedItem, SourceDetail}
 import models.registration.OrgRegistration
+import models.{RegistrationCode, UserLogin}
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 
@@ -32,7 +32,7 @@ trait Fixtures extends TestDataGenerator with MockRequest {
     id              = generateTestSystemId(ORG),
     orgDeversityId  = Some(generateTestSystemId(DEVERSITY)),
     credentialType  = "organisation",
-    orgName         = None,
+    orgName         = Some("testOrgName"),
     firstName       = None,
     lastName        = None,
     role            = None,
@@ -177,5 +177,19 @@ trait Fixtures extends TestDataGenerator with MockRequest {
   val testUserLogin = UserLogin(
     username = "testUserName",
     password = "testPassword"
+  )
+
+  val individualSession = Map(
+    "cookieId"        -> generateTestSystemId(SESSION),
+    "firstName"       -> "testFirstName",
+    "lastName"        -> "testLastName",
+    "credentialType"  -> "individual",
+    ""                -> ""
+  )
+
+  val orgSession = Map(
+    "cookieId"        -> generateTestSystemId(SESSION),
+    "orgName"         -> "testOrgName",
+    "credentialType"  -> "organisation"
   )
 }

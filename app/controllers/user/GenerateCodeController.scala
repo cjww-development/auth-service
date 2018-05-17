@@ -16,14 +16,14 @@
 package controllers.user
 
 import com.cjwwdev.auth.connectors.AuthConnector
+import com.cjwwdev.views.html.templates.errors.NotFoundView
 import common.FrontendController
+import connectors.DeversityMicroserviceConnector
 import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import services.{DashboardService, DeversityService, RegistrationCodeService}
+import services.{DashboardService, RegistrationCodeService}
 import views.html.user.GenerateCodeView
-import com.cjwwdev.views.html.templates.errors.{NotFoundView, ServerErrorView, StandardErrorView}
-import connectors.DeversityMicroserviceConnector
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

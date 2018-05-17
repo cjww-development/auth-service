@@ -16,31 +16,24 @@
 
 package forms.validation
 
-import com.cjwwdev.regex.RegexPack
 import play.api.data.Forms.text
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 object LoginValidation {
   def userNameValidation: Mapping[String] = {
-    val userNameConstraint: Constraint[String] = Constraint("constraints.userName")({ userName =>
-      val errors = userName match {
-        case "" => Seq(ValidationError("You have not entered your user name"))
-        case _  => Nil
-      }
-      if(errors.isEmpty) Valid else Invalid(errors)
-    })
+    val userNameConstraint: Constraint[String] = Constraint("constraints.userName") {
+      case "" => Invalid(ValidationError("You have not entered your user name"))
+      case _  => Valid
+    }
     text.verifying(userNameConstraint)
   }
 
   def passwordValidation: Mapping[String] = {
-    val passwordConstraint: Constraint[String] = Constraint("constraints.password")({ password =>
-      val errors = password match {
-        case "" => Seq(ValidationError("You have not entered your password"))
-        case _  => Nil
-      }
-      if(errors.isEmpty) Valid else Invalid(errors)
-    })
+    val passwordConstraint: Constraint[String] = Constraint("constraints.password") {
+      case "" => Invalid(ValidationError("You have not entered your password"))
+      case _  => Valid
+    }
     text.verifying(passwordConstraint)
   }
 }

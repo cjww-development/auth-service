@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package helpers.connectors
+package helpers.services
 
-import com.cjwwdev.auth.models.CurrentUser
-import connectors.AuthMicroserviceConnector
 import helpers.other.Fixtures
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{reset, when}
@@ -25,27 +23,29 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.mvc.Session
+import services.LoginService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait MockAuthMicroserviceConnector extends BeforeAndAfterEach with MockitoSugar with Fixtures {
+trait MockLoginService extends BeforeAndAfterEach with MockitoSugar with Fixtures {
   self: PlaySpec =>
 
-  val mockAuthMicroserviceConnector: AuthMicroserviceConnector = mock[AuthMicroserviceConnector]
+  val mockLoginService: LoginService = mock[LoginService]
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockAuthMicroserviceConnector)
+    reset(mockLoginService)
   }
 
-  def mockGetIndividualUser(fetched: Boolean): OngoingStubbing[Future[Option[CurrentUser]]] = {
-    when(mockAuthMicroserviceConnector.getUser(ArgumentMatchers.any())(ArgumentMatchers.any()))
-      .thenReturn(if(fetched) Future(Some(testCurrentUser)) else Future(None))
+  def mockProcessIndividualLoginAttempt(success: Boolean): OngoingStubbing[Future[Option[Session]]] = {
+    when(mockLoginService.processLoginAttempt(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(if(success) Future(Some(Session(data = individualSession))) else Future(None))
   }
 
-  def mockGetOrgUser(fetched: Boolean): OngoingStubbing[Future[Option[CurrentUser]]] = {
-    when(mockAuthMicroserviceConnector.getUser(ArgumentMatchers.any())(ArgumentMatchers.any()))
-      .thenReturn(if(fetched) Future(Some(testOrgCurrentUser)) else Future(None))
+  def mockProcessOrgLoginAttempt(success: Boolean): OngoingStubbing[Future[Option[Session]]] = {
+    when(mockLoginService.processLoginAttempt(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(if(success) Future(Some(Session(data = orgSession))) else Future(None))
   }
 }

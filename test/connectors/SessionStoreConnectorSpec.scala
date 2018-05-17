@@ -16,14 +16,7 @@
 
 package connectors
 
-import com.cjwwdev.http.exceptions.{ClientErrorException, NotFoundException, ServerErrorException}
-import com.cjwwdev.implicits.ImplicitDataSecurity._
-import enums.SessionCache
 import helpers.connectors.ConnectorSpec
-import models.SessionUpdateSet
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class SessionStoreConnectorSpec extends ConnectorSpec {
 

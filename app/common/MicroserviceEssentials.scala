@@ -19,7 +19,6 @@ package common
 import java.security.cert.X509Certificate
 
 import com.cjwwdev.auth.frontend.AuthorisedAction
-import javax.inject.{Inject, Provider, Singleton}
 import com.cjwwdev.filters.RequestLoggingFilter
 import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
 import com.cjwwdev.http.exceptions.ForbiddenException
@@ -32,6 +31,7 @@ import controllers.register.{routes => registerRoutes}
 import controllers.user.{routes => userRoutes}
 import controllers.{routes => assetRoutes}
 import filters.{HeadersFilter, IPWhitelistFilter}
+import javax.inject.{Inject, Provider, Singleton}
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.http.Status._
 import play.api.http.{DefaultHttpFilters, HttpErrorHandler}

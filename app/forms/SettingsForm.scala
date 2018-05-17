@@ -16,10 +16,10 @@
 
 package forms
 
+import forms.validation.SettingsValidation._
 import models.accounts.Settings
 import play.api.data.Form
 import play.api.data.Forms._
-import forms.validation.SettingsValidation._
 
 object SettingsForm {
   val form = Form(

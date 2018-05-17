@@ -16,13 +16,12 @@
 
 package services
 
-import javax.inject.Inject
-
 import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.config.ConfigurationLoader
 import common.ApplicationConfiguration
 import connectors.AccountsMicroserviceConnector
 import enums.HttpResponse
+import javax.inject.Inject
 import models.feed.{EventDetail, FeedItem, SourceDetail}
 import org.joda.time.DateTime
 import play.api.mvc.Request
