@@ -16,11 +16,11 @@
 package connectors
 
 import com.cjwwdev.auth.models.CurrentUser
-import com.cjwwdev.implicits.ImplicitDataSecurity._
 import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions.ForbiddenException
 import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.verbs.Http
+import com.cjwwdev.implicits.ImplicitDataSecurity._
 import common._
 import javax.inject.Inject
 import models.UserLogin
@@ -35,11 +35,11 @@ class AuthMicroserviceConnectorImpl @Inject()(val http: Http,
 trait AuthMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers {
   val http: Http
 
-  def getUser(loginDetails : UserLogin)(implicit request: Request[_]): Future[CurrentUser] = {
-    http.get(s"$authMicroservice/login/user?enc=${loginDetails.encryptType}") map {
-      _.toDataType[CurrentUser](needsDecrypt = true)
+  def getUser(loginDetails : UserLogin)(implicit request: Request[_]): Future[Option[CurrentUser]] = {
+    http.get(s"$authMicroservice/login/user?enc=${loginDetails.encryptType}") map { resp =>
+      Some(resp.toDataType[CurrentUser](needsDecrypt = true))
     } recover {
-      case e: ForbiddenException => throw e
+      case e: ForbiddenException => None
     }
   }
 }

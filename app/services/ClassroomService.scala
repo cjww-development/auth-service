@@ -16,15 +16,14 @@
 
 package services
 
-import javax.inject.Inject
-
 import com.cjwwdev.auth.models.CurrentUser
 import connectors.DeversityMicroserviceConnector
+import javax.inject.Inject
 import models.deversity.Classroom
 import play.api.mvc.Request
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class ClassroomServiceImpl @Inject()(val deversityConnector: DeversityMicroserviceConnector) extends ClassroomService
 

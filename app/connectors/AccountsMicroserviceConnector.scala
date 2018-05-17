@@ -20,9 +20,8 @@ import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions._
 import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.verbs.Http
-import com.cjwwdev.security.encryption.DataSecurity
-import com.cjwwdev.implicits.ImplicitJsValues._
 import com.cjwwdev.implicits.ImplicitDataSecurity._
+import com.cjwwdev.implicits.ImplicitJsValues._
 import common.{MissingBasicDetailsException, _}
 import enums.{HttpResponse, Registration}
 import javax.inject.Inject
@@ -31,7 +30,7 @@ import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.FeedItem
 import models.registration.{OrgRegistration, UserRegistration}
 import play.api.http.Status._
-import play.api.libs.json.{JsArray, JsObject, OFormat}
+import play.api.libs.json.{JsObject, OFormat}
 import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext.Implicits.global

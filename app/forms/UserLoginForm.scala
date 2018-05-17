@@ -16,10 +16,10 @@
 
 package forms
 
+import forms.validation.LoginValidation._
 import models.UserLogin
 import play.api.data.Form
 import play.api.data.Forms._
-import forms.validation.LoginValidation._
 
 object UserLoginForm {
   val loginForm = Form(

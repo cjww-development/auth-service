@@ -17,16 +17,15 @@
 package connectors
 
 import com.cjwwdev.config.ConfigurationLoader
-import com.cjwwdev.http.exceptions.{ClientErrorException, ForbiddenException, NotFoundException, ServerErrorException}
+import com.cjwwdev.http.exceptions.{ClientErrorException, NotFoundException, ServerErrorException}
 import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.session.SessionUtils
 import com.cjwwdev.http.verbs.Http
-import com.cjwwdev.security.encryption.DataSecurity
 import com.google.inject.Inject
 import common.ApplicationConfiguration
 import enums.SessionCache
 import models.SessionUpdateSet
-import play.api.libs.json.{Json, OFormat, OWrites, Reads}
+import play.api.libs.json.{OFormat, Reads}
 import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -16,11 +16,10 @@
 
 package services
 
-import javax.inject.Inject
-
 import com.cjwwdev.auth.models.CurrentUser
 import common.MissingOrgDetailsException
 import connectors.{AccountsMicroserviceConnector, DeversityMicroserviceConnector}
+import javax.inject.Inject
 import models.accounts.{BasicDetails, DeversityEnrolment, Settings}
 import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.FeedItem

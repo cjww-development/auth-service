@@ -16,10 +16,8 @@
 
 package helpers.connectors
 
-import com.cjwwdev.auth.models.CurrentUser
-import com.cjwwdev.http.exceptions.ForbiddenException
 import common.{InvalidOldPassword, MissingBasicDetailsException, PasswordUpdated, UpdatedPasswordResponse}
-import connectors.{AccountsMicroserviceConnector, AuthMicroserviceConnector}
+import connectors.AccountsMicroserviceConnector
 import enums.{HttpResponse, Registration}
 import helpers.other.Fixtures
 import models.accounts.{BasicDetails, Enrolments, Settings}

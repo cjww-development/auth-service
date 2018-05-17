@@ -21,7 +21,6 @@ import com.cjwwdev.responses.ApiResponse
 import org.joda.time.LocalDateTime
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSCookie, WSResponse}
-import play.api.mvc.Request
 
 import scala.xml.Elem
 

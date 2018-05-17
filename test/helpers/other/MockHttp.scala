@@ -17,8 +17,8 @@
 package helpers.other
 
 import com.cjwwdev.http.verbs.Http
-import org.mockito.Mockito.{reset, when}
 import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.{reset, when}
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar

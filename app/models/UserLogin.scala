@@ -16,8 +16,8 @@
 
 package models
 
-import play.api.libs.json.{JsObject, Json, OWrites}
 import com.cjwwdev.security.encryption.SHA512
+import play.api.libs.json.{JsObject, Json, OWrites}
 
 case class UserLogin(username : String, password : String)
 

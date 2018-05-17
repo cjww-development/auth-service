@@ -17,7 +17,7 @@
 package forms
 
 import org.scalatestplus.play.PlaySpec
-import play.api.data.{Form, FormError}
+import play.api.data.FormError
 
 class NewPasswordFormSpec extends PlaySpec {
   "NewPasswordForm" should {

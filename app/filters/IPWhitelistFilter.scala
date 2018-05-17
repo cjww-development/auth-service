@@ -16,11 +16,11 @@
 package filters
 
 import java.util.Base64
-import javax.inject.Inject
 
 import akka.stream.Materializer
 import com.cjwwdev.config.ConfigurationLoader
 import controllers.redirect.routes
+import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Call, Filter, RequestHeader, Result}

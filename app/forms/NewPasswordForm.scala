@@ -16,10 +16,10 @@
 
 package forms
 
+import forms.validation.UpdatePasswordValidation._
 import models.accounts.PasswordSet
 import play.api.data.Form
 import play.api.data.Forms._
-import forms.validation.UpdatePasswordValidation._
 
 object NewPasswordForm {
   val form = Form(

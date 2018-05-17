@@ -20,6 +20,8 @@ import common.FrontendController
 import connectors.SessionStoreConnector
 import forms.UserLoginForm
 import javax.inject.Inject
+import models.UserLogin
+import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.LoginService
@@ -31,27 +33,30 @@ import scala.concurrent.Future
 class LoginControllerImpl @Inject()(val loginService : LoginService,
                                     val sessionStoreConnector: SessionStoreConnector,
                                     val authConnector: AuthConnector,
-                                    implicit val messagesApi: MessagesApi) extends LoginController
+                                    implicit val messagesApi: MessagesApi) extends LoginController {
+  override val loginFailed: String = messagesApi("cjww.auth.login.error.invalid")
+}
 
 trait LoginController extends FrontendController {
   val loginService: LoginService
   val sessionStoreConnector: SessionStoreConnector
 
+  val loginFailed: String
+
+  private val loginForm: Form[UserLogin] = UserLoginForm.loginForm
+
   def show(redirect : Option[String]) : Action[AnyContent] = Action { implicit request =>
-    Ok(UserLoginView(UserLoginForm.loginForm))
+    Ok(UserLoginView(loginForm))
   }
 
-  def submit : Action[AnyContent] = Action.async {
-    implicit request =>
-      UserLoginForm.loginForm.bindFromRequest.fold(
-        errors => Future.successful(BadRequest(UserLoginView(errors))),
-        valid  => loginService.processLoginAttempt(valid) map {
-          case Some(session) => Redirect(routes.LoginController.activateAuthServiceSession(session("cookieId"))).withSession(session)
-          case None          => Ok(UserLoginView(
-            UserLoginForm.loginForm.fill(valid).withError("userName", messagesApi("cjww.auth.login.error.invalid")).withError("password", "")
-          ))
-        }
-      )
+  def submit : Action[AnyContent] = Action.async { implicit request =>
+    loginForm.bindFromRequest.fold(
+      errors => Future.successful(BadRequest(UserLoginView(errors))),
+      valid  => loginService.processLoginAttempt(valid) map {
+        case Some(session) => Redirect(routes.LoginController.activateAuthServiceSession(session("cookieId"))).withSession(session)
+        case None          => Ok(UserLoginView(loginForm.fill(valid).withError("userName", loginFailed).withError("password", "")))
+      }
+    )
   }
 
   def activateAuthServiceSession(cookieId: String): Action[AnyContent] = Action { implicit request =>

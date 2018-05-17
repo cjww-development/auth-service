@@ -17,13 +17,12 @@
 
 package controllers.register
 
-import javax.inject.Inject
-
 import com.cjwwdev.auth.connectors.AuthConnector
 import com.cjwwdev.views.html.templates.errors.StandardErrorView
 import common.FrontendController
 import enums.Registration
 import forms.UserRegisterForm
+import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.RegisterService

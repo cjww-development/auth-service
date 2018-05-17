@@ -15,11 +15,10 @@
  */
 package connectors.test
 
-import javax.inject.Inject
-
 import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.verbs.Http
 import common.ApplicationConfiguration
+import javax.inject.Inject
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Request
 

@@ -16,10 +16,10 @@
 
 package forms
 
+import forms.validation.ClassroomValidation.classNameValidation
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.MessagesApi
-import forms.validation.ClassroomValidation.classNameValidation
 
 object CreateClassForm {
   def form(implicit messagesApi: MessagesApi): Form[String] = Form(

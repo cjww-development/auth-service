@@ -17,13 +17,13 @@
 package helpers.auth
 
 import org.scalatest.Assertion
-import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.mvc.{Action, Request, Result}
 
 import scala.concurrent.Future
 
-trait AuthBuilder extends PlaySpec with MockitoSugar with MockAuthConnector {
+trait AuthBuilder extends MockAuthConnector {
+  self: PlaySpec =>
 
   def runActionWithAuth[A](action: Action[A], request: Request[A], authorisedAs: String)(test: Future[Result] => Assertion): Assertion = {
     authorisedAs match {

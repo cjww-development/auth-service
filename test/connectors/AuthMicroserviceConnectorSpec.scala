@@ -20,8 +20,8 @@ import com.cjwwdev.http.exceptions.ForbiddenException
 import com.cjwwdev.implicits.ImplicitDataSecurity._
 import helpers.connectors.ConnectorSpec
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class AuthMicroserviceConnectorSpec extends ConnectorSpec {
 
@@ -35,7 +35,7 @@ class AuthMicroserviceConnectorSpec extends ConnectorSpec {
         mockHttpGet(response = Future(fakeHttpResponse(OK, testCurrentUser.encryptType)))
 
         awaitAndAssert(testConnector.getUser(testUserLogin)) {
-          _ mustBe testCurrentUser
+          _ mustBe Some(testCurrentUser)
         }
       }
     }
@@ -44,7 +44,9 @@ class AuthMicroserviceConnectorSpec extends ConnectorSpec {
       "no user could be found" in {
         mockHttpGet(response = Future.failed(new ForbiddenException("")))
 
-        awaitAndIntercept[ForbiddenException](testConnector.getUser(testUserLogin))
+        awaitAndAssert(testConnector.getUser(testUserLogin)) {
+          _ mustBe None
+        }
       }
     }
   }
