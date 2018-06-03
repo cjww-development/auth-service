@@ -20,11 +20,10 @@ import com.cjwwdev.http.headers.HeaderPackage
 import com.cjwwdev.implicits.ImplicitDataSecurity._
 import helpers.auth.AuthBuilder
 import helpers.connectors.MockSessionStoreConnector
-import helpers.other.{Fixtures, FutureAsserts, MockMessages}
+import helpers.other.{Fixtures, FutureAsserts}
 import helpers.services.MockLoginService
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 
@@ -35,10 +34,7 @@ trait ControllerSpec
     with MockLoginService
     with MockSessionStoreConnector
     with AuthBuilder
-    with GuiceOneAppPerSuite
-    with MockMessages {
-
-  val mockMessagesApi = mock[MessagesApi]
+    with GuiceOneAppPerSuite {
 
   implicit lazy val request: FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest()

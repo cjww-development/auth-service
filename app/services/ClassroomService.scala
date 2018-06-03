@@ -25,7 +25,7 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ClassroomServiceImpl @Inject()(val deversityConnector: DeversityMicroserviceConnector) extends ClassroomService
+class DefaultClassroomService @Inject()(val deversityConnector: DeversityMicroserviceConnector) extends ClassroomService
 
 trait ClassroomService {
   val deversityConnector: DeversityMicroserviceConnector

@@ -23,18 +23,17 @@ import connectors.AccountsMicroserviceConnector
 import enums.HttpResponse
 import forms.{NewPasswordForm, SettingsForm, UserProfileForm}
 import javax.inject.Inject
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.{EditProfileService, FeedService}
 import views.html.user.EditProfile
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class EditProfileControllerImpl @Inject()(val accountsConnector: AccountsMicroserviceConnector,
-                                          val feedService : FeedService,
-                                          val authConnector: AuthConnector,
-                                          implicit val messagesApi: MessagesApi) extends EditProfileController
+class DefaultEditProfileController @Inject()(val accountsConnector: AccountsMicroserviceConnector,
+                                             val feedService : FeedService,
+                                             val controllerComponents: ControllerComponents,
+                                             val authConnector: AuthConnector) extends EditProfileController
 
 trait EditProfileController extends FrontendController with EditProfileService {
   val accountsConnector: AccountsMicroserviceConnector
@@ -44,8 +43,8 @@ trait EditProfileController extends FrontendController with EditProfileService {
     implicit request =>
       implicit user =>
         for {
-          basicDetails    <- accountsConnector.getBasicDetails
-          settings        <- accountsConnector.getSettings
+          basicDetails <- accountsConnector.getBasicDetails
+          settings     <- accountsConnector.getSettings
         } yield {
           Ok(
             EditProfile(

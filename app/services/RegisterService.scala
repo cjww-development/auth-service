@@ -16,16 +16,16 @@
 
 package services
 
-import com.google.inject.Inject
 import connectors.AccountsMicroserviceConnector
 import enums.Registration
+import javax.inject.Inject
 import models.registration.{OrgRegistration, UserRegistration}
 import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class RegisterServiceImpl @Inject()(val accountsConnector: AccountsMicroserviceConnector) extends RegisterService
+class DefaultRegisterService @Inject()(val accountsConnector: AccountsMicroserviceConnector) extends RegisterService
 
 trait RegisterService {
   val accountsConnector: AccountsMicroserviceConnector

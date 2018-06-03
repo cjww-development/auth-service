@@ -1,9 +1,10 @@
 @import com.cjwwdev.views.html.templates.MainTemplate
 @import com.cjwwdev.views.html.helpers.{textInput, errorPanel}
 @import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
+@import helper._
 @import models.test.TearDownUser
 
-@(tearDownUserForm: Form[TearDownUser])(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@(tearDownUserForm: Form[TearDownUser])(implicit request: Request[_], messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @MainTemplate(title = "Tear down test user", links, navBarRoutes) {
 <div class="top-block-single">
@@ -25,6 +26,8 @@
                 </div>
 
                 <form action="@controllers.test.routes.TeardownController.tearDownTestUserSubmit()" method="POST">
+                    @CSRF.formField
+
                     @textInput(
                         tearDownUserForm("testUserName"),
                         false,

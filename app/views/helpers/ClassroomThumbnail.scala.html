@@ -1,5 +1,5 @@
 @import models.deversity.Classroom
-@(classroom: Classroom)(implicit messagesApi: MessagesApi)
+@(classroom: Classroom)(implicit messages: Messages)
 
 <div class="col-md-4">
     <div class="classroom-panel">
@@ -11,10 +11,10 @@
 
             <div class="btn-group btn-group-lg btn-group-justified" role="group" aria-label="...">
                 <div class="btn-group" role="group">
-                    <a href="@controllers.user.deversity.routes.ClassroomController.manageClassRoom(classroom.classId)" class="btn btn-primary"><span class="glyphicon glyphicon-tasks"></span> @messagesApi("pages.manage-classrooms.manage-classroom")</a>
+                    <a href="@controllers.user.deversity.routes.ClassroomController.manageClassRoom(classroom.classId)" class="btn btn-primary"><span class="glyphicon glyphicon-tasks"></span> @messages("pages.manage-classrooms.manage-classroom")</a>
                 </div>
                 <div class="btn-group" role="group">
-                    <a href="@controllers.user.deversity.routes.ClassroomController.deleteClassRoom(classroom.classId)" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> @messagesApi("pages.manage-classrooms.delete-classroom")</a>
+                    <a href="@controllers.user.deversity.routes.ClassroomController.deleteClassRoom(classroom.classId)" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> @messages("pages.manage-classrooms.delete-classroom")</a>
                 </div>
             </div>
         </div>

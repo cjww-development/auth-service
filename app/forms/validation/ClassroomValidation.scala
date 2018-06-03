@@ -19,14 +19,14 @@ package forms.validation
 import play.api.data.Forms.text
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
-import play.api.i18n.MessagesApi
+import play.api.i18n.Messages
 
 object ClassroomValidation extends CommonValidation {
-  def classNameValidation(implicit messagesApi: MessagesApi): Mapping[String] = {
+  def classNameValidation(implicit messages: Messages): Mapping[String] = {
     val classNameConstraint: Constraint[String] = Constraint("constraints.className")({ className =>
       val errors = className match {
-        case ""                  => Seq(ValidationError(messagesApi("pages.manage-classrooms.create-classroom.error.no-entry")))
-        case x if x.length >= 20 => Seq(ValidationError(messagesApi("pages.manage-classrooms.create-classroom.error.too-long")))
+        case ""                  => Seq(ValidationError(messages("pages.manage-classrooms.create-classroom.error.no-entry")))
+        case x if x.length >= 20 => Seq(ValidationError(messages("pages.manage-classrooms.create-classroom.error.too-long")))
         case _                   => Nil
       }
       if(errors.isEmpty) Valid else Invalid(errors)

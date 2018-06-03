@@ -17,15 +17,15 @@
 package models
 
 import com.cjwwdev.security.encryption.SHA512
-import play.api.libs.json.{JsObject, Json, OWrites}
+import play.api.libs.json.{Json, OWrites}
 
 case class UserLogin(username : String, password : String)
 
 object UserLogin {
-  implicit val userLoginWrites: OWrites[UserLogin] = new OWrites[UserLogin] {
-    override def writes(o: UserLogin): JsObject = Json.obj(
-      "username" -> o.username,
-      "password" -> SHA512.encrypt(o.password)
+  implicit val userLoginWrites: OWrites[UserLogin] = OWrites[UserLogin] {
+    login => Json.obj(
+      "username" -> login.username,
+      "password" -> SHA512.encrypt(login.password)
     )
   }
 }

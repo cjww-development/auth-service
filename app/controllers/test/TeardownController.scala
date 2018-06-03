@@ -20,16 +20,15 @@ import common.FrontendController
 import connectors.test.TeardownConnector
 import forms.test.TearDownUserForm
 import javax.inject.Inject
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import views.html.test.{ActionCompleteView, TearDownUserView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TeardownControllerImpl @Inject()(implicit val messagesApi: MessagesApi,
-                                       val authConnector: AuthConnector,
-                                       val tearDownConnector: TeardownConnector) extends TeardownController
+class DefaultTeardownController @Inject()(val authConnector: AuthConnector,
+                                          val controllerComponents: ControllerComponents,
+                                          val tearDownConnector: TeardownConnector) extends TeardownController
 
 trait TeardownController extends FrontendController {
   val tearDownConnector: TeardownConnector

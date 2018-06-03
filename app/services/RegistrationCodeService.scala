@@ -24,7 +24,7 @@ import play.api.mvc.Request
 
 import scala.concurrent.Future
 
-class RegistrationCodeServiceImpl @Inject()(val deversityMicroserviceConnector: DeversityMicroserviceConnector) extends RegistrationCodeService
+class DefaultRegistrationCodeService @Inject()(val deversityMicroserviceConnector: DeversityMicroserviceConnector) extends RegistrationCodeService
 
 trait RegistrationCodeService {
   val deversityMicroserviceConnector: DeversityMicroserviceConnector

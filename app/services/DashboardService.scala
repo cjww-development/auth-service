@@ -28,9 +28,9 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class DashboardServiceImpl @Inject()(val accountConnector: AccountsMicroserviceConnector,
-                                     val deversityConnector: DeversityMicroserviceConnector,
-                                     val feedService: FeedService) extends DashboardService
+class DefaultDashboardService @Inject()(val accountConnector: AccountsMicroserviceConnector,
+                                        val deversityConnector: DeversityMicroserviceConnector,
+                                        val feedService: FeedService) extends DashboardService
 
 trait DashboardService {
   val accountConnector: AccountsMicroserviceConnector
@@ -49,11 +49,8 @@ trait DashboardService {
     feedService.processRetrievedList
   }
 
-  def concatTeacherName(teacher: Option[TeacherDetails]): Option[String] = {
-    teacher match {
-      case Some(info) => Some(s"${info.title}. ${info.lastName}")
-      case _          => None
-    }
+  def concatTeacherName(teacher: Option[TeacherDetails]): Option[String] = teacher.map {
+    info => s"${info.title}. ${info.lastName}"
   }
 
   def getSchoolInfo(schoolName: String)(implicit user: CurrentUser, request: Request[_]): Future[OrgDetails] = {

@@ -2,34 +2,38 @@
 @import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
 @import com.cjwwdev.views.html.templates.MainTemplate
 @import com.cjwwdev.views.html.helpers.{textInput, errorPanel, radioButton}
+@import helper._
 @import models.accounts.Settings
 
-@(profile : Form[UserProfile], passwords : Form[PasswordSet], displayname : Form[Settings], basicDetails : BasicDetails)(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@(profile : Form[UserProfile], passwords : Form[PasswordSet], displayname : Form[Settings], basicDetails : BasicDetails)(implicit request: Request[_], messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
-@MainTemplate(title = messagesApi("pages.user-edit-profile.title"), links, navBarRoutes) {
+@MainTemplate(title = messages("pages.user-edit-profile.title"), links, navBarRoutes) {
 <div class="top-block-single">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
                 <div class="page-header">
-                    <h1>@Html(messagesApi("pages.user-edit-profile.heading", basicDetails.firstName, basicDetails.lastName))</h1>
+                    <h1>@Html(messages("pages.user-edit-profile.heading", basicDetails.firstName, basicDetails.lastName))</h1>
                 </div>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-8">
-                <h2>@messagesApi("pages.user-edit-profile.basics.heading")</h2>
+                <h2>@messages("pages.user-edit-profile.basics.heading")</h2>
                 <hr>
 
                 <form action="@controllers.user.routes.EditProfileController.updateProfile()" method="post">
+
+                    @CSRF.formField
+
                     @textInput(
                         profile("firstName"),
                         false,
                         '_sassClass   -> "cjww-input-group-addon-oversized",
-                        '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.first-name.label"),
+                        '_label       -> messages("pages.user-edit-profile.basics.text-entry.first-name.label"),
                         '_inputType   -> "text",
-                        '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.first-name.placeholder"),
+                        '_placeholder -> messages("pages.user-edit-profile.basics.text-entry.first-name.placeholder"),
                         '_fieldName   -> "firstName",
                         '_spanId      -> "first-name-span"
                     )
@@ -38,9 +42,9 @@
                         profile("lastName"),
                         false,
                         '_sassClass   -> "cjww-input-group-addon-oversized",
-                        '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.last-name.label"),
+                        '_label       -> messages("pages.user-edit-profile.basics.text-entry.last-name.label"),
                         '_inputType   -> "text",
-                        '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.last-name.placeholder"),
+                        '_placeholder -> messages("pages.user-edit-profile.basics.text-entry.last-name.placeholder"),
                         '_fieldName   -> "lastName",
                         '_spanId      -> "last-name-span"
                     )
@@ -49,9 +53,9 @@
                         profile("userName"),
                         true,
                         '_sassClass   -> "cjww-input-group-addon-oversized",
-                        '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.user-name.label"),
+                        '_label       -> messages("pages.user-edit-profile.basics.text-entry.user-name.label"),
                         '_inputType   -> "text",
-                        '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.user-name.placeholder"),
+                        '_placeholder -> messages("pages.user-edit-profile.basics.text-entry.user-name.placeholder"),
                         '_fieldName   -> "userName",
                         '_spanId      -> "user-name-span"
                     )
@@ -60,16 +64,16 @@
                         profile("email"),
                         false,
                         '_sassClass   -> "cjww-input-group-addon-oversized",
-                        '_label       -> messagesApi("pages.user-edit-profile.basics.text-entry.email.label"),
+                        '_label       -> messages("pages.user-edit-profile.basics.text-entry.email.label"),
                         '_inputType   -> "text",
-                        '_placeholder -> messagesApi("pages.user-edit-profile.basics.text-entry.email.placeholder"),
+                        '_placeholder -> messages("pages.user-edit-profile.basics.text-entry.email.placeholder"),
                         '_fieldName   -> "email",
                         '_spanId      -> "email-span"
                     )
 
                     <div class="form-group">
                         <div class="input-group">
-                            <button id="basic-details-save-submit" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("app.common.save")</button>
+                            <button id="basic-details-save-submit" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messages("app.common.save")</button>
                         </div>
                     </div>
                     <hr>
@@ -83,17 +87,19 @@
 
         <div class="row">
             <div class="col-md-8">
-                <h2>@messagesApi("pages.user-edit-profile.password.heading")</h2>
+                <h2>@messages("pages.user-edit-profile.password.heading")</h2>
                 <hr>
 
                 <form id="password" action="@controllers.user.routes.EditProfileController.updatePassword()" method="post">
+                    @CSRF.formField
+
                     @textInput(
                         profile("oldPassword"),
                         false,
                         '_sassClass   -> "cjww-input-group-addon-oversized",
-                        '_label       -> messagesApi("pages.user-edit-profile.password.text-entry.old.label"),
+                        '_label       -> messages("pages.user-edit-profile.password.text-entry.old.label"),
                         '_inputType   -> "password",
-                        '_placeholder -> messagesApi("pages.user-edit-profile.password.text-entry.old.placeholder"),
+                        '_placeholder -> messages("pages.user-edit-profile.password.text-entry.old.placeholder"),
                         '_fieldName   -> "oldPassword",
                         '_spanId      -> "old-password-span"
                     )
@@ -102,9 +108,9 @@
                         profile("newPassword"),
                         false,
                         '_sassClass   -> "cjww-input-group-addon-oversized",
-                        '_label       -> messagesApi("pages.user-edit-profile.password.text-entry.new.label"),
+                        '_label       -> messages("pages.user-edit-profile.password.text-entry.new.label"),
                         '_inputType   -> "password",
-                        '_placeholder -> messagesApi("pages.user-edit-profile.password.text-entry.new.placeholder"),
+                        '_placeholder -> messages("pages.user-edit-profile.password.text-entry.new.placeholder"),
                         '_fieldName   -> "newPassword",
                         '_spanId      -> "new-password-span"
                     )
@@ -113,16 +119,16 @@
                         profile("confirmPassword"),
                         false,
                         '_sassClass   -> "cjww-input-group-addon-oversized",
-                        '_label       -> messagesApi("pages.user-edit-profile.password.text-entry.confirm.label"),
+                        '_label       -> messages("pages.user-edit-profile.password.text-entry.confirm.label"),
                         '_inputType   -> "password",
-                        '_placeholder -> messagesApi("pages.user-edit-profile.password.text-entry.confirm.placeholder"),
+                        '_placeholder -> messages("pages.user-edit-profile.password.text-entry.confirm.placeholder"),
                         '_fieldName   -> "confirmPassword",
                         '_spanId      -> "confirm-password-span"
                     )
 
                     <div class="form-group">
                         <div class="input-group">
-                            <button id="update-password-submit" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("pages.user-edit-profile.password.button.label")</button>
+                            <button id="update-password-submit" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messages("pages.user-edit-profile.password.button.label")</button>
                         </div>
                     </div>
                     <hr>
@@ -140,29 +146,31 @@
                 <hr>
 
                 <form action="@controllers.user.routes.EditProfileController.updateSettings()" method="post">
-                    <div class="well">
-                        <h3>@messagesApi("pages.user-edit-profile.settings.heading")</h3>
+                    @CSRF.formField
 
-                        <p>@messagesApi("pages.user-edit-profile.settings.image.body")</p>
+                    <div class="well">
+                        <h3>@messages("pages.user-edit-profile.settings.heading")</h3>
+
+                        <p>@messages("pages.user-edit-profile.settings.image.body")</p>
                         @textInput(
                             displayname("displayImageURL"),
                             false,
                             '_sassClass   -> "cjww-input-group-addon-oversized",
-                            '_label       -> messagesApi("pages.user-edit-profile.settings.text-entry.url.label"),
+                            '_label       -> messages("pages.user-edit-profile.settings.text-entry.url.label"),
                             '_inputType   -> "text",
-                            '_placeholder -> messagesApi("pages.user-edit-profile.settings.text-entry.url.placeholder"),
+                            '_placeholder -> messages("pages.user-edit-profile.settings.text-entry.url.placeholder"),
                             '_fieldName   -> "displayImageURL",
                             '_spanId      -> "display-image-url-span"
                         )
 
-                        <p>@messagesApi("pages.user-edit-profile.settings.name-style.body")</p>
+                        <p>@messages("pages.user-edit-profile.settings.name-style.body")</p>
                         <div class="form-group form-inline">
                             @radioButton(
                                 displayname("displayName"),
                                 "full",
                                 '_name  -> "displayName",
                                 '_id    -> "displayName1",
-                                '_label -> messagesApi("pages.user-edit-profile.settings.name-style.radio.full.label")
+                                '_label -> messages("pages.user-edit-profile.settings.name-style.radio.full.label")
                             )
 
                             @radioButton(
@@ -170,7 +178,7 @@
                                 "short",
                                 '_name  -> "displayName",
                                 '_id    -> "displayName2",
-                                '_label -> messagesApi("pages.user-edit-profile.settings.name-style.radio.short.label")
+                                '_label -> messages("pages.user-edit-profile.settings.name-style.radio.short.label")
                             )
 
                             @radioButton(
@@ -178,22 +186,22 @@
                                 "user",
                                 '_name  -> "displayName",
                                 '_id    -> "displayName3",
-                                '_label -> messagesApi("pages.user-edit-profile.settings.name-style.radio.user.label")
+                                '_label -> messages("pages.user-edit-profile.settings.name-style.radio.user.label")
                             )
                         </div>
 
-                        <p>@messagesApi("pages.user-edit-profile.settings.name-colour.body")</p>
+                        <p>@messages("pages.user-edit-profile.settings.name-colour.body")</p>
                         <div class="form-group">
                             <label class="btn btn-primary" for="displayNameColour">
                                 <span class="glyphicon glyphicon-tint" aria-hidden="true"></span>
-                                @messagesApi("pages.user-edit-profile.settings.name-colour.picker.label")
+                                @messages("pages.user-edit-profile.settings.name-colour.picker.label")
                                 <input id="displayNameColour" type="color" name="displayNameColour" value="@{displayname("displayNameColour").value.get}">
                             </label>
                         </div>
 
                         <div class="form-group">
                             <div class="input-group">
-                                <button id="settings-submit" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("app.common.save")</button>
+                                <button id="settings-submit" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messages("app.common.save")</button>
                             </div>
                         </div>
                     </div>
@@ -208,14 +216,14 @@
         <div class="row">
             <div class="col-md-8">
                 <div class="panel panel-danger">
-                    <div class="panel-heading"><strong>@messagesApi("pages.user-edit-profile.delete.heading")</strong></div>
+                    <div class="panel-heading"><strong>@messages("pages.user-edit-profile.delete.heading")</strong></div>
                     <div class="panel-body">
-                        <p class="text-danger">@Html(messagesApi("pages.user-edit-profile.delete.body.one"))</p>
-                        <p class="text-danger">@messagesApi("pages.user-edit-profile.delete.body.two")</p>
+                        <p class="text-danger">@Html(messages("pages.user-edit-profile.delete.body.one"))</p>
+                        <p class="text-danger">@messages("pages.user-edit-profile.delete.body.two")</p>
 
                         <div class="form-group">
                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-account-modal">
-                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> @messagesApi("app.common.delete-account")
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> @messages("app.common.delete-account")
                             </button>
                         </div>
                     </div>
@@ -238,7 +246,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Close</button>
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-account-modal">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> @messagesApi("app.common.delete-account")
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> @messages("app.common.delete-account")
                 </button>
             </div>
         </div>

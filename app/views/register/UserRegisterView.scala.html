@@ -1,12 +1,13 @@
 @import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
 @import com.cjwwdev.views.html.templates.MainTemplate
 @import com.cjwwdev.views.html.helpers.{errorPanel, textInput}
+@import helper._
 @import models.registration.UserRegistration
 @import controllers.register.{routes => registerRoutes}
 
-@(register: Form[UserRegistration])(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@(register: Form[UserRegistration])(implicit request: Request[_], messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
-@MainTemplate(title = messagesApi("pages.user-register.title"), links, navBarRoutes) {
+@MainTemplate(title = messages("pages.user-register.title"), links, navBarRoutes) {
     <div class="top-block-single">
         <div class="container">
             <div class="row">
@@ -21,7 +22,7 @@
                             </p>
 
                             <div class="page-header">
-                                <h1 id="main-heading" class="pageTitle text-center">@messagesApi("pages.user-register.heading")</h1>
+                                <h1 id="main-heading" class="pageTitle text-center">@messages("pages.user-register.heading")</h1>
                             </div>
 
                             <div class="row">
@@ -33,13 +34,15 @@
                             </div>
 
                             <form action="@registerRoutes.UserRegisterController.submit()" method="post">
+                                @CSRF.formField
+
                                 @textInput(
                                     register("firstName"),
                                     false,
                                     '_sassClass   -> "cjww-input-group-addon",
-                                    '_label       -> messagesApi("pages.user-register.text-entry.first-name.label"),
+                                    '_label       -> messages("pages.user-register.text-entry.first-name.label"),
                                     '_inputType   -> "text",
-                                    '_placeholder -> messagesApi("pages.user-register.text-entry.first-name.placeholder"),
+                                    '_placeholder -> messages("pages.user-register.text-entry.first-name.placeholder"),
                                     '_fieldName   -> "firstName",
                                     '_spanId      -> "first-name-span"
                                 )
@@ -48,9 +51,9 @@
                                     register("lastName"),
                                     false,
                                     '_sassClass   -> "cjww-input-group-addon",
-                                    '_label       -> messagesApi("pages.user-register.text-entry.last-name.label"),
+                                    '_label       -> messages("pages.user-register.text-entry.last-name.label"),
                                     '_inputType   -> "text",
-                                    '_placeholder -> messagesApi("pages.user-register.text-entry.last-name.placeholder"),
+                                    '_placeholder -> messages("pages.user-register.text-entry.last-name.placeholder"),
                                     '_fieldName   -> "lastName",
                                     '_spanId      -> "last-name-span"
                                 )
@@ -59,9 +62,9 @@
                                     register("userName"),
                                     false,
                                     '_sassClass   -> "cjww-input-group-addon",
-                                    '_label       -> messagesApi("pages.user-register.text-entry.user-name.label"),
+                                    '_label       -> messages("pages.user-register.text-entry.user-name.label"),
                                     '_inputType   -> "text",
-                                    '_placeholder -> messagesApi("pages.user-register.text-entry.user-name.placeholder"),
+                                    '_placeholder -> messages("pages.user-register.text-entry.user-name.placeholder"),
                                     '_fieldName   -> "userName",
                                     '_spanId      -> "user-name-span"
                                 )
@@ -70,9 +73,9 @@
                                     register("email"),
                                     false,
                                     '_sassClass   -> "cjww-input-group-addon",
-                                    '_label       -> messagesApi("pages.user-register.text-entry.email.label"),
+                                    '_label       -> messages("pages.user-register.text-entry.email.label"),
                                     '_inputType   -> "text",
-                                    '_placeholder -> messagesApi("pages.user-register.text-entry.email.placeholder"),
+                                    '_placeholder -> messages("pages.user-register.text-entry.email.placeholder"),
                                     '_fieldName   -> "email",
                                     '_spanId      -> "email-span"
                                 )
@@ -81,9 +84,9 @@
                                     register("password"),
                                     false,
                                     '_sassClass   -> "cjww-input-group-addon",
-                                    '_label       -> messagesApi("pages.user-register.text-entry.password.label"),
+                                    '_label       -> messages("pages.user-register.text-entry.password.label"),
                                     '_inputType   -> "password",
-                                    '_placeholder -> messagesApi("pages.user-register.text-entry.password.placeholder"),
+                                    '_placeholder -> messages("pages.user-register.text-entry.password.placeholder"),
                                     '_fieldName   -> "password",
                                     '_spanId      -> "password-span"
                                 )
@@ -92,16 +95,16 @@
                                     register("confirmPassword"),
                                     false,
                                     '_sassClass   -> "cjww-input-group-addon",
-                                    '_label       -> messagesApi("pages.user-register.text-entry.confirm-password.label"),
+                                    '_label       -> messages("pages.user-register.text-entry.confirm-password.label"),
                                     '_inputType   -> "password",
-                                    '_placeholder -> messagesApi("pages.user-register.text-entry.confirm-password.placeholder"),
+                                    '_placeholder -> messages("pages.user-register.text-entry.confirm-password.placeholder"),
                                     '_fieldName   -> "confirmPassword",
                                     '_spanId      -> "confirm-password-span"
                                 )
 
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <button id="user-register-submit" type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> @messagesApi("app.common.register")</button>
+                                        <button id="user-register-submit" type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> @messages("app.common.register")</button>
                                     </div>
                                 </div>
                             </form>

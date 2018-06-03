@@ -19,38 +19,33 @@ package controllers.redirect
 import com.cjwwdev.auth.connectors.AuthConnector
 import common.{ApplicationConfiguration, FrontendController}
 import javax.inject.Inject
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import views.html.misc.ServiceUnavailableView
 import views.html.redirect.ServiceSelector
 
 import scala.concurrent.Future
 
-class RedirectControllerImpl @Inject()(val authConnector: AuthConnector,
-                                       implicit val messagesApi: MessagesApi) extends RedirectController
+class DefaultRedirectController @Inject()(val authConnector: AuthConnector,
+                                          val controllerComponents: ControllerComponents) extends RedirectController
 
 trait RedirectController extends FrontendController with ApplicationConfiguration {
-  def chooseService : Action[AnyContent] = isAuthorised { implicit user => implicit request =>
+  def chooseService : Action[AnyContent] = isAuthorised { implicit request => implicit user =>
     Future.successful(Ok(ServiceSelector()))
   }
 
-  def redirectToDeversity: Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(Redirect(deversityFrontend))
+  def redirectToDeversity: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Redirect(deversityFrontend))
   }
 
-  def redirectToDiagnostics: Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(Redirect(diagnosticsFrontend))
+  def redirectToDiagnostics: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Redirect(diagnosticsFrontend))
   }
 
-  def redirectToHub: Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(Redirect(hubFrontend))
+  def redirectToHub: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Redirect(hubFrontend))
   }
 
-  def redirectToServiceOutage: Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(ServiceUnavailable(ServiceUnavailableView()))
+  def redirectToServiceOutage: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(ServiceUnavailable(ServiceUnavailableView()))
   }
 }

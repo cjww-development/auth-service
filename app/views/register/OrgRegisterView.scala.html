@@ -1,12 +1,13 @@
 @import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
 @import com.cjwwdev.views.html.templates.MainTemplate
 @import com.cjwwdev.views.html.helpers.{errorPanel, textInput}
+@import helper._
 @import models.registration.OrgRegistration
 @import controllers.register.{routes => registerRoutes}
 
-@(register: Form[OrgRegistration])(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@(register: Form[OrgRegistration])(implicit request: Request[_], messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
-@MainTemplate(title = messagesApi("pages.org-register.title"), links, navBarRoutes) {
+@MainTemplate(title = messages("pages.org-register.title"), links, navBarRoutes) {
 <div class="top-block-single">
     <div class="container">
         <div class="row">
@@ -21,8 +22,8 @@
                         </p>
 
                         <div class="page-header">
-                            <h1 id="main-heading" class="pageTitle text-center">@messagesApi("pages.org-register.heading")</h1>
-                            <p class="text-center">@messagesApi("pages.org-register.body")</p>
+                            <h1 id="main-heading" class="pageTitle text-center">@messages("pages.org-register.heading")</h1>
+                            <p class="text-center">@messages("pages.org-register.body")</p>
                         </div>
 
                         <div class="row">
@@ -34,13 +35,15 @@
                         </div>
 
                         <form action="@registerRoutes.OrgRegisterController.submit()" method="post">
+                            @CSRF.formField
+
                             @textInput(
                                 register("orgName"),
                                 false,
                                 '_sassClass   -> "cjww-input-group-addon",
-                                '_label       -> messagesApi("pages.org-register.text-entry.org-name.label"),
+                                '_label       -> messages("pages.org-register.text-entry.org-name.label"),
                                 '_inputType   -> "text",
-                                '_placeholder -> messagesApi("pages.org-register.text-entry.org-name.placeholder"),
+                                '_placeholder -> messages("pages.org-register.text-entry.org-name.placeholder"),
                                 '_fieldName   -> "orgName",
                                 '_spanId      -> "org-name-span"
                             )
@@ -49,9 +52,9 @@
                                 register("initials"),
                                 false,
                                 '_sassClass   -> "cjww-input-group-addon",
-                                '_label       -> messagesApi("pages.org-register.text-entry.initials.label"),
+                                '_label       -> messages("pages.org-register.text-entry.initials.label"),
                                 '_inputType   -> "text",
-                                '_placeholder -> messagesApi("pages.org-register.text-entry.initials.placeholder"),
+                                '_placeholder -> messages("pages.org-register.text-entry.initials.placeholder"),
                                 '_fieldName   -> "initials",
                                 '_spanId      -> "initials-span"
                             )
@@ -60,9 +63,9 @@
                                 register("orgUserName"),
                                 false,
                                 '_sassClass   -> "cjww-input-group-addon",
-                                '_label       -> messagesApi("pages.org-register.text-entry.org-user-name.label"),
+                                '_label       -> messages("pages.org-register.text-entry.org-user-name.label"),
                                 '_inputType   -> "text",
-                                '_placeholder -> messagesApi("pages.org-register.text-entry.org-user-name.placeholder"),
+                                '_placeholder -> messages("pages.org-register.text-entry.org-user-name.placeholder"),
                                 '_fieldName   -> "orgUserName",
                                 '_spanId      -> "org-user-name-span"
                             )
@@ -71,9 +74,9 @@
                                 register("location"),
                                 false,
                                 '_sassClass   -> "cjww-input-group-addon",
-                                '_label       -> messagesApi("pages.org-register.text-entry.location.label"),
+                                '_label       -> messages("pages.org-register.text-entry.location.label"),
                                 '_inputType   -> "text",
-                                '_placeholder -> messagesApi("pages.org-register.text-entry.location.placeholder"),
+                                '_placeholder -> messages("pages.org-register.text-entry.location.placeholder"),
                                 '_fieldName   -> "location",
                                 '_spanId      -> "location-span"
                             )
@@ -82,9 +85,9 @@
                                 register("orgEmail"),
                                 false,
                                 '_sassClass   -> "cjww-input-group-addon",
-                                '_label       -> messagesApi("pages.org-register.text-entry.org-email.label"),
+                                '_label       -> messages("pages.org-register.text-entry.org-email.label"),
                                 '_inputType   -> "text",
-                                '_placeholder -> messagesApi("pages.org-register.text-entry.org-email.placeholder"),
+                                '_placeholder -> messages("pages.org-register.text-entry.org-email.placeholder"),
                                 '_fieldName   -> "orgEmail",
                                 '_spanId      -> "org-email-span"
                             )
@@ -93,9 +96,9 @@
                                 register("password"),
                                 false,
                                 '_sassClass   -> "cjww-input-group-addon",
-                                '_label       -> messagesApi("pages.org-register.text-entry.password.label"),
+                                '_label       -> messages("pages.org-register.text-entry.password.label"),
                                 '_inputType   -> "password",
-                                '_placeholder -> messagesApi("pages.org-register.text-entry.password.placeholder"),
+                                '_placeholder -> messages("pages.org-register.text-entry.password.placeholder"),
                                 '_fieldName   -> "password",
                                 '_spanId      -> "password-span"
                             )
@@ -104,16 +107,16 @@
                                 register("confirmPassword"),
                                 false,
                                 '_sassClass   -> "cjww-input-group-addon",
-                                '_label       -> messagesApi("pages.org-register.text-entry.confirm-password.label"),
+                                '_label       -> messages("pages.org-register.text-entry.confirm-password.label"),
                                 '_inputType   -> "password",
-                                '_placeholder -> messagesApi("pages.org-register.text-entry.confirm-password.placeholder"),
+                                '_placeholder -> messages("pages.org-register.text-entry.confirm-password.placeholder"),
                                 '_fieldName   -> "confirmPassword",
                                 '_spanId      -> "confirm-password-span"
                             )
 
                             <div class="form-group">
                                 <div class="input-group">
-                                    <button id="org-register-submit" type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> @messagesApi("app.common.register")</button>
+                                    <button id="org-register-submit" type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> @messages("app.common.register")</button>
                                 </div>
                             </div>
                         </form>

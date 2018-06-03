@@ -19,16 +19,15 @@ package controllers.user
 import com.cjwwdev.auth.connectors.AuthConnector
 import common.FrontendController
 import javax.inject.Inject
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.DashboardService
 import views.html.user.{Dashboard, OrgDashboard}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class DashboardControllerImpl @Inject()(val dashboardService: DashboardService,
-                                        val authConnector: AuthConnector,
-                                        implicit val messagesApi: MessagesApi) extends DashboardController
+class DefaultDashboardController @Inject()(val dashboardService: DashboardService,
+                                           val controllerComponents: ControllerComponents,
+                                           val authConnector: AuthConnector) extends DashboardController
 
 trait DashboardController extends FrontendController {
   val dashboardService: DashboardService

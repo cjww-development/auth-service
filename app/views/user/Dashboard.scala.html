@@ -10,7 +10,7 @@
 @(feed: Option[List[FeedItem]],
   basicDetails: BasicDetails,
   settings: Settings,
-  deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], user: CurrentUser, messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+  deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], user: CurrentUser, messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @import controllers.user.{routes => userRoutes}
 @import views.html.helpers.feedItem
@@ -49,7 +49,7 @@
     }
 }
 
-@MainTemplate(title = messagesApi("pages.dashboard.title"), links, navBarRoutes) {
+@MainTemplate(title = messages("pages.dashboard.title"), links, navBarRoutes) {
     <div class="cjww-jumbo-background" style="background: url('@{getDisplayImageURL(settings)}') fixed center no-repeat;">
         <div class="container">
             <div class="row">
@@ -69,7 +69,7 @@
 
             <div class="row">
                 <div class="col-md-11">
-                    <h1 id="main-heading" class="page-title" style="color: @{getDisplayNameColour(settings)}">@messagesApi("pages.dashboard.heading", displayNameSelector(settings.displayName))</h1>
+                    <h1 id="main-heading" class="page-title" style="color: @{getDisplayNameColour(settings)}">@messages("pages.dashboard.heading", displayNameSelector(settings.displayName))</h1>
                 </div>
 
                 <div class="col-md-1">
@@ -78,9 +78,9 @@
                             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>  <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a href="#"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> @messagesApi("pages.dashboard.cover-photo.dropdown.one")</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> @messages("pages.dashboard.cover-photo.dropdown.one")</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="@userRoutes.EditProfileController.show()"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messagesApi("pages.dashboard.cover-photo.dropdown.two")</a></li>
+                            <li><a href="@userRoutes.EditProfileController.show()"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messages("pages.dashboard.cover-photo.dropdown.two")</a></li>
                         </ul>
                     </div>
                 </div>
@@ -92,24 +92,24 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
-                    <h2>@messagesApi("pages.dashboard.quick-links.heading")</h2>
+                    <h2>@messages("pages.dashboard.quick-links.heading")</h2>
                     <hr>
                     <div class="list-group">
                         <a id="edit-profile-link" href="@userRoutes.EditProfileController.show()" class="list-group-item">
-                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.one")</h4>
+                            <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messages("pages.dashboard.quick-links.list.one")</h4>
                         </a>
                         @*<a id="message-link" href="#" class="list-group-item">*@
-                        @*<h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.two") <span class="badge">0</span></h4>*@
+                        @*<h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> @messages("pages.dashboard.quick-links.list.two") <span class="badge">0</span></h4>*@
                         @*</a>*@
                         @*<a id="saved-work-link" href="#" class="list-group-item">*@
-                        @*<h4 class="list-group-item-heading"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.three")</h4>*@
+                        @*<h4 class="list-group-item-heading"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> @messages("pages.dashboard.quick-links.list.three")</h4>*@
                         @*</a>*@
                         @*<a id="problem-reports-link" href="#" class="list-group-item">*@
-                        @*<h4 class="list-group-item-heading"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> @messagesApi("pages.dashboard.quick-links.list.four")</h4>*@
+                        @*<h4 class="list-group-item-heading"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> @messages("pages.dashboard.quick-links.list.four")</h4>*@
                         @*</a>*@
                         @if(deversityEnrolment.fold(false)(_.role == "teacher")) {
                             <a href="@controllers.user.routes.GenerateCodeController.getRegistrationCodeShow()" id="registration-code-link" class="list-group-item">
-                                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-qrcode"></span> @messagesApi("pages.dashboard.quick-links.list.five")</h4>
+                                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-qrcode"></span> @messages("pages.dashboard.quick-links.list.five")</h4>
                             </a>
                             <a href="@controllers.user.deversity.routes.ClassroomController.manageClassRooms()" id="manage-classroom-link" class="list-group-item">
                                 <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-list-alt"></span> @messages("pages.dashboard.quick-links.list.six")</h4>
@@ -118,11 +118,11 @@
                     </div>
 
                     @if(deversityEnrolment.isDefined) {
-                        <h2>@messagesApi("pages.dashboard.enrolment-status.heading")</h2>
+                        <h2>@messages("pages.dashboard.enrolment-status.heading")</h2>
                         <hr>
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h3 class="panel-title">@messagesApi("pages.dashboard.enrolment-status.heading-two")</h3>
+                                <h3 class="panel-title">@messages("pages.dashboard.enrolment-status.heading-two")</h3>
                             </div>
 
                             @if(deversityEnrolment.isDefined) {
@@ -142,7 +142,7 @@
                 </div>
 
                 <div class="col-md-9">
-                    <h2>@messagesApi("pages.dashboard.feed.heading")</h2>
+                    <h2>@messages("pages.dashboard.feed.heading")</h2>
                     <hr>
 
                     @feedItem(feed)

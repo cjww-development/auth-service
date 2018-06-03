@@ -28,13 +28,13 @@ case class UserRegistration(firstName: String,
                             confirmPassword: String)
 
 object UserRegistration {
-  implicit val userRegisterWrites: OWrites[UserRegistration] = new OWrites[UserRegistration] {
-    override def writes(o: UserRegistration): JsObject = Json.obj(
-      "firstName" -> o.firstName,
-      "lastName"  -> o.lastName,
-      "userName"  -> o.userName,
-      "email"     -> o.email,
-      "password"  -> SHA512.encrypt(o.password)
+  implicit val userRegisterWrites: OWrites[UserRegistration] = OWrites[UserRegistration] {
+    userReg => Json.obj(
+      "firstName" -> userReg.firstName,
+      "lastName"  -> userReg.lastName,
+      "userName"  -> userReg.userName,
+      "email"     -> userReg.email,
+      "password"  -> SHA512.encrypt(userReg.password)
     )
   }
 

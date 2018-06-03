@@ -47,6 +47,7 @@ class IPWhitelistFilter @Inject()(implicit val mat: Materializer, configLoader: 
       if(uriIsWhitelisted(rh) | isAssetRoute(rh)) {
         f(rh)
       } else {
+
         rh.headers.get(headerKey) match {
           case Some(ip) => if(whitelistSeq contains ip) f(rh) else Future.successful(Redirect(routes.RedirectController.redirectToServiceOutage()))
           case None     =>

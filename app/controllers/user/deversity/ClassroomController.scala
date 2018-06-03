@@ -20,16 +20,15 @@ import com.cjwwdev.auth.connectors.AuthConnector
 import common.FrontendController
 import forms.CreateClassForm
 import javax.inject.Inject
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.ClassroomService
 import views.html.user.deversity.{ManageClassroomView, ManageClassroomsView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ClassroomControllerImpl @Inject()(implicit val messagesApi: MessagesApi,
-                                        val authConnector: AuthConnector,
-                                        val classroomService: ClassroomService) extends ClassroomController
+class DefaultClassroomController @Inject()(val authConnector: AuthConnector,
+                                           val controllerComponents: ControllerComponents,
+                                           val classroomService: ClassroomService) extends ClassroomController
 
 trait ClassroomController extends FrontendController {
   val classroomService: ClassroomService

@@ -36,8 +36,8 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AccountsMicroserviceConnectorImpl @Inject()(val http: Http,
-                                                  val configurationLoader: ConfigurationLoader) extends AccountsMicroserviceConnector
+class DefaultAccountsMicroserviceConnector @Inject()(val http: Http,
+                                                     val configurationLoader: ConfigurationLoader) extends AccountsMicroserviceConnector
 
 trait AccountsMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers {
   val http: Http

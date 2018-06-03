@@ -22,19 +22,18 @@ import forms.UserLoginForm
 import javax.inject.Inject
 import models.UserLogin
 import play.api.data.Form
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.LoginService
 import views.html.login.UserLoginView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class LoginControllerImpl @Inject()(val loginService : LoginService,
-                                    val sessionStoreConnector: SessionStoreConnector,
-                                    val authConnector: AuthConnector,
-                                    implicit val messagesApi: MessagesApi) extends LoginController {
-  override val loginFailed: String = messagesApi("cjww.auth.login.error.invalid")
+class DefaultLoginController @Inject()(val loginService : LoginService,
+                                       val sessionStoreConnector: SessionStoreConnector,
+                                       val authConnector: AuthConnector,
+                                       val controllerComponents: ControllerComponents) extends LoginController {
+  override val loginFailed: String = messages("cjww.auth.login.error.invalid")
 }
 
 trait LoginController extends FrontendController {

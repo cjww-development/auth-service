@@ -21,8 +21,8 @@ import play.api.libs.json._
 case class SessionUpdateSet(key : String, data : String)
 
 object SessionUpdateSet {
-  implicit val sessionUpdateSetWrites: OWrites[SessionUpdateSet] = new OWrites[SessionUpdateSet] {
-    override def writes(o: SessionUpdateSet): JsObject = Json.obj(o.key -> o.data)
+  implicit val sessionUpdateSetWrites: OWrites[SessionUpdateSet] = OWrites[SessionUpdateSet] {
+    set => Json.obj(set.key -> set.data)
   }
 
   implicit val sessionUpdateSetReads: Reads[SessionUpdateSet] = Json.reads[SessionUpdateSet]

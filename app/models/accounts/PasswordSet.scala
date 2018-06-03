@@ -22,10 +22,10 @@ import play.api.libs.json._
 case class PasswordSet(oldPassword : String, newPassword : String, confirmPassword : String)
 
 object PasswordSet {
-  implicit val passwordSetWrite: OWrites[PasswordSet] = new OWrites[PasswordSet] {
-    override def writes(o: PasswordSet): JsObject = Json.obj(
-      "previousPassword"  -> SHA512.encrypt(o.oldPassword),
-      "newPassword"       -> SHA512.encrypt(o.newPassword)
+  implicit val passwordSetWrite: OWrites[PasswordSet] = OWrites[PasswordSet] {
+    set => Json.obj(
+      "previousPassword" -> SHA512.encrypt(set.oldPassword),
+      "newPassword"      -> SHA512.encrypt(set.newPassword)
     )
   }
 

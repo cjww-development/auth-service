@@ -1,31 +1,31 @@
 @import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
 @import com.cjwwdev.views.html.templates.MainTemplate
 
-@(accType : String)(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@(accType : String)(implicit request: Request[_], messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @individual = {
 <div id="individual-success">
-    <p>@messagesApi("pages.register-success.individual.top")</p>
+    <p>@messages("pages.register-success.individual.top")</p>
     <ul class="list-bullet">
-        <li><p>@messagesApi("pages.register-success.individual.list.one")</p></li>
-        <li><p>@messagesApi("pages.register-success.individual.list.two")</p></li>
+        <li><p>@messages("pages.register-success.individual.list.one")</p></li>
+        <li><p>@messages("pages.register-success.individual.list.two")</p></li>
     </ul>
-    <p>@messagesApi("pages.register-success.individual.bottom")</p>
+    <p>@messages("pages.register-success.individual.bottom")</p>
 </div>
 }
 
 @organisation = {
 <div id="organisation-success">
-    <p>@messagesApi("pages.register-success.organisation.top")</p>
+    <p>@messages("pages.register-success.organisation.top")</p>
     <ul class="list-bullet">
-        <li><p>@messagesApi("pages.register-success.organisation.list.one")</p></li>
-        <li><p>@messagesApi("pages.register-success.organisation.list.two")</p></li>
-        <li><p>@messagesApi("pages.register-success.organisation.list.three")</p></li>
+        <li><p>@messages("pages.register-success.organisation.list.one")</p></li>
+        <li><p>@messages("pages.register-success.organisation.list.two")</p></li>
+        <li><p>@messages("pages.register-success.organisation.list.three")</p></li>
     </ul>
 </div>
 }
 
-@MainTemplate(title = messagesApi("pages.register-success.title"), links, navBarRoutes) {
+@MainTemplate(title = messages("pages.register-success.title"), links, navBarRoutes) {
 <div class="top-block-single">
     <div class="container">
         <div class="row">
@@ -40,16 +40,16 @@
             </div>
 
             <div class="col-md-8 col-sm-8 col-xs-12">
-                <h1 id="main-heading">@messagesApi("pages.register-success.heading")</h1>
-                <p>@messagesApi("pages.register-success.body.top")</p>
+                <h1 id="main-heading">@messages("pages.register-success.heading")</h1>
+                <p>@messages("pages.register-success.body.top")</p>
                 @if(accType == "individual"){
                     @individual
                 }
                 @if(accType == "organisation"){
                     @organisation
                 }
-                <p>@messagesApi("pages.register-success.body.bottom")</p>
-                <a id="login-submit" class="btn btn-success" href="@controllers.login.routes.LoginController.show(None)"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> @messagesApi("app.common.login")</a>
+                <p>@messages("pages.register-success.body.bottom")</p>
+                <a id="login-submit" class="btn btn-success" href="@controllers.login.routes.LoginController.show(None)"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> @messages("app.common.login")</a>
             </div>
         </div>
     </div>

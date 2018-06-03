@@ -16,14 +16,14 @@
 
 package models.deversity
 
-import play.api.libs.json.{JsValue, Json, OFormat, Reads}
+import play.api.libs.json.{Json, OFormat, Reads}
 
 case class Classroom(classId: String, name: String)
 
 object Classroom {
   implicit val format: OFormat[Classroom] = Json.format[Classroom]
 
-  implicit val classListReader: Reads[List[Classroom]] = new Reads[List[Classroom]] {
-    override def reads(json: JsValue) = Json.fromJson[List[Classroom]](json)
+  implicit val classListReader: Reads[List[Classroom]] = Reads[List[Classroom]] {
+    Json.fromJson[List[Classroom]]
   }
 }
