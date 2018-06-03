@@ -33,8 +33,8 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class DeversityMicroserviceConnectorImpl @Inject()(val http: Http,
-                                                   val configurationLoader: ConfigurationLoader) extends DeversityMicroserviceConnector
+class DefaultDeversityMicroserviceConnector @Inject()(val http: Http,
+                                                      val configurationLoader: ConfigurationLoader) extends DeversityMicroserviceConnector
 
 trait DeversityMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers with Logging {
   val http: Http

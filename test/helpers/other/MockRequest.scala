@@ -16,6 +16,7 @@
 
 package helpers.other
 
+import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import com.cjwwdev.responses.ApiResponse
 import org.joda.time.LocalDateTime
@@ -26,6 +27,8 @@ import scala.xml.Elem
 
 trait MockRequest extends ApiResponse {
   def fakeHttpResponse(statusCode: Int, bodyContents: String = ""): WSResponse = new WSResponse {
+    override def headers: Map[String, Seq[String]]      = ???
+    override def bodyAsSource: Source[ByteString, _]    = ???
     override def cookie(name: String): Option[WSCookie] = ???
     override def underlying[T]: T                       = ???
     override def body: String                           = bodyContents

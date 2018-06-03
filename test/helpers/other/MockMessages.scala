@@ -19,23 +19,19 @@ package helpers.other
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
-import play.api.i18n.{Lang, Messages, MessagesApi}
-import play.api.mvc.RequestHeader
+import play.api.i18n.{Lang, MessagesProvider}
 
 trait MockMessages {
 
-  val mockMessagesApi: MessagesApi
+  val mockMessagesProvider: MessagesProvider
 
   val lang = Lang("en")
-  val messages = Messages(lang, mockMessagesApi)
+  val messages = mockMessagesProvider.messages
 
   val MOCKED_MESSAGE = "mocked message"
 
   def mockAllMessages: OngoingStubbing[String] = {
-    when(mockMessagesApi.preferred(any[RequestHeader]()))
-      .thenReturn(messages)
-
-    when(mockMessagesApi.apply(any[String](), any())(any()))
+    when(messages.apply(any[String](), any()))
       .thenReturn(MOCKED_MESSAGE)
   }
 }

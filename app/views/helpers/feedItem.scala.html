@@ -1,6 +1,6 @@
 @import models.feed.FeedItem
 
-@(feed : Option[List[FeedItem]])(implicit messagesApi: MessagesApi)
+@(feed : Option[List[FeedItem]])(implicit messages: Messages)
 
 @image(source : String) = {
     @source match {
@@ -33,5 +33,5 @@
         <hr>
     }
 } else {
-    <p id="no-feed-content" class="text-center">@messagesApi("pages.dashboard.feed.no-content")</p>
+    <p id="no-feed-content" class="text-center">@messages("pages.dashboard.feed.no-content")</p>
 }

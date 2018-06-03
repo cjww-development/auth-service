@@ -23,17 +23,16 @@ import common.FrontendController
 import enums.Registration
 import forms.UserRegisterForm
 import javax.inject.Inject
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.RegisterService
 import views.html.register.{RegisterSuccess, UserRegisterView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UserRegisterControllerImpl @Inject()(val registrationService : RegisterService,
-                                           val authConnector: AuthConnector,
-                                           implicit val messagesApi: MessagesApi) extends UserRegisterController
+class DefaultUserRegisterController @Inject()(val registrationService : RegisterService,
+                                              val controllerComponents: ControllerComponents,
+                                              val authConnector: AuthConnector) extends UserRegisterController
 
 trait UserRegisterController extends FrontendController {
   val registrationService: RegisterService
@@ -49,16 +48,16 @@ trait UserRegisterController extends FrontendController {
         case Registration.success       => Ok(RegisterSuccess("individual"))
         case Registration.bothInUse     => BadRequest(UserRegisterView(
           UserRegisterForm.RegisterUserForm.fill(newUser)
-            .withError("userName", messagesApi("cjww.auth.register.generic.userName.inUse"))
-            .withError("orgEmail", messagesApi("cjww.auth.register.generic.email.inUse"))
+            .withError("userName", messages("cjww.auth.register.generic.userName.inUse"))
+            .withError("orgEmail", messages("cjww.auth.register.generic.email.inUse"))
         ))
         case Registration.emailInUse    => BadRequest(UserRegisterView(
-          UserRegisterForm.RegisterUserForm.fill(newUser).withError("orgEmail", messagesApi("cjww.auth.register.generic.email.inUse"))
+          UserRegisterForm.RegisterUserForm.fill(newUser).withError("orgEmail", messages("cjww.auth.register.generic.email.inUse"))
         ))
         case Registration.userNameInUse => BadRequest(UserRegisterView(
-          UserRegisterForm.RegisterUserForm.withError("userName", messagesApi("cjww.auth.register.generic.userName.inUse"))
+          UserRegisterForm.RegisterUserForm.withError("userName", messages("cjww.auth.register.generic.userName.inUse"))
         ))
-        case Registration.failed        => InternalServerError(StandardErrorView(messagesApi("cjww.auth.error.generic")))
+        case Registration.failed        => InternalServerError(StandardErrorView(messages("cjww.auth.error.generic")))
       }
     )
   }

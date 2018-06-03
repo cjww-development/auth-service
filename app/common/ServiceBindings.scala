@@ -16,8 +16,8 @@
 
 package common
 
-import com.cjwwdev.config.{ConfigurationLoader, ConfigurationLoaderImpl}
-import com.google.inject.AbstractModule
+import com.cjwwdev.config.{ConfigurationLoader, DefaultConfigurationLoader}
+import com.cjwwdev.health.{DefaultHealthController, HealthController}
 import connectors._
 import connectors.test._
 import controllers.login._
@@ -25,48 +25,47 @@ import controllers.redirect._
 import controllers.register._
 import controllers.test._
 import controllers.user._
-import controllers.user.deversity.{ClassroomController, ClassroomControllerImpl}
+import controllers.user.deversity.{ClassroomController, DefaultClassroomController}
+import play.api.inject.{Binding, Module}
+import play.api.{Configuration, Environment}
 import services._
 
-class ServiceBindings extends AbstractModule {
-  override def configure(): Unit = {
-    bindOther()
-    bindConnectors()
-    bindServices()
-    bindControllers()
-  }
+class ServiceBindings extends Module {
 
-  private def bindConnectors(): Unit = {
-    bind(classOf[TeardownConnector]).to(classOf[TeardownConnectorImpl]).asEagerSingleton()
-    bind(classOf[AccountsMicroserviceConnector]).to(classOf[AccountsMicroserviceConnectorImpl]).asEagerSingleton()
-    bind(classOf[AuthMicroserviceConnector]).to(classOf[AuthMicroserviceConnectorImpl]).asEagerSingleton()
-    bind(classOf[DeversityMicroserviceConnector]).to(classOf[DeversityMicroserviceConnectorImpl]).asEagerSingleton()
-    bind(classOf[SessionStoreConnector]).to(classOf[SessionStoreConnectorImpl]).asEagerSingleton()
-  }
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] =
+    bindOther() ++ bindConnectors() ++ bindServices() ++ bindControllers()
 
-  private def bindServices(): Unit = {
-    bind(classOf[DashboardService]).to(classOf[DashboardServiceImpl]).asEagerSingleton()
-    bind(classOf[DeversityService]).to(classOf[DeversityServiceImpl]).asEagerSingleton()
-    bind(classOf[FeedService]).to(classOf[FeedServiceImpl]).asEagerSingleton()
-    bind(classOf[LoginService]).to(classOf[LoginServiceImpl]).asEagerSingleton()
-    bind(classOf[RegisterService]).to(classOf[RegisterServiceImpl]).asEagerSingleton()
-    bind(classOf[RegistrationCodeService]).to(classOf[RegistrationCodeServiceImpl]).asEagerSingleton()
-    bind(classOf[ClassroomService]).to(classOf[ClassroomServiceImpl]).asEagerSingleton()
-  }
+  private def bindConnectors(): Seq[Binding[_]] = Seq(
+    bind(classOf[TeardownConnector]).to(classOf[DefaultTeardownConnector]).eagerly(),
+    bind(classOf[AccountsMicroserviceConnector]).to(classOf[DefaultAccountsMicroserviceConnector]).eagerly(),
+    bind(classOf[AuthMicroserviceConnector]).to(classOf[DefaultAuthMicroserviceConnector]).eagerly(),
+    bind(classOf[DeversityMicroserviceConnector]).to(classOf[DefaultDeversityMicroserviceConnector]).eagerly(),
+    bind(classOf[SessionStoreConnector]).to(classOf[DefaultSessionStoreConnector]).eagerly()
+  )
 
-  private def bindControllers(): Unit = {
-    bind(classOf[LoginController]).to(classOf[LoginControllerImpl]).asEagerSingleton()
-    bind(classOf[RedirectController]).to(classOf[RedirectControllerImpl]).asEagerSingleton()
-    bind(classOf[OrgRegisterController]).to(classOf[OrgRegisterControllerImpl]).asEagerSingleton()
-    bind(classOf[UserRegisterController]).to(classOf[UserRegisterControllerImpl]).asEagerSingleton()
-    bind(classOf[TeardownController]).to(classOf[TeardownControllerImpl]).asEagerSingleton()
-    bind(classOf[DashboardController]).to(classOf[DashboardControllerImpl]).asEagerSingleton()
-    bind(classOf[EditProfileController]).to(classOf[EditProfileControllerImpl]).asEagerSingleton()
-    bind(classOf[GenerateCodeController]).to(classOf[GenerateCodeControllerImpl]).asEagerSingleton()
-    bind(classOf[ClassroomController]).to(classOf[ClassroomControllerImpl]).asEagerSingleton()
-  }
+  private def bindServices(): Seq[Binding[_]] = Seq(
+    bind(classOf[DashboardService]).to(classOf[DefaultDashboardService]).eagerly(),
+    bind(classOf[FeedService]).to(classOf[DefaultFeedService]).eagerly(),
+    bind(classOf[LoginService]).to(classOf[DefaultLoginService]).eagerly(),
+    bind(classOf[RegisterService]).to(classOf[DefaultRegisterService]).eagerly(),
+    bind(classOf[RegistrationCodeService]).to(classOf[DefaultRegistrationCodeService]).eagerly(),
+    bind(classOf[ClassroomService]).to(classOf[DefaultClassroomService]).eagerly()
+  )
 
-  private def bindOther(): Unit = {
-    bind(classOf[ConfigurationLoader]).to(classOf[ConfigurationLoaderImpl]).asEagerSingleton()
-  }
+  private def bindControllers(): Seq[Binding[_]] = Seq(
+    bind(classOf[LoginController]).to(classOf[DefaultLoginController]).eagerly(),
+    bind(classOf[RedirectController]).to(classOf[DefaultRedirectController]).eagerly(),
+    bind(classOf[OrgRegisterController]).to(classOf[DefaultOrgRegisterController]).eagerly(),
+    bind(classOf[UserRegisterController]).to(classOf[DefaultUserRegisterController]).eagerly(),
+    bind(classOf[TeardownController]).to(classOf[DefaultTeardownController]).eagerly(),
+    bind(classOf[DashboardController]).to(classOf[DefaultDashboardController]).eagerly(),
+    bind(classOf[EditProfileController]).to(classOf[DefaultEditProfileController]).eagerly(),
+    bind(classOf[GenerateCodeController]).to(classOf[DefaultGenerateCodeController]).eagerly(),
+    bind(classOf[ClassroomController]).to(classOf[DefaultClassroomController]).eagerly(),
+    bind(classOf[HealthController]).to(classOf[DefaultHealthController]).eagerly()
+  )
+
+  private def bindOther(): Seq[Binding[_]] = Seq(
+    bind(classOf[ConfigurationLoader]).to(classOf[DefaultConfigurationLoader]).eagerly()
+  )
 }

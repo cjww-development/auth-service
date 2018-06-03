@@ -41,7 +41,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     name                                          :=  """auth-service""",
     version                                       :=  btVersion,
-    scalaVersion                                  :=  "2.11.12",
+    scalaVersion                                  :=  "2.12.6",
     organization                                  :=  "com.cjww-dev.frontends",
     resolvers                                     ++= Seq(
       "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
@@ -49,7 +49,7 @@ lazy val microservice = Project(appName, file("."))
     ),
     libraryDependencies                           ++= AppDependencies(),
     libraryDependencies                           +=  filters,
-    herokuAppName in Compile                      :=  "cjww-auth-service",
+    //herokuAppName in Compile                      :=  "cjww-auth-service",
     bintrayOrganization                           :=  Some("cjww-development"),
     bintrayReleaseOnPublish in ThisBuild          :=  false,
     bintrayRepository                             :=  "releases",

@@ -31,8 +31,8 @@ import play.api.mvc.{Request, Session}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class LoginServiceImpl @Inject()(val authConnector: AuthMicroserviceConnector,
-                                 val sessionStoreConnector: SessionStoreConnector) extends LoginService {
+class DefaultLoginService @Inject()(val authConnector: AuthMicroserviceConnector,
+                                    val sessionStoreConnector: SessionStoreConnector) extends LoginService {
   override def generateSessionId: String = s"session-${UUID.randomUUID()}"
 }
 
@@ -42,14 +42,12 @@ trait LoginService extends Logging {
 
   def generateSessionId: String
 
-  private val contextIdWriter: OWrites[String] = new OWrites[String] {
-    override def writes(o: String) = Json.obj(
-      "contextId" -> Json.toJsFieldJsValueWrapper(o)(stringWrites)
-    )
+  private val contextIdWriter: OWrites[String] = OWrites[String] {
+    str => Json.obj("contextId" -> Json.toJsFieldJsValueWrapper(str)(stringWrites))
   }
 
-  private val contextIdReads: Reads[String] = new Reads[String] {
-    override def reads(json: JsValue) = JsSuccess(json.\("contextId").as[String](stringReads))
+  private val contextIdReads: Reads[String] = Reads[String] {
+    json => JsSuccess(json.\("contextId").as[String](stringReads))
   }
 
   private val contextIdFormat: OFormat[String] = OFormat(contextIdReads, contextIdWriter)

@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2018 CJWW Development
  *
@@ -13,13 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package services
 
-import connectors.AccountsMicroserviceConnector
+package common
+
+import com.cjwwdev.filters.RequestLoggingFilter
+import filters.{HeadersFilter, IPWhitelistFilter}
 import javax.inject.Inject
+import play.api.http.DefaultHttpFilters
 
-class DeversityServiceImpl @Inject()(val accountsConnector: AccountsMicroserviceConnector) extends DeversityService
-
-trait DeversityService {
-
-}
+class AuthServiceFilters @Inject()(ipWhitelistFilter: IPWhitelistFilter,
+                                   loggingFilter: RequestLoggingFilter,
+                                   headersFilter: HeadersFilter)
+  extends DefaultHttpFilters(
+    ipWhitelistFilter,
+    loggingFilter,
+    headersFilter
+  )

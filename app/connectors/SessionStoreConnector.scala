@@ -21,9 +21,9 @@ import com.cjwwdev.http.exceptions.{ClientErrorException, NotFoundException, Ser
 import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.session.SessionUtils
 import com.cjwwdev.http.verbs.Http
-import com.google.inject.Inject
 import common.ApplicationConfiguration
 import enums.SessionCache
+import javax.inject.Inject
 import models.SessionUpdateSet
 import play.api.libs.json.{OFormat, Reads}
 import play.api.mvc.Request
@@ -31,8 +31,8 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class SessionStoreConnectorImpl @Inject()(val http : Http,
-                                          val configurationLoader: ConfigurationLoader) extends SessionStoreConnector
+class DefaultSessionStoreConnector @Inject()(val http : Http,
+                                             val configurationLoader: ConfigurationLoader) extends SessionStoreConnector
 
 trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils with WsResponseHelpers {
   val http: Http

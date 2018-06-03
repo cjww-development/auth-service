@@ -28,14 +28,14 @@ case class OrgRegistration(orgName: String,
                            confirmPassword: String)
 
 object OrgRegistration {
-  implicit val orgRegisterWrites: OWrites[OrgRegistration] = new OWrites[OrgRegistration] {
-    override def writes(o: OrgRegistration): JsObject = Json.obj(
-      "orgName"     -> o.orgName,
-      "initials"    -> o.initials,
-      "orgUserName" -> o.orgUserName,
-      "location"    -> o.location,
-      "orgEmail"    -> o.orgEmail,
-      "password"    -> SHA512.encrypt(o.password)
+  implicit val orgRegisterWrites: OWrites[OrgRegistration] = OWrites[OrgRegistration] {
+    orgReg => Json.obj(
+      "orgName"     -> orgReg.orgName,
+      "initials"    -> orgReg.initials,
+      "orgUserName" -> orgReg.orgUserName,
+      "location"    -> orgReg.location,
+      "orgEmail"    -> orgReg.orgEmail,
+      "password"    -> SHA512.encrypt(orgReg.password)
     )
   }
 

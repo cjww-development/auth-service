@@ -24,8 +24,8 @@ import play.api.mvc.Request
 
 import scala.concurrent.Future
 
-class TeardownConnectorImpl @Inject()(val http: Http,
-                                      val configurationLoader: ConfigurationLoader) extends TeardownConnector
+class DefaultTeardownConnector @Inject()(val http: Http,
+                                         val configurationLoader: ConfigurationLoader) extends TeardownConnector
 
 trait TeardownConnector extends ApplicationConfiguration {
   val http: Http

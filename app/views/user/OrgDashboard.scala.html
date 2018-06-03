@@ -4,7 +4,7 @@
 @import com.cjwwdev.views.html.templates.MainTemplate
 @import views.html.helpers._
 
-@(basicDetails: OrgDetails, teacherList: List[TeacherDetails])(implicit request: Request[_], messages: Messages, messagesApi: MessagesApi, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@(basicDetails: OrgDetails, teacherList: List[TeacherDetails])(implicit request: Request[_], messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @colourSwitcher(random : Int) = {
     @random match {
@@ -26,7 +26,7 @@
     }
 }
 
-@MainTemplate(title = messagesApi("pages.org-dashboard.title"), links, navBarRoutes) {
+@MainTemplate(title = messages("pages.org-dashboard.title"), links, navBarRoutes) {
 <div class="cjww-jumbo-background" style="background: url('/account-services/assets/images/background.jpg') fixed center no-repeat;">
     <div class="container">
         <div class="row">
@@ -46,7 +46,7 @@
 
         <div class="row">
             <div class="col-md-11">
-                <h1 id="main-heading" class="page-title">@messagesApi("pages.org-dashboard.heading", basicDetails.orgName)</h1>
+                <h1 id="main-heading" class="page-title">@messages("pages.org-dashboard.heading", basicDetails.orgName)</h1>
             </div>
 
             <div class="col-md-1">
@@ -55,9 +55,9 @@
                         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>  <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a href="#"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.cover-photo.dropdown.one")</a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> @messages("pages.org-dashboard.cover-photo.dropdown.one")</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href=""><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.cover-photo.dropdown.two")</a></li>
+                        <li><a href=""><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messages("pages.org-dashboard.cover-photo.dropdown.two")</a></li>
                     </ul>
                 </div>
             </div>
@@ -69,31 +69,31 @@
     <div class="container">
         <div class="row">
             <div class="col-md-3">
-                <h2>@messagesApi("pages.org-dashboard.quick-links.heading")</h2>
+                <h2>@messages("pages.org-dashboard.quick-links.heading")</h2>
                 <hr>
                 <div class="list-group">
                     <a id="review-enrolments-link" href="" class="list-group-item">
-                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.quick-links.list.one")</h4>
+                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> @messages("pages.org-dashboard.quick-links.list.one")</h4>
                     </a>
                     <a id="edit-profile-link" href="" class="list-group-item">
-                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.quick-links.list.two")</h4>
+                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messages("pages.org-dashboard.quick-links.list.two")</h4>
                     </a>
                     <a id="messages-link" href="#" class="list-group-item">
-                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> @messagesApi("pages.org-dashboard.quick-links.list.three") <span class="badge">0</span></h4>
+                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> @messages("pages.org-dashboard.quick-links.list.three") <span class="badge">0</span></h4>
                     </a>
                     <a href="@controllers.user.routes.GenerateCodeController.getRegistrationCodeShow()" id="registration-code-link" class="list-group-item">
-                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-qrcode"></span> @messagesApi("pages.org-dashboard.quick-links.list.four")</h4>
+                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-qrcode"></span> @messages("pages.org-dashboard.quick-links.list.four")</h4>
                     </a>
                 </div>
             </div>
 
             <div class="col-md-9">
-                <h2>@messagesApi("pages.org-dashboard.teacher-list.heading")</h2>
+                <h2>@messages("pages.org-dashboard.teacher-list.heading")</h2>
                 <hr>
 
                 <div class="row">
                     @if(teacherList.isEmpty) {
-                    <p class="text-center">@messagesApi("pages.org-dashboard.teacher-list.body", basicDetails.orgName)</p>
+                    <p class="text-center">@messages("pages.org-dashboard.teacher-list.body", basicDetails.orgName)</p>
                     } else {
                         @for(teacher <- teacherList) {
                             <div class="col-md-3">

@@ -16,7 +16,6 @@
 
 package models.accounts
 
-import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json._
 
 case class Settings(displayName: String,
@@ -24,30 +23,23 @@ case class Settings(displayName: String,
                     displayImageURL: String)
 
 object Settings {
-  implicit val settingsRead: Reads[Settings] = new Reads[Settings] {
-    override def reads(json: JsValue): JsResult[Settings] = JsSuccess(
-      Settings(
-        displayName       = (json \ "displayName").asOpt[String].getOrElse(default.displayName),
-        displayNameColour = (json \ "displayNameColour").asOpt[String].getOrElse(default.displayNameColour),
-        displayImageURL   = (json \ "displayImageURL").asOpt[String].getOrElse(default.displayImageURL)
-      )
-    )
+  implicit val settingsRead: Reads[Settings] = Reads[Settings] {
+    json => JsSuccess(Settings(
+      displayName       = (json \ "displayName").asOpt[String].getOrElse(default.displayName),
+      displayNameColour = (json \ "displayNameColour").asOpt[String].getOrElse(default.displayNameColour),
+      displayImageURL   = (json \ "displayImageURL").asOpt[String].getOrElse(default.displayImageURL)
+    ))
   }
 
-  implicit val settingsWrite: OWrites[Settings] = new OWrites[Settings] {
-    override def writes(o: Settings): JsObject = {
-      def buildImageUrl: (String, JsValueWrapper) = {
-        o.displayImageURL match {
-          case "" => "displayImageURL" -> default.displayImageURL
-          case _  => "displayImageURL" -> o.displayImageURL
-        }
+  implicit val settingsWrite: OWrites[Settings] = OWrites[Settings] {
+    settings => Json.obj(
+      "displayName" -> settings.displayName,
+      "displayNameColour" -> settings.displayNameColour,
+      settings.displayImageURL match {
+        case "" => "displayImageURL" -> default.displayImageURL
+        case _  => "displayImageURL" -> settings.displayImageURL
       }
-      Json.obj(
-        "displayName"       -> o.displayName,
-        "displayNameColour" -> o.displayNameColour,
-        buildImageUrl
-      )
-    }
+    )
   }
 
   implicit val standardFormat: OFormat[Settings] = OFormat(settingsRead, settingsWrite)
