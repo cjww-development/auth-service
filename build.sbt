@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import com.heroku.sbt.HerokuPlugin.autoImport.herokuAppName
 import com.typesafe.config.ConfigFactory
 import scoverage.ScoverageKeys
 import scala.util.{Failure, Success, Try}
@@ -49,7 +50,7 @@ lazy val microservice = Project(appName, file("."))
     ),
     libraryDependencies                           ++= AppDependencies(),
     libraryDependencies                           +=  filters,
-    //herokuAppName in Compile                      :=  "cjww-auth-service",
+    herokuAppName in Compile                      :=  "cjww-auth-service",
     bintrayOrganization                           :=  Some("cjww-development"),
     bintrayReleaseOnPublish in ThisBuild          :=  false,
     bintrayRepository                             :=  "releases",

@@ -20,7 +20,7 @@ addSbtPlugin("org.scalastyle"   %% "scalastyle-sbt-plugin" % "1.0.0")
 addSbtPlugin("com.typesafe.sbt"  % "sbt-native-packager"   % "1.3.4")
 addSbtPlugin("org.foundweekends" % "sbt-bintray"           % "0.5.4")
 addSbtPlugin("com.github.gseitz" %  "sbt-release"          % "1.0.8")
-//addSbtPlugin("com.heroku"        % "sbt-heroku"            % "1.0.1")
+addSbtPlugin("com.heroku"        % "sbt-heroku"            % "2.1.0")
 
 addSbtPlugin("com.typesafe.sbt"  % "sbt-coffeescript"      % "1.0.2")
 addSbtPlugin("com.typesafe.sbt"  % "sbt-less"              % "1.1.2")
