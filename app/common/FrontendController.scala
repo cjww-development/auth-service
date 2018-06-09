@@ -31,9 +31,9 @@ trait FrontendController
 
   implicit val messages: Messages = MessagesImpl(Lang(Locale.ENGLISH), controllerComponents.messagesApi)
 
-  implicit def requestHeaderFromRequest(implicit request: Request[_]): RequestHeader = request.copy()
+  implicit def requestHeaderFromRequest(implicit request: Request[_]): RequestHeader = request
 
-  override def unauthorisedRedirect: Call = LOGIN_CALLBACK
+  override def unauthorisedRedirect: Call = Call("GET", s"/account-services$LOGIN_CALLBACK")
 
   override val logger: Logger = LoggerFactory.getLogger(getClass)
 }

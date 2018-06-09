@@ -30,7 +30,7 @@ trait ApplicationConfiguration {
   val EDIT_PROFILE              = "edit-profile"
   val TITLE                     = "Your profile has been updated"
 
-  val LOGIN_CALLBACK            = controllers.login.routes.LoginController.show(None)
+  val LOGIN_CALLBACK            = controllers.login.routes.LoginController.show(None).url
 
   val LOGIN_REDIRECT            = "/account-services/login"
 
