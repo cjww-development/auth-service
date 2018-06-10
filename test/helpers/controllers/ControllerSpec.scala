@@ -21,17 +21,21 @@ import com.cjwwdev.implicits.ImplicitDataSecurity._
 import helpers.auth.AuthBuilder
 import helpers.connectors.MockSessionStoreConnector
 import helpers.other.{Fixtures, FutureAsserts}
-import helpers.services.MockLoginService
+import helpers.services.{MockFeatureService, MockLoginService}
+import org.scalatest.Assertion
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 trait ControllerSpec
   extends PlaySpec
     with FutureAsserts
     with Fixtures
     with MockLoginService
+    with MockFeatureService
     with MockSessionStoreConnector
     with AuthBuilder
     with GuiceOneAppPerSuite {
@@ -39,4 +43,8 @@ trait ControllerSpec
   implicit lazy val request: FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest()
       .withHeaders("cjww-headers" -> HeaderPackage("testAppId", generateTestSystemId(SESSION)).encryptType)
+
+  def assertFutureResult(futureResult: Future[Result])(assertions: Future[Result] => Assertion): Assertion = {
+    assertions(futureResult)
+  }
 }

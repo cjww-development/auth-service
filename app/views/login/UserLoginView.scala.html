@@ -3,7 +3,7 @@
 @import com.cjwwdev.views.html.helpers.{errorPanel, textInput}
 @import helper._
 
-@(login: Form[models.UserLogin])(implicit request: Request[_], messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@(login: Form[models.UserLogin])(implicit request: Request[_], messages: MessagesApi, lang: Lang, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @MainTemplate(title = messages("pages.user-login.title"), links, navBarRoutes){
 <div class="top-block-single">

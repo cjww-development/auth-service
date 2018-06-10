@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package forms
+package common.helpers
 
-import forms.validation.ClassroomValidation.classNameValidation
-import play.api.data.Form
-import play.api.data.Forms._
-import play.api.i18n.{Lang, MessagesApi}
+import common.ApplicationConfiguration
+import org.slf4j.{Logger, LoggerFactory}
+import play.api.i18n.Lang
+import play.api.mvc._
 
-object CreateClassForm {
-  def form(implicit messages: MessagesApi, lang: Lang): Form[String] = Form(
-    single(
-      "classRoomName" -> classNameValidation
-    )
-  )
+trait FrontendController
+  extends BaseController
+    with ControllerHelpers
+    with ApplicationConfiguration
+    with UrlParser{
+
+  implicit def getLang(implicit request: Request[_]): Lang = supportedLangs.preferred(request.acceptLanguages)
+
+  override val logger: Logger = LoggerFactory.getLogger(getClass)
 }

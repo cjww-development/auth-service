@@ -1,2 +1,5 @@
 GET         /tear-down-test-user                                controllers.test.TeardownController.tearDownTestUserShow
 POST        /tear-down-test-user                                controllers.test.TeardownController.tearDownTestUserSubmit
+
+GET         /feature-switches                                   controllers.test.FeatureController.show()
+POST        /feature-switches                                   controllers.test.FeatureController.submit()

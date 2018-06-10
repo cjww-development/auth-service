@@ -16,11 +16,13 @@
 package controllers.test
 
 import com.cjwwdev.auth.connectors.AuthConnector
-import common.FrontendController
+import common.helpers.AuthController
 import connectors.test.TeardownConnector
+import enums.Features._
 import forms.test.TearDownUserForm
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import services.FeatureService
 import views.html.test.{ActionCompleteView, TearDownUserView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -28,9 +30,12 @@ import scala.concurrent.Future
 
 class DefaultTeardownController @Inject()(val authConnector: AuthConnector,
                                           val controllerComponents: ControllerComponents,
-                                          val tearDownConnector: TeardownConnector) extends TeardownController
+                                          val featureService: FeatureService,
+                                          val tearDownConnector: TeardownConnector) extends TeardownController {
+  override def deversityEnabled: Boolean = featureService.getBooleanFeatureState(DEVERSITY)
+}
 
-trait TeardownController extends FrontendController {
+trait TeardownController extends AuthController {
   val tearDownConnector: TeardownConnector
 
   def tearDownTestUserShow: Action[AnyContent] = Action.async { implicit request =>

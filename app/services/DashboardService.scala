@@ -17,7 +17,7 @@
 package services
 
 import com.cjwwdev.auth.models.CurrentUser
-import common.MissingOrgDetailsException
+import common.responses.MissingOrgDetailsException
 import connectors.{AccountsMicroserviceConnector, DeversityMicroserviceConnector}
 import javax.inject.Inject
 import models.accounts.{BasicDetails, DeversityEnrolment, Settings}

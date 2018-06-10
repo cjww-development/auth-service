@@ -19,10 +19,10 @@ package forms.validation
 import play.api.data.Forms.text
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
-import play.api.i18n.Messages
+import play.api.i18n.{Lang, MessagesApi}
 
 object ClassroomValidation extends CommonValidation {
-  def classNameValidation(implicit messages: Messages): Mapping[String] = {
+  def classNameValidation(implicit messages: MessagesApi, lang: Lang): Mapping[String] = {
     val classNameConstraint: Constraint[String] = Constraint("constraints.className")({ className =>
       val errors = className match {
         case ""                  => Seq(ValidationError(messages("pages.manage-classrooms.create-classroom.error.no-entry")))

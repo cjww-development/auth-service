@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package common
+package common.helpers
 
 import play.api.libs.typedmap.TypedMap
 import play.api.mvc.request.{RemoteConnection, RequestTarget}

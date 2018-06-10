@@ -27,19 +27,21 @@ import javax.inject.Inject
 import models.SessionUpdateSet
 import play.api.libs.json.{OFormat, Reads}
 import play.api.mvc.Request
+import services.FeatureService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DefaultSessionStoreConnector @Inject()(val http : Http,
-                                             val configurationLoader: ConfigurationLoader) extends SessionStoreConnector
+                                             val featureService: FeatureService) extends SessionStoreConnector
 
 trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils with WsResponseHelpers {
   val http: Http
 
   def cache(sessionId : String)(implicit request: Request[_]) : Future[SessionCache.Value] = {
     http.postString(s"$sessionStore/session/$sessionId", "") map {
-      _ => SessionCache.cached
+      _ =>
+        SessionCache.cached
     } recover {
       case _: ServerErrorException => SessionCache.cacheFailure
     }

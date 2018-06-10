@@ -21,7 +21,7 @@ import java.util.UUID
 
 import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.implicits.ImplicitDataSecurity._
-import common.Logging
+import common.helpers.Logging
 import connectors._
 import javax.inject.Inject
 import models.{SessionUpdateSet, UserLogin}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package common
+package common.responses
 
 sealed trait UpdatedPasswordResponse
 case object InvalidOldPassword extends UpdatedPasswordResponse

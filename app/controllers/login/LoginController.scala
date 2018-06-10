@@ -16,14 +16,15 @@
 package controllers.login
 
 import com.cjwwdev.auth.connectors.AuthConnector
-import common.FrontendController
+import common.helpers.AuthController
 import connectors.SessionStoreConnector
+import enums.Features._
 import forms.UserLoginForm
 import javax.inject.Inject
 import models.UserLogin
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import services.LoginService
+import services.{FeatureService, LoginService}
 import views.html.login.UserLoginView
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -32,15 +33,12 @@ import scala.concurrent.Future
 class DefaultLoginController @Inject()(val loginService : LoginService,
                                        val sessionStoreConnector: SessionStoreConnector,
                                        val authConnector: AuthConnector,
-                                       val controllerComponents: ControllerComponents) extends LoginController {
-  override val loginFailed: String = messages("cjww.auth.login.error.invalid")
-}
+                                       val featureService: FeatureService,
+                                       val controllerComponents: ControllerComponents) extends LoginController
 
-trait LoginController extends FrontendController {
+trait LoginController extends AuthController {
   val loginService: LoginService
   val sessionStoreConnector: SessionStoreConnector
-
-  val loginFailed: String
 
   private val loginForm: Form[UserLogin] = UserLoginForm.loginForm
 
@@ -53,13 +51,18 @@ trait LoginController extends FrontendController {
       errors => Future.successful(BadRequest(UserLoginView(errors))),
       valid  => loginService.processLoginAttempt(valid) map {
         case Some(session) => Redirect(routes.LoginController.activateAuthServiceSession(session("cookieId"))).withSession(session)
-        case None          => Ok(UserLoginView(loginForm.fill(valid).withError("userName", loginFailed).withError("password", "")))
+        case None          => Ok(UserLoginView(loginForm.fill(valid)
+          .withError("userName", messagesApi("cjww.auth.login.error.invalid")).withError("password", "")))
       }
     )
   }
 
   def activateAuthServiceSession(cookieId: String): Action[AnyContent] = Action { implicit request =>
-    Redirect(s"$deversityFrontend/private/build-deversity-session/$cookieId")
+    if(deversityEnabled) {
+      Redirect(s"$deversityFrontend/private/build-deversity-session/$cookieId")
+    } else {
+      Redirect(controllers.redirect.routes.RedirectController.chooseService())
+    }
   }
 
   def redirectToServiceSelector: Action[AnyContent] = Action(implicit request => Redirect(serviceDirector))

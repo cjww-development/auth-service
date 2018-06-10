@@ -18,6 +18,7 @@ package helpers.connectors
 
 import connectors.{stringReads, stringWrites}
 import helpers.other.{Fixtures, FutureAsserts, MockHttp, MockRequest}
+import helpers.services.MockFeatureService
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status
@@ -32,19 +33,18 @@ trait ConnectorSpec
     with MockRequest
     with Fixtures
     with Status
+    with MockFeatureService
     with GuiceOneAppPerSuite {
 
   implicit lazy val request: FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest().withSession("cookieId" -> generateTestSystemId(SESSION))
 
-  private val contextIdWriter: OWrites[String] = new OWrites[String] {
-    override def writes(o: String) = Json.obj(
-      "contextId" -> Json.toJsFieldJsValueWrapper(o)(stringWrites)
-    )
+  private val contextIdWriter: OWrites[String] = OWrites[String] {
+    str => Json.obj("contextId" -> Json.toJsFieldJsValueWrapper(str)(stringWrites))
   }
 
-  private val contextIdReads: Reads[String] = new Reads[String] {
-    override def reads(json: JsValue) = JsSuccess(json.\("contextId").as[String](stringReads))
+  private val contextIdReads: Reads[String] = Reads[String] {
+    json => JsSuccess(json.\("contextId").as[String](stringReads))
   }
 
   implicit val contextIdFormat: OFormat[String] = OFormat(contextIdReads, contextIdWriter)

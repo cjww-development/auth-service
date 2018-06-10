@@ -20,10 +20,10 @@ import com.cjwwdev.config.{ConfigurationLoader, DefaultConfigurationLoader}
 import com.cjwwdev.health.{DefaultHealthController, HealthController}
 import connectors._
 import connectors.test._
-import controllers.login._
-import controllers.redirect._
-import controllers.register._
-import controllers.test._
+import controllers.login.{DefaultLoginController, LoginController}
+import controllers.redirect.{DefaultRedirectController, RedirectController}
+import controllers.register.{DefaultOrgRegisterController, DefaultUserRegisterController, OrgRegisterController, UserRegisterController}
+import controllers.test.{DefaultFeatureController, DefaultTeardownController, FeatureController, TeardownController}
 import controllers.user._
 import controllers.user.deversity.{ClassroomController, DefaultClassroomController}
 import play.api.inject.{Binding, Module}
@@ -49,7 +49,8 @@ class ServiceBindings extends Module {
     bind(classOf[LoginService]).to(classOf[DefaultLoginService]).eagerly(),
     bind(classOf[RegisterService]).to(classOf[DefaultRegisterService]).eagerly(),
     bind(classOf[RegistrationCodeService]).to(classOf[DefaultRegistrationCodeService]).eagerly(),
-    bind(classOf[ClassroomService]).to(classOf[DefaultClassroomService]).eagerly()
+    bind(classOf[ClassroomService]).to(classOf[DefaultClassroomService]).eagerly(),
+    bind(classOf[FeatureService]).to(classOf[DefaultFeatureService]).eagerly()
   )
 
   private def bindControllers(): Seq[Binding[_]] = Seq(
@@ -62,7 +63,8 @@ class ServiceBindings extends Module {
     bind(classOf[EditProfileController]).to(classOf[DefaultEditProfileController]).eagerly(),
     bind(classOf[GenerateCodeController]).to(classOf[DefaultGenerateCodeController]).eagerly(),
     bind(classOf[ClassroomController]).to(classOf[DefaultClassroomController]).eagerly(),
-    bind(classOf[HealthController]).to(classOf[DefaultHealthController]).eagerly()
+    bind(classOf[HealthController]).to(classOf[DefaultHealthController]).eagerly(),
+    bind(classOf[FeatureController]).to(classOf[DefaultFeatureController]).eagerly()
   )
 
   private def bindOther(): Seq[Binding[_]] = Seq(

@@ -25,11 +25,13 @@ import common._
 import javax.inject.Inject
 import models.UserLogin
 import play.api.mvc.Request
+import services.FeatureService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DefaultAuthMicroserviceConnector @Inject()(val http: Http,
+                                                 val featureService: FeatureService,
                                                  val configurationLoader: ConfigurationLoader) extends AuthMicroserviceConnector
 
 trait AuthMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers {

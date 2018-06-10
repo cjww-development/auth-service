@@ -17,11 +17,12 @@ package controllers.user
 
 import com.cjwwdev.auth.connectors.AuthConnector
 import com.cjwwdev.views.html.templates.errors.NotFoundView
-import common.FrontendController
+import common.helpers.AuthController
 import connectors.DeversityMicroserviceConnector
+import enums.Features._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import services.{DashboardService, RegistrationCodeService}
+import services.{DashboardService, FeatureService, RegistrationCodeService}
 import views.html.user.GenerateCodeView
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -30,10 +31,13 @@ import scala.concurrent.Future
 class DefaultGenerateCodeController @Inject()(val authConnector: AuthConnector,
                                               val registrationCodeService: RegistrationCodeService,
                                               val dashboardService: DashboardService,
+                                              val featureService: FeatureService,
                                               val controllerComponents: ControllerComponents,
-                                              val deversityConnector: DeversityMicroserviceConnector) extends GenerateCodeController
+                                              val deversityConnector: DeversityMicroserviceConnector) extends GenerateCodeController {
+  override def deversityEnabled: Boolean = featureService.getBooleanFeatureState(DEVERSITY)
+}
 
-trait GenerateCodeController extends FrontendController {
+trait GenerateCodeController extends AuthController {
   val registrationCodeService: RegistrationCodeService
   val dashboardService: DashboardService
   val deversityConnector: DeversityMicroserviceConnector
@@ -41,34 +45,38 @@ trait GenerateCodeController extends FrontendController {
   def getRegistrationCodeShow: Action[AnyContent] = isAuthorised {
     implicit request =>
       implicit user =>
-        user.credentialType match {
-          case INDIVIDUAL => for {
-            enr <- deversityConnector.getDeversityEnrolment
-            res <- enr.fold(Future(NotFound(NotFoundView())))(_ => registrationCodeService.getGeneratedCode map(
+        deversityGuard {
+          user.credentialType match {
+            case INDIVIDUAL => for {
+              enr <- deversityConnector.getDeversityEnrolment
+              res <- enr.fold(Future(NotFound(NotFoundView())))(_ => registrationCodeService.getGeneratedCode map(
+                regCode => Ok(GenerateCodeView(regCode))
+                ))
+            } yield res
+            case ORGANISATION => registrationCodeService.getGeneratedCode map {
               regCode => Ok(GenerateCodeView(regCode))
-            ))
-          } yield res
-          case ORGANISATION => registrationCodeService.getGeneratedCode map {
-            regCode => Ok(GenerateCodeView(regCode))
+            }
+            case _ => Future(NotFound(NotFoundView()))
           }
-          case _ => Future(NotFound(NotFoundView()))
         }
   }
 
   def generateRegistrationCode: Action[AnyContent] = isAuthorised {
     implicit request =>
       implicit user =>
-        user.credentialType match {
-          case INDIVIDUAL => for {
-            enr <- deversityConnector.getDeversityEnrolment
-            res <- enr.fold(Future(NotFound(NotFoundView())))(_ => registrationCodeService.generateRegistrationCode map(
+        deversityGuard {
+          user.credentialType match {
+            case INDIVIDUAL => for {
+              enr <- deversityConnector.getDeversityEnrolment
+              res <- enr.fold(Future(NotFound(NotFoundView())))(_ => registrationCodeService.generateRegistrationCode map(
+                _ => Redirect(routes.GenerateCodeController.getRegistrationCodeShow())
+                ))
+            } yield res
+            case ORGANISATION => registrationCodeService.generateRegistrationCode map {
               _ => Redirect(routes.GenerateCodeController.getRegistrationCodeShow())
-            ))
-          } yield res
-          case ORGANISATION => registrationCodeService.generateRegistrationCode map {
-            _ => Redirect(routes.GenerateCodeController.getRegistrationCodeShow())
+            }
+            case _ => Future(NotFound(NotFoundView()))
           }
-          case _ => Future(NotFound(NotFoundView()))
         }
   }
 }

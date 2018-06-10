@@ -5,7 +5,7 @@
 @import views.html.helpers.ClassroomThumbnail
 
 @import models.deversity.Classroom
-@(createClassroomForm: Form[String], classList: Seq[Classroom])(implicit request: Request[_], messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@(createClassroomForm: Form[String], classList: Seq[Classroom])(implicit request: Request[_], messages: MessagesApi, lang: Lang, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @MainTemplate(title = messages("pages.manage-classrooms.title"), links, navBarRoutes) {
     <div class="cjww-jumbo">

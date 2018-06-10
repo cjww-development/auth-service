@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.test
 
-import connectors.test.TeardownConnector
 import helpers.connectors.ConnectorSpec
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class TeardownConnectorSpec extends ConnectorSpec {
 
   val testConnector = new TeardownConnector {
-    override val http = mockHttp
+    override val http           = mockHttp
+    override val featureService = mockFeatureService
   }
 
   "deleteTestAccountInstance" should {

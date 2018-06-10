@@ -4,7 +4,7 @@
 @import com.cjwwdev.views.html.templates.MainTemplate
 @import views.html.helpers._
 
-@(basicDetails: OrgDetails, teacherList: List[TeacherDetails])(implicit request: Request[_], messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@(basicDetails: OrgDetails, teacherList: List[TeacherDetails])(implicit request: Request[_], messages: MessagesApi, lang: Lang, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @colourSwitcher(random : Int) = {
     @random match {

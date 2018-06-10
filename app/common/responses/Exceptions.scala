@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package common
+package common.responses
 
 class MissingBasicDetailsException(msg: String) extends Exception(msg)
 class MissingOrgDetailsException(msg: String) extends Exception(msg)
