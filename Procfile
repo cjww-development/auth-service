@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/auth-service -Dhttp.port=${PORT}
+web: target/universal/stage/bin/auth-service -Dhttp.port=${PORT} -Dfeatures.DEVERSITY=true
