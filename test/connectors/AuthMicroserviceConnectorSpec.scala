@@ -26,7 +26,8 @@ import scala.concurrent.Future
 class AuthMicroserviceConnectorSpec extends ConnectorSpec {
 
   val testConnector = new AuthMicroserviceConnector {
-    override val http = mockHttp
+    override val featureService = mockFeatureService
+    override val http           = mockHttp
   }
 
   "getUser" should {

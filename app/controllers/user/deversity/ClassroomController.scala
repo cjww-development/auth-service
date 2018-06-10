@@ -17,58 +17,71 @@
 package controllers.user.deversity
 
 import com.cjwwdev.auth.connectors.AuthConnector
-import common.FrontendController
+import common.helpers.AuthController
+import enums.Features._
 import forms.CreateClassForm
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import services.ClassroomService
+import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
+import services.{ClassroomService, FeatureService}
 import views.html.user.deversity.{ManageClassroomView, ManageClassroomsView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class DefaultClassroomController @Inject()(val authConnector: AuthConnector,
                                            val controllerComponents: ControllerComponents,
-                                           val classroomService: ClassroomService) extends ClassroomController
+                                           val featureService: FeatureService,
+                                           val classroomService: ClassroomService) extends ClassroomController {
+  override def deversityEnabled: Boolean = featureService.getBooleanFeatureState(DEVERSITY)
+}
 
-trait ClassroomController extends FrontendController {
+trait ClassroomController extends AuthController {
   val classroomService: ClassroomService
 
-  private val createClassroomForm = CreateClassForm.form
+  def deversityEnabled: Boolean
 
   def manageClassRooms: Action[AnyContent] = isAuthorised {
    implicit user =>
       implicit request =>
-        classroomService.getClassrooms map { classList =>
-          Ok(ManageClassroomsView(createClassroomForm, classList))
+        deversityGuard {
+          classroomService.getClassrooms map { classList =>
+            Ok(ManageClassroomsView(CreateClassForm.form, classList))
+          }
         }
   }
 
   def createClassRoom: Action[AnyContent] = isAuthorised {
     implicit user =>
       implicit request =>
-        createClassroomForm.bindFromRequest.fold(
-          errors => classroomService.getClassrooms map { classList =>
-            BadRequest(ManageClassroomsView(errors, classList))
-          },
-          name   => classroomService.createClassroom(name) map { _ =>
-            Redirect(routes.ClassroomController.manageClassRooms())
-          }
-        )
+        deversityGuard {
+          CreateClassForm.form.bindFromRequest.fold(
+            errors => classroomService.getClassrooms map { classList =>
+              BadRequest(ManageClassroomsView(errors, classList))
+            },
+            name   => classroomService.createClassroom(name) map { _ =>
+              Redirect(routes.ClassroomController.manageClassRooms())
+            }
+          )
+        }
   }
 
   def manageClassRoom(classId: String): Action[AnyContent] = isAuthorised {
     implicit user =>
       implicit request =>
-        classroomService.getClassroom(classId) map { classRoom =>
-          Ok(ManageClassroomView(classRoom))
+        deversityGuard {
+          classroomService.getClassroom(classId) map { classRoom =>
+            Ok(ManageClassroomView(classRoom))
+          }
         }
   }
 
   def deleteClassRoom(classId: String): Action[AnyContent] = isAuthorised {
     implicit user =>
       implicit request =>
-        classroomService.deleteClassroom(classId) map {
-          _ => Redirect(routes.ClassroomController.manageClassRooms())
+        deversityGuard {
+          classroomService.deleteClassroom(classId) map {
+            _ => Redirect(routes.ClassroomController.manageClassRooms())
+          }
         }
   }
 }

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package common
+package common.helpers
 
+import common.ApplicationConfiguration
 import play.api.mvc.Request
 
 trait UrlParser extends ApplicationConfiguration with Logging {

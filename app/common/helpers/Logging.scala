@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2018 CJWW Development
  *
@@ -15,18 +14,10 @@
  * limitations under the License.
  */
 
-package common
+package common.helpers
 
-import com.cjwwdev.filters.RequestLoggingFilter
-import filters.{HeadersFilter, IPWhitelistFilter}
-import javax.inject.Inject
-import play.api.http.DefaultHttpFilters
+import org.slf4j.{Logger, LoggerFactory}
 
-class AuthServiceFilters @Inject()(ipWhitelistFilter: IPWhitelistFilter,
-                                   loggingFilter: RequestLoggingFilter,
-                                   headersFilter: HeadersFilter)
-  extends DefaultHttpFilters(
-    ipWhitelistFilter,
-    loggingFilter,
-    headersFilter
-  )
+trait Logging {
+  val logger: Logger = LoggerFactory.getLogger(getClass)
+}

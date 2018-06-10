@@ -2,7 +2,7 @@
 @import com.cjwwdev.views.html.templates.MainTemplate
 
 @import com.cjwwdev.auth.models.CurrentUser
-@(regCode: RegistrationCode)(implicit request: Request[_], user: CurrentUser, messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@(regCode: RegistrationCode)(implicit request: Request[_], user: CurrentUser, messages: MessagesApi, lang: Lang, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @MainTemplate(title = messages("pages.generate-code.title"), links, navBarRoutes) {
 <script>

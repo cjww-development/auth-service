@@ -16,7 +16,7 @@
 
 package helpers.connectors
 
-import common.{InvalidOldPassword, MissingBasicDetailsException, PasswordUpdated, UpdatedPasswordResponse}
+import common.responses.{InvalidOldPassword, MissingBasicDetailsException, PasswordUpdated, UpdatedPasswordResponse}
 import connectors.AccountsMicroserviceConnector
 import enums.{HttpResponse, Registration}
 import helpers.other.Fixtures

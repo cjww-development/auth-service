@@ -17,19 +17,24 @@
 package controllers.user
 
 import com.cjwwdev.auth.connectors.AuthConnector
-import common.FrontendController
+import common.helpers.AuthController
+import enums.Features._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import services.DashboardService
+import services.{DashboardService, FeatureService}
 import views.html.user.{Dashboard, OrgDashboard}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class DefaultDashboardController @Inject()(val dashboardService: DashboardService,
                                            val controllerComponents: ControllerComponents,
-                                           val authConnector: AuthConnector) extends DashboardController
+                                           val featureService: FeatureService,
+                                           val authConnector: AuthConnector) extends DashboardController {
+  override def deversityEnabled: Boolean = featureService.getBooleanFeatureState(DEVERSITY)
+}
 
-trait DashboardController extends FrontendController {
+trait DashboardController extends AuthController {
   val dashboardService: DashboardService
 
   def show : Action[AnyContent] = isAuthorised {
@@ -44,7 +49,11 @@ trait DashboardController extends FrontendController {
             basicDetails        <- dashboardService.getBasicDetails
             settings            <- dashboardService.getSettings
             feed                <- dashboardService.getFeed
-            deversityEnrolment  <- dashboardService.getDeversityEnrolment
+            deversityEnrolment  <- if(deversityEnabled) {
+              dashboardService.getDeversityEnrolment
+            } else {
+              Future(None)
+            }
           } yield Ok(Dashboard(feed, basicDetails, settings, deversityEnrolment))
         }
   }

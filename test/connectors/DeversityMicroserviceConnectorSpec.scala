@@ -18,9 +18,9 @@ package connectors
 
 import com.cjwwdev.http.exceptions.NotFoundException
 import com.cjwwdev.implicits.ImplicitDataSecurity._
-import com.cjwwdev.security.encryption.DataSecurity
 import enums.HttpResponse
 import helpers.connectors.ConnectorSpec
+import models.deversity.Classroom
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -28,7 +28,8 @@ import scala.concurrent.Future
 class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   val testConnector = new DeversityMicroserviceConnector {
-    override val http = mockHttp
+    override val featureService = mockFeatureService
+    override val http           = mockHttp
   }
 
   "getDeversityEnrolment" should {
@@ -131,10 +132,38 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "getClassrooms" should {
     "return a seq of class rooms" in {
-      mockHttpGet(response = Future(fakeHttpResponse(OK, DataSecurity.encryptType(testClassSeq))))
+      mockHttpGet(response = Future(fakeHttpResponse(OK, testClassSeq.encryptType)))
 
       awaitAndAssert(testConnector.getClassrooms) {
         _ mustBe testClassSeq
+      }
+    }
+
+    "return an empty seq" in {
+      mockHttpGet(response = Future(fakeHttpResponse(NO_CONTENT)))
+
+      awaitAndAssert(testConnector.getClassrooms) {
+        _ mustBe Seq.empty[Classroom]
+      }
+    }
+  }
+
+  "getClassroom" should {
+    "return a classroom" in {
+      mockHttpGet(response = Future(fakeHttpResponse(OK, testClassroom.encryptType)))
+
+      awaitAndAssert(testConnector.getClassroom(generateTestSystemId("class"))) {
+        _ mustBe testClassroom
+      }
+    }
+  }
+
+  "deleteClassroom" should {
+    "return a HttpSuccess" in {
+      mockHttpDelete(response = Future(fakeHttpResponse(OK)))
+
+      awaitAndAssert(testConnector.deleteClassroom(generateTestSystemId("class"))) {
+        _ mustBe HttpResponse.success
       }
     }
   }

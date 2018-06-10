@@ -10,7 +10,7 @@
 @(feed: Option[List[FeedItem]],
   basicDetails: BasicDetails,
   settings: Settings,
-  deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], user: CurrentUser, messages: Messages, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+  deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], user: CurrentUser, messages: MessagesApi, lang: Lang, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @import controllers.user.{routes => userRoutes}
 @import views.html.helpers.feedItem

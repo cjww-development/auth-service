@@ -22,31 +22,33 @@ import controllers.login.LoginController
 import enums.SessionCache
 import helpers.controllers.ControllerSpec
 import play.api.mvc.ControllerComponents
+import play.api.test.CSRFTokenHelper._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.LoginService
+import services.{FeatureService, LoginService}
 
 class LoginControllerSpec extends ControllerSpec {
 
-  class Setup {
+  class Setup(deversity: Boolean = false) {
     val testController = new LoginController {
-      override val controllerComponents: ControllerComponents           = stubControllerComponents()
-      override val loginFailed: String                                  = "testMessage"
-      override val loginService: LoginService                           = mockLoginService
-      override val sessionStoreConnector: SessionStoreConnector         = mockSessionStoreConnector
-      override def authConnector: AuthConnector                         = mockAuthConnector
+      override def deversityEnabled: Boolean                    = deversity
+      override val featureService: FeatureService               = mockFeatureService
+      override val controllerComponents: ControllerComponents   = stubControllerComponents()
+      override val loginService: LoginService                   = mockLoginService
+      override val sessionStoreConnector: SessionStoreConnector = mockSessionStoreConnector
+      override def authConnector: AuthConnector                 = mockAuthConnector
     }
   }
 
-  "show" ignore {
+  "show" should {
     "return an Ok" in new Setup {
-      runActionWithoutAuth(testController.show(redirect = None), FakeRequest()) {
+      runActionWithoutAuth(testController.show(redirect = None), addCSRFToken(FakeRequest())) {
         status(_) mustBe OK
       }
     }
   }
 
-  "submit" ignore {
+  "submit" should {
     val request = FakeRequest().withFormUrlEncodedBody(
       "userName" -> "testUserName",
       "password" -> "testPassword"
@@ -54,7 +56,7 @@ class LoginControllerSpec extends ControllerSpec {
 
     "return a BadRequest" when {
       "the form could not be validated" in new Setup {
-        runActionWithoutAuth(testController.submit, FakeRequest()) {
+        runActionWithoutAuth(testController.submit, addCSRFToken(FakeRequest())) {
           status(_) mustBe BAD_REQUEST
         }
       }
@@ -64,7 +66,7 @@ class LoginControllerSpec extends ControllerSpec {
       "the credentials could not be validated" in new Setup {
         mockProcessIndividualLoginAttempt(success = false)
 
-        runActionWithoutAuth(testController.submit, request) {
+        runActionWithoutAuth(testController.submit, addCSRFToken(request)) {
           status(_) mustBe OK
         }
       }
@@ -74,7 +76,7 @@ class LoginControllerSpec extends ControllerSpec {
       "the credentials were validated" in new Setup {
         mockProcessIndividualLoginAttempt(success = true)
 
-        runActionWithoutAuth(testController.submit, request) { res =>
+        runActionWithoutAuth(testController.submit, addCSRFToken(request)) { res =>
           status(res) mustBe SEE_OTHER
           assert(redirectLocation(res).get.contains("/account-services/session/session-"))
         }
@@ -82,30 +84,37 @@ class LoginControllerSpec extends ControllerSpec {
     }
   }
 
-  "activateAuthServiceSession" ignore {
-    "return a SeeOther" in new Setup {
-      runActionWithoutAuth(testController.activateAuthServiceSession("testCookieId"), FakeRequest()) { res =>
+  "activateAuthServiceSession" should {
+    "return a SeeOther and redirect to deversity frontend" in new Setup {
+      runActionWithoutAuth(testController.activateAuthServiceSession("testCookieId"), addCSRFToken(FakeRequest())) { res =>
+        status(res)           mustBe SEE_OTHER
+        redirectLocation(res) mustBe Some("/account-services/where-do-you-want-to-go")
+      }
+    }
+
+    "return a SeeOther and redirect to the service director page" in new Setup(deversity = true) {
+      runActionWithoutAuth(testController.activateAuthServiceSession("testCookieId"), addCSRFToken(FakeRequest())) { res =>
         status(res)           mustBe SEE_OTHER
         redirectLocation(res) mustBe Some("http://localhost:9986/deversity/private/build-deversity-session/testCookieId")
       }
     }
   }
 
-  "redirectToServiceSelector" ignore {
+  "redirectToServiceSelector" should {
     "return a SeeOther" in new Setup {
-      runActionWithoutAuth(testController.redirectToServiceSelector, FakeRequest()) { res =>
+      runActionWithoutAuth(testController.redirectToServiceSelector, addCSRFToken(FakeRequest())) { res =>
         status(res)           mustBe SEE_OTHER
         redirectLocation(res) mustBe Some(controllers.redirect.routes.RedirectController.chooseService().url)
       }
     }
   }
 
-  "signOut" ignore {
+  "signOut" should {
     "return a SeeOther" in new Setup {
 
       mockDestroySession(cacheValue = SessionCache.cacheDestroyed)
 
-      runActionWithAuth(testController.signOut, request, "individual") { res =>
+      runActionWithAuth(testController.signOut, addCSRFToken(request), "individual") { res =>
         status(res)           mustBe SEE_OTHER
         redirectLocation(res) mustBe Some(controllers.login.routes.LoginController.show(None).url)
       }

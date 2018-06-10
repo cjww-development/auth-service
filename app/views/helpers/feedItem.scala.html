@@ -1,6 +1,6 @@
 @import models.feed.FeedItem
 
-@(feed : Option[List[FeedItem]])(implicit messages: Messages)
+@(feed : Option[List[FeedItem]])(implicit messages: MessagesApi, lang: Lang)
 
 @image(source : String) = {
     @source match {

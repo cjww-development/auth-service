@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package common
-
-import java.util.Locale
+package common.helpers
 
 import com.cjwwdev.auth.frontend.AuthorisedAction
+import common.ApplicationConfiguration
 import org.slf4j.{Logger, LoggerFactory}
-import play.api.i18n._
-import play.api.mvc._
+import play.api.i18n.Lang
+import play.api.mvc.{BaseController, Call, Request}
 
-trait FrontendController
+trait AuthController
   extends BaseController
+    with ControllerHelpers
     with ApplicationConfiguration
     with UrlParser
     with AuthorisedAction {
 
-  implicit val messages: Messages = MessagesImpl(Lang(Locale.ENGLISH), controllerComponents.messagesApi)
-
-  implicit def requestHeaderFromRequest(implicit request: Request[_]): RequestHeader = request
+  implicit def getLang(implicit request: Request[_]): Lang = supportedLangs.preferred(request.acceptLanguages)
 
   override def unauthorisedRedirect: Call = Call("GET", s"/account-services$LOGIN_CALLBACK")
 

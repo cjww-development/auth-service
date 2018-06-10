@@ -17,18 +17,23 @@
 package controllers.redirect
 
 import com.cjwwdev.auth.connectors.AuthConnector
-import common.{ApplicationConfiguration, FrontendController}
+import common.helpers.AuthController
+import enums.Features._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import services.FeatureService
 import views.html.misc.ServiceUnavailableView
 import views.html.redirect.ServiceSelector
 
 import scala.concurrent.Future
 
 class DefaultRedirectController @Inject()(val authConnector: AuthConnector,
-                                          val controllerComponents: ControllerComponents) extends RedirectController
+                                          val featureService: FeatureService,
+                                          val controllerComponents: ControllerComponents) extends RedirectController {
+  override def deversityEnabled: Boolean = featureService.getBooleanFeatureState(DEVERSITY)
+}
 
-trait RedirectController extends FrontendController with ApplicationConfiguration {
+trait RedirectController extends AuthController {
   def chooseService : Action[AnyContent] = isAuthorised { implicit request => implicit user =>
     Future.successful(Ok(ServiceSelector()))
   }

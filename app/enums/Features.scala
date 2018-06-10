@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package common
+package enums
 
-import org.slf4j.{Logger, LoggerFactory}
+import scala.language.implicitConversions
 
-trait Logging {
-  val logger: Logger = LoggerFactory.getLogger(getClass)
+object Features extends Enumeration {
+  val DEVERSITY = Value
+
+  implicit def featureToString(feature: Features.Value): String = feature.toString
+
+  val allFeatures: List[Features.Value] = List(
+    DEVERSITY
+  )
 }
