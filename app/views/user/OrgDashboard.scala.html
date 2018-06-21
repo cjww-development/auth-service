@@ -1,7 +1,6 @@
-@import models.deversity.OrgDetails
-@import models.deversity.TeacherDetails
 @import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
 @import com.cjwwdev.views.html.templates.MainTemplate
+@import models.deversity.{OrgDetails, TeacherDetails}
 @import views.html.helpers._
 
 @(basicDetails: OrgDetails, teacherList: List[TeacherDetails])(implicit request: Request[_], messages: MessagesApi, lang: Lang, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
@@ -46,7 +45,7 @@
 
         <div class="row">
             <div class="col-md-11">
-                <h1 id="main-heading" class="page-title">@messages("pages.org-dashboard.heading", basicDetails.orgName)</h1>
+                <h1 id="main-heading" class="page-title" style="color: #FFFFFF">@messages("pages.org-dashboard.heading", basicDetails.orgName)</h1>
             </div>
 
             <div class="col-md-1">
