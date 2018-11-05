@@ -16,6 +16,7 @@
 
 package models.deversity
 
+import com.cjwwdev.security.deobfuscation.{DeObfuscation, DeObfuscator, DecryptionError}
 import play.api.libs.json.{Json, OFormat, Reads}
 
 case class Classroom(classId: String, name: String)
@@ -25,5 +26,17 @@ object Classroom {
 
   implicit val classListReader: Reads[List[Classroom]] = Reads[List[Classroom]] {
     Json.fromJson[List[Classroom]]
+  }
+
+  implicit val seqDeObfuscator: DeObfuscator[Seq[Classroom]] = new DeObfuscator[Seq[Classroom]] {
+    override def decrypt(value: String): Either[Seq[Classroom], DecryptionError] = {
+      DeObfuscation.deObfuscate[Seq[Classroom]](value)
+    }
+  }
+
+  implicit val deObfuscator: DeObfuscator[Classroom] = new DeObfuscator[Classroom] {
+    override def decrypt(value: String): Either[Classroom, DecryptionError] = {
+      DeObfuscation.deObfuscate[Classroom](value)
+    }
   }
 }

@@ -24,8 +24,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class TeardownConnectorSpec extends ConnectorSpec {
 
   val testConnector = new TeardownConnector {
-    override val http           = mockHttp
-    override val featureService = mockFeatureService
+    override val http = mockHttp
   }
 
   "deleteTestAccountInstance" should {

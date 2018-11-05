@@ -29,9 +29,8 @@ import play.api.mvc.Request
 import scala.concurrent.Future
 
 class DefaultFeedService @Inject()(val accountConnector: AccountsMicroserviceConnector,
-                                   val featureService: FeatureService,
-                                   val configurationLoader: ConfigurationLoader) extends FeedService {
-  override val appName = configurationLoader.loadedConfig.underlying.getString("appName")
+                                   val config: ConfigurationLoader) extends FeedService {
+  override val appName: String = config.get[String]("appName")
 }
 
 trait FeedService extends ApplicationConfiguration {

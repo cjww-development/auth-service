@@ -19,10 +19,9 @@ import com.cjwwdev.auth.connectors.AuthConnector
 import com.cjwwdev.views.html.templates.errors.NotFoundView
 import common.helpers.AuthController
 import connectors.DeversityMicroserviceConnector
-import enums.Features._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import services.{DashboardService, FeatureService, RegistrationCodeService}
+import services.{DashboardService, RegistrationCodeService}
 import views.html.user.GenerateCodeView
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -31,11 +30,8 @@ import scala.concurrent.Future
 class DefaultGenerateCodeController @Inject()(val authConnector: AuthConnector,
                                               val registrationCodeService: RegistrationCodeService,
                                               val dashboardService: DashboardService,
-                                              val featureService: FeatureService,
                                               val controllerComponents: ControllerComponents,
-                                              val deversityConnector: DeversityMicroserviceConnector) extends GenerateCodeController {
-  override def deversityEnabled: Boolean = featureService.getBooleanFeatureState(DEVERSITY)
-}
+                                              val deversityConnector: DeversityMicroserviceConnector) extends GenerateCodeController
 
 trait GenerateCodeController extends AuthController {
   val registrationCodeService: RegistrationCodeService
@@ -51,12 +47,14 @@ trait GenerateCodeController extends AuthController {
               enr <- deversityConnector.getDeversityEnrolment
               res <- enr.fold(Future(NotFound(NotFoundView())))(_ => registrationCodeService.getGeneratedCode map(
                 regCode => Ok(GenerateCodeView(regCode))
-                ))
+              ))
             } yield res
             case ORGANISATION => registrationCodeService.getGeneratedCode map {
               regCode => Ok(GenerateCodeView(regCode))
             }
-            case _ => Future(NotFound(NotFoundView()))
+            case _ =>
+              logger.info("Credential type could not be matched")
+              Future(NotFound(NotFoundView()))
           }
         }
   }

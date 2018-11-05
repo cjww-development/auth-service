@@ -21,17 +21,14 @@ import com.cjwwdev.implicits.ImplicitDataSecurity._
 import enums.SessionCache
 import helpers.connectors.ConnectorSpec
 import models.SessionUpdateSet
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.when
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class SessionStoreConnectorSpec extends ConnectorSpec {
 
   val testConnector = new SessionStoreConnector {
-    override val featureService = mockFeatureService
-    override val http           = mockHttp
+    override val http = mockHttp
   }
 
   "cache" should {
@@ -61,7 +58,7 @@ class SessionStoreConnectorSpec extends ConnectorSpec {
       "data has been found matching the key" in {
         val testModel = TestModel("test", 616)
 
-        mockHttpGet(response = Future(fakeHttpResponse(OK, testModel.encryptType)))
+        mockHttpGet(response = Future(fakeHttpResponse(OK, testModel.encrypt)))
 
         awaitAndAssert(testConnector.getDataElement[TestModel]("testKey")) {
           _ mustBe Some(testModel)

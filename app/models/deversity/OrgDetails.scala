@@ -17,6 +17,7 @@
 
 package models.deversity
 
+import com.cjwwdev.security.deobfuscation.{DeObfuscation, DeObfuscator, DecryptionError}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -28,4 +29,10 @@ object OrgDetails {
     (__ \ "initials").format[String] and
     (__ \ "location").format[String]
   )(OrgDetails.apply, unlift(OrgDetails.unapply))
+
+  implicit val deObfuscator: DeObfuscator[OrgDetails] = new DeObfuscator[OrgDetails] {
+    override def decrypt(value: String): Either[OrgDetails, DecryptionError] = {
+      DeObfuscation.deObfuscate[OrgDetails](value)
+    }
+  }
 }

@@ -25,14 +25,13 @@ import play.api.mvc.ControllerComponents
 import play.api.test.CSRFTokenHelper._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{FeatureService, LoginService}
+import services.LoginService
 
 class LoginControllerSpec extends ControllerSpec {
 
   class Setup(deversity: Boolean = false) {
     val testController = new LoginController {
       override def deversityEnabled: Boolean                    = deversity
-      override val featureService: FeatureService               = mockFeatureService
       override val controllerComponents: ControllerComponents   = stubControllerComponents()
       override val loginService: LoginService                   = mockLoginService
       override val sessionStoreConnector: SessionStoreConnector = mockSessionStoreConnector
@@ -78,7 +77,7 @@ class LoginControllerSpec extends ControllerSpec {
 
         runActionWithoutAuth(testController.submit, addCSRFToken(request)) { res =>
           status(res) mustBe SEE_OTHER
-          assert(redirectLocation(res).get.contains("/account-services/session/session-"))
+          assert(redirectLocation(res).get.contains("/session/session-"))
         }
       }
     }
@@ -88,7 +87,7 @@ class LoginControllerSpec extends ControllerSpec {
     "return a SeeOther and redirect to deversity frontend" in new Setup {
       runActionWithoutAuth(testController.activateAuthServiceSession("testCookieId"), addCSRFToken(FakeRequest())) { res =>
         status(res)           mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some("/account-services/where-do-you-want-to-go")
+        redirectLocation(res) mustBe Some("/where-do-you-want-to-go")
       }
     }
 

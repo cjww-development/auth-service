@@ -17,17 +17,17 @@
 
 package forms
 
+import com.cjwwdev.featuremanagement.models.Feature
 import play.api.data.Forms._
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError, Forms, Mapping}
 
-case class FeatureState(name: String, state: Boolean)
-case class FeatureModel(featureState: List[FeatureState])
+case class FeatureModel(featureState: List[Feature])
 
 object FeatureSwitchForm {
 
-  implicit def featureFormatter: Formatter[List[FeatureState]] = new Formatter[List[FeatureState]] {
-    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], List[FeatureState]] = {
+  implicit def featureFormatter: Formatter[List[Feature]] = new Formatter[List[Feature]] {
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], List[Feature]] = {
       val states = data.toList.filterNot(_._1 == "csrfToken") map { case (feat, state) =>
         val index = feat.replace("featureState[", "").replace("]", "")
         val cleansedState = state match {
@@ -35,18 +35,18 @@ object FeatureSwitchForm {
           case "off" => false
           case bool  => bool.toBoolean
         }
-        FeatureState(index, cleansedState)
+        Feature(index, cleansedState)
       }
 
       Right(states)
     }
 
-    override def unbind(key: String, value: List[FeatureState]): Map[String, String] = {
-      value.map(feat => (feat.name.toString, feat.state.toString)).toMap
+    override def unbind(key: String, value: List[Feature]): Map[String, String] = {
+      value.map(feat => (feat.feature, feat.state.toString)).toMap
     }
   }
 
-  val feature: Mapping[List[FeatureState]] = Forms.of[List[FeatureState]](featureFormatter)
+  val feature: Mapping[List[Feature]] = Forms.of[List[Feature]](featureFormatter)
 
   val form: Form[FeatureModel] = Form(
     mapping(

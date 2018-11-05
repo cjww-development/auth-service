@@ -19,7 +19,7 @@ package helpers.connectors
 import connectors.SessionStoreConnector
 import enums.SessionCache
 import helpers.other.Fixtures
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.{reset, when}
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
@@ -40,22 +40,22 @@ trait MockSessionStoreConnector extends BeforeAndAfterEach with MockitoSugar wit
   }
 
   def mockCache(cached: Boolean): OngoingStubbing[Future[SessionCache.Value]] = {
-    when(mockSessionStoreConnector.cache(ArgumentMatchers.any())(ArgumentMatchers.any()))
+    when(mockSessionStoreConnector.cache(any())(any()))
       .thenReturn(Future(if(cached) SessionCache.cached else SessionCache.cacheFailure))
   }
 
   def mockGetDataElement[T](returned: Option[T]): OngoingStubbing[Future[Option[T]]] = {
-    when(mockSessionStoreConnector.getDataElement[T](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockSessionStoreConnector.getDataElement[T](any())(any(), any(), any()))
       .thenReturn(Future(returned))
   }
 
   def mockUpdateSession(updated: Boolean): OngoingStubbing[Future[SessionCache.Value]] = {
-    when(mockSessionStoreConnector.updateSession(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockSessionStoreConnector.updateSession(any(), any())(any(), any()))
       .thenReturn(Future(if(updated) SessionCache.cacheUpdated else SessionCache.cacheUpdateFailure))
   }
 
   def mockDestroySession(cacheValue: SessionCache.Value): OngoingStubbing[Future[SessionCache.Value]] = {
-    when(mockSessionStoreConnector.destroySession(ArgumentMatchers.any()))
+    when(mockSessionStoreConnector.destroySession(any()))
       .thenReturn(Future(cacheValue))
   }
 }

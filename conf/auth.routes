@@ -1,3 +1,5 @@
 #This is the main routes file for this microservice
 ->      /account-services                  app.Routes
 ->      /                                  health.Routes
+->      /private                           shuttering.Routes
+->      /private                           features.Routes

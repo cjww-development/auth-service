@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package common.helpers
+package common
 
-import org.slf4j.{Logger, LoggerFactory}
+import com.cjwwdev.featuremanagement.models.Features
+import javax.inject.Inject
 
-trait Logging {
-  val logger: Logger = LoggerFactory.getLogger(getClass)
+class FeatureDef @Inject extends Features {
+
+  val deversity: String = "deversity"
+
+  override val allFeatures: List[String] = List(deversity)
 }

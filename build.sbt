@@ -42,7 +42,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     name                                          :=  """auth-service""",
     version                                       :=  btVersion,
-    scalaVersion                                  :=  "2.12.6",
+    scalaVersion                                  :=  "2.12.7",
     organization                                  :=  "com.cjww-dev.apps",
     resolvers                                     ++= Seq(
       "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",

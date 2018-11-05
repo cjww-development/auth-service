@@ -26,8 +26,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class AccountsMicroserviceConnectorSpec extends ConnectorSpec {
 
   val testConnector = new AccountsMicroserviceConnector {
-    override val http           = mockHttp
-    override val featureService = mockFeatureService
+    override val http = mockHttp
   }
 
   "updateProfile" should {

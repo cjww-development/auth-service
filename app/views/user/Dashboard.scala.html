@@ -10,6 +10,7 @@
 @(feed: Option[List[FeedItem]],
   basicDetails: BasicDetails,
   settings: Settings,
+  deversityEnabled: Boolean,
   deversityEnrolment: Option[DeversityEnrolment])(implicit request: Request[_], user: CurrentUser, messages: MessagesApi, lang: Lang, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @import controllers.user.{routes => userRoutes}
@@ -107,37 +108,41 @@
                         @*<a id="problem-reports-link" href="#" class="list-group-item">*@
                         @*<h4 class="list-group-item-heading"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> @messages("pages.dashboard.quick-links.list.four")</h4>*@
                         @*</a>*@
-                        @if(deversityEnrolment.fold(false)(_.role == "teacher")) {
-                            <a href="@controllers.user.routes.GenerateCodeController.getRegistrationCodeShow()" id="registration-code-link" class="list-group-item">
-                                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-qrcode"></span> @messages("pages.dashboard.quick-links.list.five")</h4>
-                            </a>
-                            <a href="@controllers.user.deversity.routes.ClassroomController.manageClassRooms()" id="manage-classroom-link" class="list-group-item">
-                                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-list-alt"></span> @messages("pages.dashboard.quick-links.list.six")</h4>
-                            </a>
+                        @if(deversityEnabled) {
+                            @if(deversityEnrolment.fold(false)(_.role == "teacher")) {
+                                <a href="@controllers.user.routes.GenerateCodeController.getRegistrationCodeShow()" id="registration-code-link" class="list-group-item">
+                                    <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-qrcode"></span> @messages("pages.dashboard.quick-links.list.five")</h4>
+                                </a>
+                                <a href="@controllers.user.deversity.routes.ClassroomController.manageClassRooms()" id="manage-classroom-link" class="list-group-item">
+                                    <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-list-alt"></span> @messages("pages.dashboard.quick-links.list.six")</h4>
+                                </a>
+                            }
                         }
                     </div>
 
-                    @if(deversityEnrolment.isDefined) {
-                        <h2>@messages("pages.dashboard.enrolment-status.heading")</h2>
-                        <hr>
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">@messages("pages.dashboard.enrolment-status.heading-two")</h3>
-                            </div>
+                    @if(deversityEnabled) {
+                        @if(deversityEnrolment.isDefined) {
+                            <h2>@messages("pages.dashboard.enrolment-status.heading")</h2>
+                            <hr>
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">@messages("pages.dashboard.enrolment-status.heading-two")</h3>
+                                </div>
 
-                            @if(deversityEnrolment.isDefined) {
-                                <ul class="list-group">
-                                    <li id="deversity-role" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.role.capitalize)</h4></li>
-                                    <li id="school-name" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.schoolDevId)</h4></li>
-                                    @if(deversityEnrolment.get.teacher.isDefined) {
-                                        <li id="deversity-teacher" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.teacher.map(_.capitalize))</h4></li>
-                                    }
-                                    @if(deversityEnrolment.get.room.isDefined) {
-                                        <li id="teacher-room" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.room.map(_.capitalize))</h4></li>
-                                    }
-                                </ul>
-                            }
-                        </div>
+                                @if(deversityEnrolment.isDefined) {
+                                    <ul class="list-group">
+                                        <li id="deversity-role" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.role.capitalize)</h4></li>
+                                        <li id="school-name" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.schoolDevId)</h4></li>
+                                        @if(deversityEnrolment.get.teacher.isDefined) {
+                                            <li id="deversity-teacher" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.teacher.map(_.capitalize))</h4></li>
+                                        }
+                                        @if(deversityEnrolment.get.room.isDefined) {
+                                            <li id="teacher-room" class="list-group-item text-center"><h4>@deversityEnrolment.map(_.room.map(_.capitalize))</h4></li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                        }
                     }
                 </div>
 

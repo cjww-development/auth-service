@@ -16,6 +16,7 @@
 
 package models.accounts
 
+import com.cjwwdev.security.obfuscation.{Obfuscation, Obfuscator}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -28,4 +29,8 @@ object UserProfile {
     (__ \ "userName").format[String] and
     (__ \ "email").format[String]
   )(UserProfile.apply, unlift(UserProfile.unapply))
+
+  implicit val obfuscator: Obfuscator[UserProfile] = new Obfuscator[UserProfile] {
+    override def encrypt(value: UserProfile): String = Obfuscation.obfuscateJson(Json.toJson(value))
+  }
 }

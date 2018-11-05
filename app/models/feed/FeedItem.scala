@@ -17,6 +17,7 @@
 package models.feed
 
 import com.cjwwdev.json.TimeFormat
+import com.cjwwdev.security.obfuscation.{Obfuscation, Obfuscator}
 import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -33,4 +34,8 @@ object FeedItem extends TimeFormat {
     (__ \ "eventDetail").format[EventDetail](EventDetail.standardFormat) and
     (__ \ "generated").format[DateTime](dateTimeRead)(dateTimeWrite)
   )(FeedItem.apply, unlift(FeedItem.unapply))
+
+  implicit val obfuscator: Obfuscator[FeedItem] = new Obfuscator[FeedItem] {
+    override def encrypt(value: FeedItem): String = Obfuscation.obfuscateJson(Json.toJson(value))
+  }
 }

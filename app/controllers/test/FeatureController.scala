@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2018 CJWW Development
  *
@@ -17,25 +16,23 @@
 
 package controllers.test
 
+import com.cjwwdev.featuremanagement.services.FeatureService
+import common.FeatureDef
 import common.helpers.FrontendController
-import enums.Features._
 import forms.{FeatureModel, FeatureSwitchForm}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import services.FeatureService
 import views.html.test.FeatureSwitchView
 
 class DefaultFeatureController @Inject()(val controllerComponents: ControllerComponents,
-                                         val featureService: FeatureService) extends FeatureController {
-  override def deversityEnabled: Boolean = featureService.getBooleanFeatureState(DEVERSITY)
-}
+                                         val featureService: FeatureService) extends FeatureController
 
 trait FeatureController extends FrontendController {
 
   val featureService: FeatureService
 
   def show(): Action[AnyContent] = Action { implicit request =>
-    val featureList = featureService.getAllBooleanFeatureStates(allFeatures)
+    val featureList = featureService.getAllStates(new FeatureDef)
     Ok(FeatureSwitchView(FeatureSwitchForm.form.fill(FeatureModel(featureList))))
   }
 
@@ -43,7 +40,7 @@ trait FeatureController extends FrontendController {
     FeatureSwitchForm.form.bindFromRequest.fold(
       _     => BadRequest("BAD REQ"),
       valid => {
-        valid.featureState.map(feature => featureService.setBooleanFeatureState(feature.name, feature.state))
+        valid.featureState.map(feature => featureService.setState(feature.feature, feature.state))
         Redirect(routes.FeatureController.show())
       }
     )

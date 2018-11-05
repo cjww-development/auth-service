@@ -33,6 +33,6 @@ trait ServiceSpec
 
   implicit lazy val request: FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest()
-      .withHeaders("cjww-headers" -> HeaderPackage("testAppId", generateTestSystemId(SESSION)).encryptType)
+      .withHeaders("cjww-headers" -> HeaderPackage("testAppId", Some(generateTestSystemId(SESSION))).encrypt)
 
 }

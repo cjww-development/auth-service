@@ -16,6 +16,8 @@
 
 package models.accounts
 
+import com.cjwwdev.security.deobfuscation.{DeObfuscation, DeObfuscator, DecryptionError}
+import com.cjwwdev.security.obfuscation.{Obfuscation, Obfuscator}
 import play.api.libs.json._
 
 case class Settings(displayName: String,
@@ -43,6 +45,16 @@ object Settings {
   }
 
   implicit val standardFormat: OFormat[Settings] = OFormat(settingsRead, settingsWrite)
+
+  implicit val obfuscator: Obfuscator[Settings] = new Obfuscator[Settings] {
+    override def encrypt(value: Settings): String = Obfuscation.obfuscateJson(Json.toJson(value))
+  }
+
+  implicit val deObfuscator: DeObfuscator[Settings] = new DeObfuscator[Settings] {
+    override def decrypt(value: String): Either[Settings, DecryptionError] = {
+      DeObfuscation.deObfuscate[Settings](value)
+    }
+  }
 
   val default = Settings("full", "#FFFFFF", "/account-services/assets/images/background.jpg")
 }
