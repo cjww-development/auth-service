@@ -26,14 +26,13 @@ import scala.concurrent.Future
 class AuthMicroserviceConnectorSpec extends ConnectorSpec {
 
   val testConnector = new AuthMicroserviceConnector {
-    override val featureService = mockFeatureService
-    override val http           = mockHttp
+    override val http = mockHttp
   }
 
   "getUser" should {
     "return a CurrentUser" when {
       "a user has been found" in {
-        mockHttpGet(response = Future(fakeHttpResponse(OK, testCurrentUser.encryptType)))
+        mockHttpGet(response = Future(fakeHttpResponse(OK, testCurrentUser.encrypt)))
 
         awaitAndAssert(testConnector.getUser(testUserLogin)) {
           _ mustBe Some(testCurrentUser)

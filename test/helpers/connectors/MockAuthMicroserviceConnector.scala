@@ -19,7 +19,7 @@ package helpers.connectors
 import com.cjwwdev.auth.models.CurrentUser
 import connectors.AuthMicroserviceConnector
 import helpers.other.Fixtures
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.{reset, when}
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
@@ -40,12 +40,12 @@ trait MockAuthMicroserviceConnector extends BeforeAndAfterEach with MockitoSugar
   }
 
   def mockGetIndividualUser(fetched: Boolean): OngoingStubbing[Future[Option[CurrentUser]]] = {
-    when(mockAuthMicroserviceConnector.getUser(ArgumentMatchers.any())(ArgumentMatchers.any()))
+    when(mockAuthMicroserviceConnector.getUser(any())(any()))
       .thenReturn(if(fetched) Future(Some(testCurrentUser)) else Future(None))
   }
 
   def mockGetOrgUser(fetched: Boolean): OngoingStubbing[Future[Option[CurrentUser]]] = {
-    when(mockAuthMicroserviceConnector.getUser(ArgumentMatchers.any())(ArgumentMatchers.any()))
+    when(mockAuthMicroserviceConnector.getUser(any())(any()))
       .thenReturn(if(fetched) Future(Some(testOrgCurrentUser)) else Future(None))
   }
 }

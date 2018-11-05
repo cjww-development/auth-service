@@ -16,6 +16,7 @@
 
 package forms
 
+import com.cjwwdev.featuremanagement.models.Feature
 import org.scalatestplus.play.PlaySpec
 
 class FeatureSwitchFormSpec extends PlaySpec {
@@ -29,7 +30,7 @@ class FeatureSwitchFormSpec extends PlaySpec {
       val result = FeatureSwitchForm.form.bind(testFeatures)
       result.errors.isEmpty mustBe true
       result.get            mustBe FeatureModel(featureState = List(
-        FeatureState("DEVERSITY", state = true)
+        Feature("DEVERSITY", state = true)
       ))
     }
 
@@ -42,8 +43,8 @@ class FeatureSwitchFormSpec extends PlaySpec {
       val result = FeatureSwitchForm.form.bind(testFeatures)
       result.errors.isEmpty mustBe true
       result.get            mustBe FeatureModel(featureState = List(
-        FeatureState("DEVERSITY", state = true),
-        FeatureState("INFO_HUB", state = true)
+        Feature("DEVERSITY", state = true),
+        Feature("INFO_HUB", state = true)
       ))
     }
 
@@ -57,9 +58,9 @@ class FeatureSwitchFormSpec extends PlaySpec {
       val result = FeatureSwitchForm.form.bind(testFeatures)
       result.errors.isEmpty mustBe true
       result.get            mustBe FeatureModel(featureState = List(
-        FeatureState("DEVERSITY", state = true),
-        FeatureState("INFO_HUB", state = true),
-        FeatureState("DIAG", state = true)
+        Feature("DEVERSITY", state = true),
+        Feature("INFO_HUB", state = true),
+        Feature("DIAG", state = true)
       ))
     }
 
@@ -74,9 +75,9 @@ class FeatureSwitchFormSpec extends PlaySpec {
       val result = FeatureSwitchForm.form.bind(testFeatures)
       result.errors.isEmpty mustBe true
       result.get            mustBe FeatureModel(featureState = List(
-        FeatureState("DEVERSITY", state = true),
-        FeatureState("INFO_HUB", state = true),
-        FeatureState("DIAG", state = true)
+        Feature("DEVERSITY", state = true),
+        Feature("INFO_HUB", state = true),
+        Feature("DIAG", state = true)
       ))
     }
   }

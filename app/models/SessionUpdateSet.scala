@@ -16,6 +16,7 @@
 
 package models
 
+import com.cjwwdev.security.obfuscation.{Obfuscation, Obfuscator}
 import play.api.libs.json._
 
 case class SessionUpdateSet(key : String, data : String)
@@ -28,4 +29,8 @@ object SessionUpdateSet {
   implicit val sessionUpdateSetReads: Reads[SessionUpdateSet] = Json.reads[SessionUpdateSet]
 
   implicit val standardFormat: OFormat[SessionUpdateSet] = OFormat(sessionUpdateSetReads, sessionUpdateSetWrites)
+
+  implicit val obfuscator: Obfuscator[SessionUpdateSet] = new Obfuscator[SessionUpdateSet] {
+    override def encrypt(value: SessionUpdateSet): String = Obfuscation.obfuscateJson(Json.toJson(value))
+  }
 }

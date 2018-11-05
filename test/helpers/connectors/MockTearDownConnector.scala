@@ -18,7 +18,7 @@ package helpers.connectors
 
 import connectors.test.TeardownConnector
 import helpers.other.Fixtures
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.{reset, when}
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
@@ -41,7 +41,7 @@ trait MockTearDownConnector extends BeforeAndAfterEach with MockitoSugar with Fi
   }
 
   def mockDeleteTestAccountInstance: OngoingStubbing[Future[WSResponse]] = {
-    when(mockTearDownConnector.deleteTestAccountInstance(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+    when(mockTearDownConnector.deleteTestAccountInstance(any(), any())(any()))
       .thenReturn(Future(fakeHttpResponse(OK)))
   }
 }

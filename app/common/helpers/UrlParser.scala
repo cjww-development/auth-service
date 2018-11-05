@@ -16,6 +16,7 @@
 
 package common.helpers
 
+import com.cjwwdev.logging.Logging
 import common.ApplicationConfiguration
 import play.api.mvc.Request
 

@@ -20,11 +20,10 @@ import com.cjwwdev.auth.connectors.AuthConnector
 import com.cjwwdev.views.html.templates.errors.StandardErrorView
 import common.helpers.FrontendController
 import enums.Registration
-import enums.Features._
 import forms.OrgRegisterForm
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import services.{FeatureService, RegisterService}
+import services.RegisterService
 import views.html.register.{OrgRegisterView, RegisterSuccess}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -32,10 +31,7 @@ import scala.concurrent.Future
 
 class DefaultOrgRegisterController @Inject()(val registrationService : RegisterService,
                                              val controllerComponents: ControllerComponents,
-                                             val featureService: FeatureService,
-                                             val authConnector: AuthConnector) extends OrgRegisterController {
-  override def deversityEnabled: Boolean = featureService.getBooleanFeatureState(DEVERSITY)
-}
+                                             val authConnector: AuthConnector) extends OrgRegisterController
 
 trait OrgRegisterController extends FrontendController {
   val registrationService: RegisterService

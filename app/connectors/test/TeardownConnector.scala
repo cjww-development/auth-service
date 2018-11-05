@@ -21,12 +21,10 @@ import common.ApplicationConfiguration
 import javax.inject.Inject
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Request
-import services.FeatureService
 
 import scala.concurrent.Future
 
 class DefaultTeardownConnector @Inject()(val http: Http,
-                                         val featureService: FeatureService,
                                          val configurationLoader: ConfigurationLoader) extends TeardownConnector
 
 trait TeardownConnector extends ApplicationConfiguration {

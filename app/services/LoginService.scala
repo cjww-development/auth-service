@@ -21,11 +21,11 @@ import java.util.UUID
 
 import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.implicits.ImplicitDataSecurity._
-import common.helpers.Logging
+import com.cjwwdev.security.obfuscation.Obfuscation._
+import com.cjwwdev.logging.Logging
 import connectors._
 import javax.inject.Inject
 import models.{SessionUpdateSet, UserLogin}
-import play.api.libs.json._
 import play.api.mvc.{Request, Session}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -41,16 +41,6 @@ trait LoginService extends Logging {
   val sessionStoreConnector: SessionStoreConnector
 
   def generateSessionId: String
-
-  private val contextIdWriter: OWrites[String] = OWrites[String] {
-    str => Json.obj("contextId" -> Json.toJsFieldJsValueWrapper(str)(stringWrites))
-  }
-
-  private val contextIdReads: Reads[String] = Reads[String] {
-    json => JsSuccess(json.\("contextId").as[String](stringReads))
-  }
-
-  private val contextIdFormat: OFormat[String] = OFormat(contextIdReads, contextIdWriter)
 
   private def sessionMap(user: CurrentUser): Map[String, String] = {
     user.credentialType match {

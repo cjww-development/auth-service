@@ -16,27 +16,18 @@
 
 package common.helpers
 
-import play.api.mvc.{BaseController, Call, Request, Result}
 import com.cjwwdev.views.html.templates.errors.NotFoundView
-import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
+import common.ApplicationConfiguration
 import play.api.i18n.Lang
+import play.api.mvc.{BaseController, Request, Result}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-trait ControllerHelpers {
+trait ControllerHelpers extends ApplicationConfiguration {
   self: BaseController =>
 
-  def deversityEnabled: Boolean
-
-  protected def deversityGuard(result: => Future[Result])(implicit request: Request[_],
-                                                          lang: Lang,
-                                                          navBarLinks: Seq[NavBarLinkBuilder],
-                                                          navBarRoutes: Map[String, Call]): Future[Result] = {
-    if(deversityEnabled) {
-      result
-    } else {
-      Future(NotFound(NotFoundView()))
-    }
+  protected def deversityGuard(result: => Future[Result])(implicit request: Request[_], lang: Lang): Future[Result] = {
+    if(deversityEnabled) result else Future(NotFound(NotFoundView()))
   }
 }

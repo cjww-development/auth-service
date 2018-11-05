@@ -22,11 +22,10 @@ import common.helpers.AuthController
 import common.responses.{InvalidOldPassword, PasswordUpdated}
 import connectors.AccountsMicroserviceConnector
 import enums.HttpResponse
-import enums.Features._
 import forms.{NewPasswordForm, SettingsForm, UserProfileForm}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import services.{EditProfileService, FeatureService, FeedService}
+import services.{EditProfileService, FeedService}
 import views.html.user.EditProfile
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -34,11 +33,8 @@ import scala.concurrent.Future
 
 class DefaultEditProfileController @Inject()(val accountsConnector: AccountsMicroserviceConnector,
                                              val feedService : FeedService,
-                                             val featureService: FeatureService,
                                              val controllerComponents: ControllerComponents,
-                                             val authConnector: AuthConnector) extends EditProfileController {
-  override def deversityEnabled: Boolean = featureService.getBooleanFeatureState(DEVERSITY)
-}
+                                             val authConnector: AuthConnector) extends EditProfileController
 
 trait EditProfileController extends AuthController with EditProfileService {
   val accountsConnector: AccountsMicroserviceConnector

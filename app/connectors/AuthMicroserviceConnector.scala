@@ -25,20 +25,18 @@ import common._
 import javax.inject.Inject
 import models.UserLogin
 import play.api.mvc.Request
-import services.FeatureService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DefaultAuthMicroserviceConnector @Inject()(val http: Http,
-                                                 val featureService: FeatureService,
                                                  val configurationLoader: ConfigurationLoader) extends AuthMicroserviceConnector
 
 trait AuthMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers {
   val http: Http
 
   def getUser(loginDetails : UserLogin)(implicit request: Request[_]): Future[Option[CurrentUser]] = {
-    http.get(s"$authMicroservice/login/user?enc=${loginDetails.encryptType}") map { resp =>
+    http.get(s"$authMicroservice/login/user?enc=${loginDetails.encrypt}") map { resp =>
       Some(resp.toDataType[CurrentUser](needsDecrypt = true))
     } recover {
       case e: ForbiddenException => None

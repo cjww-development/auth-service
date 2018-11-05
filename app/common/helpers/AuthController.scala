@@ -25,7 +25,6 @@ import play.api.mvc.{BaseController, Call, Request}
 trait AuthController
   extends BaseController
     with ControllerHelpers
-    with ApplicationConfiguration
     with UrlParser
     with AuthorisedAction {
 

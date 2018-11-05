@@ -16,7 +16,8 @@
 
 package helpers.services
 
-import forms.FeatureState
+import com.cjwwdev.featuremanagement.models.Feature
+import com.cjwwdev.featuremanagement.services.FeatureService
 import helpers.other.Fixtures
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{reset, when}
@@ -24,7 +25,6 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import services.FeatureService
 
 trait MockFeatureService extends BeforeAndAfterEach with MockitoSugar with Fixtures {
   self: PlaySpec =>
@@ -36,21 +36,21 @@ trait MockFeatureService extends BeforeAndAfterEach with MockitoSugar with Fixtu
     reset(mockFeatureService)
   }
 
-  def mockGetAllBooleanFeatureStates(): OngoingStubbing[List[FeatureState]] = {
-    when(mockFeatureService.getAllBooleanFeatureStates(ArgumentMatchers.any()))
+  def mockGetAllBooleanFeatureStates(): OngoingStubbing[List[Feature]] = {
+    when(mockFeatureService.getAllStates(ArgumentMatchers.any()))
       .thenReturn(List(
-        FeatureState(name = "test1", state = false),
-        FeatureState(name = "test2", state = true)
+        Feature(feature = "test1", state = false),
+        Feature(feature = "test2", state = true)
       ))
   }
 
-  def mockGetFeatureState(state: Boolean): OngoingStubbing[Boolean] = {
-    when(mockFeatureService.getBooleanFeatureState(ArgumentMatchers.any()))
+  def mockGetFeatureState(state: Feature): OngoingStubbing[Feature] = {
+    when(mockFeatureService.getState(ArgumentMatchers.any()))
       .thenReturn(state)
   }
 
   def mockSetFeatureState(state: Boolean): OngoingStubbing[Boolean] = {
-    when(mockFeatureService.setBooleanFeatureState(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockFeatureService.setState(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(state)
   }
 }

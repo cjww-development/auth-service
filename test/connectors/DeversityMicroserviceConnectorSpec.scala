@@ -28,14 +28,13 @@ import scala.concurrent.Future
 class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   val testConnector = new DeversityMicroserviceConnector {
-    override val featureService = mockFeatureService
-    override val http           = mockHttp
+    override val http = mockHttp
   }
 
   "getDeversityEnrolment" should {
     "return some DeversityEnrolment" when {
       "the response has an Ok status" in {
-        mockHttpGet(response = Future(fakeHttpResponse(OK, testTeacherEnrolment.encryptType)))
+        mockHttpGet(response = Future(fakeHttpResponse(OK, testTeacherEnrolment.encrypt)))
 
         awaitAndAssert(testConnector.getDeversityEnrolment) {
           _ mustBe Some(testTeacherEnrolment)
@@ -64,7 +63,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "getTeacherInfo" should {
     "return some TeacherInfo" in {
-      mockHttpGet(response = Future(fakeHttpResponse(OK, testTeacherDetails.encryptType)))
+      mockHttpGet(response = Future(fakeHttpResponse(OK, testTeacherDetails.encrypt)))
 
       awaitAndAssert(testConnector.getTeacherInfo("testTeacher", "testSchool")) {
         _ mustBe Some(testTeacherDetails)
@@ -82,7 +81,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "getSchoolInfo" should {
     "return some OrgDetails" in {
-      mockHttpGet(response = Future(fakeHttpResponse(OK, testOrgDetails.encryptType)))
+      mockHttpGet(response = Future(fakeHttpResponse(OK, testOrgDetails.encrypt)))
 
       awaitAndAssert(testConnector.getSchoolInfo("testSchool")) {
         _ mustBe Some(testOrgDetails)
@@ -100,7 +99,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "getRegistrationCode" should {
     "return some OrgDetails" in {
-      mockHttpGet(response = Future(fakeHttpResponse(OK, testRegistrationCode.encryptType)))
+      mockHttpGet(response = Future(fakeHttpResponse(OK, testRegistrationCode.encrypt)))
 
       awaitAndAssert(testConnector.getRegistrationCode) {
         _ mustBe testRegistrationCode
@@ -132,7 +131,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "getClassrooms" should {
     "return a seq of class rooms" in {
-      mockHttpGet(response = Future(fakeHttpResponse(OK, testClassSeq.encryptType)))
+      mockHttpGet(response = Future(fakeHttpResponse(OK, testClassSeq.encrypt)))
 
       awaitAndAssert(testConnector.getClassrooms) {
         _ mustBe testClassSeq
@@ -150,7 +149,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "getClassroom" should {
     "return a classroom" in {
-      mockHttpGet(response = Future(fakeHttpResponse(OK, testClassroom.encryptType)))
+      mockHttpGet(response = Future(fakeHttpResponse(OK, testClassroom.encrypt)))
 
       awaitAndAssert(testConnector.getClassroom(generateTestSystemId("class"))) {
         _ mustBe testClassroom

@@ -16,7 +16,8 @@
 
 package models.registration
 
-import com.cjwwdev.security.encryption.SHA512
+import com.cjwwdev.implicits.ImplicitDataSecurity._
+import com.cjwwdev.security.obfuscation.{Obfuscation, Obfuscator}
 import play.api.libs.json._
 
 case class OrgRegistration(orgName: String,
@@ -35,13 +36,17 @@ object OrgRegistration {
       "orgUserName" -> orgReg.orgUserName,
       "location"    -> orgReg.location,
       "orgEmail"    -> orgReg.orgEmail,
-      "password"    -> SHA512.encrypt(orgReg.password)
+      "password"    -> orgReg.password.sha512
     )
   }
 
   val orgRegisterReads: Reads[OrgRegistration] = Json.reads[OrgRegistration]
 
   implicit val standardFormat: OFormat[OrgRegistration] = OFormat(orgRegisterReads, orgRegisterWrites)
+
+  implicit val obfuscator: Obfuscator[OrgRegistration] = new Obfuscator[OrgRegistration] {
+    override def encrypt(value: OrgRegistration): String = Obfuscation.obfuscateJson(Json.toJson(value))
+  }
 }
 
 

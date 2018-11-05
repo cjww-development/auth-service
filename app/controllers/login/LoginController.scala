@@ -18,13 +18,12 @@ package controllers.login
 import com.cjwwdev.auth.connectors.AuthConnector
 import common.helpers.AuthController
 import connectors.SessionStoreConnector
-import enums.Features._
 import forms.UserLoginForm
 import javax.inject.Inject
 import models.UserLogin
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import services.{FeatureService, LoginService}
+import services.LoginService
 import views.html.login.UserLoginView
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -33,7 +32,6 @@ import scala.concurrent.Future
 class DefaultLoginController @Inject()(val loginService : LoginService,
                                        val sessionStoreConnector: SessionStoreConnector,
                                        val authConnector: AuthConnector,
-                                       val featureService: FeatureService,
                                        val controllerComponents: ControllerComponents) extends LoginController
 
 trait LoginController extends AuthController {

@@ -22,6 +22,8 @@ import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.implicits.ImplicitDataSecurity._
 import com.cjwwdev.implicits.ImplicitJsValues._
+import com.cjwwdev.security.deobfuscation.DeObfuscation._
+import com.cjwwdev.security.obfuscation.Obfuscation._
 import common._
 import common.responses.{InvalidOldPassword, MissingBasicDetailsException, PasswordUpdated, UpdatedPasswordResponse}
 import enums.{HttpResponse, Registration}
@@ -33,13 +35,11 @@ import models.registration.{OrgRegistration, UserRegistration}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, OFormat}
 import play.api.mvc.Request
-import services.FeatureService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DefaultAccountsMicroserviceConnector @Inject()(val http: Http,
-                                                     val featureService: FeatureService,
                                                      val configurationLoader: ConfigurationLoader) extends AccountsMicroserviceConnector
 
 trait AccountsMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers {

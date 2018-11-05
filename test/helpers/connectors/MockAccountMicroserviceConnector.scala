@@ -23,7 +23,7 @@ import helpers.other.Fixtures
 import models.accounts.{BasicDetails, Enrolments, Settings}
 import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.FeedItem
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.{reset, when}
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
@@ -44,72 +44,72 @@ trait MockAccountMicroserviceConnector extends BeforeAndAfterEach with MockitoSu
   }
 
   def mockUpdateProfile(updated: Boolean): OngoingStubbing[Future[HttpResponse.Value]] = {
-    when(mockAccountsMicroserviceConnector.updateProfile(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.updateProfile(any())(any(), any()))
       .thenReturn(Future(if(updated) HttpResponse.success else HttpResponse.failed))
   }
 
   def mockUpdatePassword(updated: Boolean): OngoingStubbing[Future[UpdatedPasswordResponse]] = {
-    when(mockAccountsMicroserviceConnector.updatePassword(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.updatePassword(any())(any(), any(), any()))
       .thenReturn(Future(if(updated) PasswordUpdated else InvalidOldPassword))
   }
 
   def mockUpdateSettings(updated: Boolean): OngoingStubbing[Future[HttpResponse.Value]] = {
-    when(mockAccountsMicroserviceConnector.updateSettings(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.updateSettings(any())(any(), any(), any()))
       .thenReturn(Future(if(updated) HttpResponse.success else HttpResponse.failed))
   }
 
   def mockCreateFeedItem: OngoingStubbing[Future[HttpResponse.Value]] = {
-    when(mockAccountsMicroserviceConnector.createFeedItem(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.createFeedItem(any())(any(), any()))
       .thenReturn(Future(HttpResponse.success))
   }
 
   def mockGetFeedItems(populated: Boolean): OngoingStubbing[Future[Option[List[FeedItem]]]] = {
-    when(mockAccountsMicroserviceConnector.getFeedItems(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.getFeedItems(any(), any()))
       .thenReturn(Future(if(populated) Some(testFeedList) else None))
   }
 
   def mockGetBasicDetails(fetched: Boolean): OngoingStubbing[Future[BasicDetails]] = {
-    when(mockAccountsMicroserviceConnector.getBasicDetails(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.getBasicDetails(any(), any()))
       .thenReturn(if(fetched) Future(testBasicDetails) else Future.failed(new MissingBasicDetailsException("")))
   }
 
   def mockGetEnrolments(fetched: Boolean): OngoingStubbing[Future[Option[Enrolments]]] = {
-    when(mockAccountsMicroserviceConnector.getEnrolments(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.getEnrolments(any(), any()))
       .thenReturn(Future(if(fetched) Some(testEnrolments) else None))
   }
 
   def mockGetSettings(notDefault: Boolean): OngoingStubbing[Future[Settings]] = {
-    when(mockAccountsMicroserviceConnector.getSettings(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.getSettings(any(), any()))
       .thenReturn(Future(if(notDefault) testSettings else Settings.default))
   }
 
   def mockGetOrgBasicDetails(fetched: Boolean): OngoingStubbing[Future[Option[OrgDetails]]] = {
-    when(mockAccountsMicroserviceConnector.getOrgBasicDetails(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.getOrgBasicDetails(any(), any()))
       .thenReturn(Future(if(fetched) Some(testOrgDetails) else None))
   }
 
   def mockGetTeacherList(populated: Boolean): OngoingStubbing[Future[List[TeacherDetails]]] = {
-    when(mockAccountsMicroserviceConnector.getTeacherList(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.getTeacherList(any(), any()))
       .thenReturn(Future(if(populated) testTeacherDetailsList else List()))
   }
 
   def mockCreateNewIndividualUser(created: Boolean): OngoingStubbing[Future[Registration.Value]] = {
-    when(mockAccountsMicroserviceConnector.createNewIndividualUser(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.createNewIndividualUser(any())(any(), any()))
       .thenReturn(Future(if(created) Registration.success else Registration.failed))
   }
 
   def mockCreateNewOrgUser(created: Boolean): OngoingStubbing[Future[Registration.Value]] = {
-    when(mockAccountsMicroserviceConnector.createNewOrgUser(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.createNewOrgUser(any())(any(), any()))
       .thenReturn(Future(if(created) Registration.success else Registration.failed))
   }
 
   def mockCheckUserName(inUse: Boolean): OngoingStubbing[Future[Boolean]] = {
-    when(mockAccountsMicroserviceConnector.checkUserName(ArgumentMatchers.any())(ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.checkUserName(any())(any()))
       .thenReturn(Future(inUse))
   }
 
   def mockCheckEmailAddress(inUse: Boolean): OngoingStubbing[Future[Boolean]] = {
-    when(mockAccountsMicroserviceConnector.checkEmailAddress(ArgumentMatchers.any())(ArgumentMatchers.any()))
+    when(mockAccountsMicroserviceConnector.checkEmailAddress(any())(any()))
       .thenReturn(Future(inUse))
   }
 }

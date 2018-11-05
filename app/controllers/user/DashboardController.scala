@@ -18,10 +18,9 @@ package controllers.user
 
 import com.cjwwdev.auth.connectors.AuthConnector
 import common.helpers.AuthController
-import enums.Features._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import services.{DashboardService, FeatureService}
+import services.DashboardService
 import views.html.user.{Dashboard, OrgDashboard}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -29,10 +28,7 @@ import scala.concurrent.Future
 
 class DefaultDashboardController @Inject()(val dashboardService: DashboardService,
                                            val controllerComponents: ControllerComponents,
-                                           val featureService: FeatureService,
-                                           val authConnector: AuthConnector) extends DashboardController {
-  override def deversityEnabled: Boolean = featureService.getBooleanFeatureState(DEVERSITY)
-}
+                                           val authConnector: AuthConnector) extends DashboardController
 
 trait DashboardController extends AuthController {
   val dashboardService: DashboardService
@@ -44,7 +40,7 @@ trait DashboardController extends AuthController {
           case "organisation" => for {
             Some(basicDetails)  <- dashboardService.getOrgBasicDetails
             teacherList         <- dashboardService.getTeacherList
-          } yield Ok(OrgDashboard(basicDetails, teacherList))
+          } yield Ok(OrgDashboard(basicDetails, teacherList, deversityEnabled))
           case "individual" => for {
             basicDetails        <- dashboardService.getBasicDetails
             settings            <- dashboardService.getSettings
@@ -54,7 +50,7 @@ trait DashboardController extends AuthController {
             } else {
               Future(None)
             }
-          } yield Ok(Dashboard(feed, basicDetails, settings, deversityEnrolment))
+          } yield Ok(Dashboard(feed, basicDetails, settings, deversityEnabled, deversityEnrolment))
         }
   }
 }

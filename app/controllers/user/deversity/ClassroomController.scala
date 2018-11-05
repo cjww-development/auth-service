@@ -18,22 +18,17 @@ package controllers.user.deversity
 
 import com.cjwwdev.auth.connectors.AuthConnector
 import common.helpers.AuthController
-import enums.Features._
 import forms.CreateClassForm
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
-import services.{ClassroomService, FeatureService}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import services.ClassroomService
 import views.html.user.deversity.{ManageClassroomView, ManageClassroomsView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class DefaultClassroomController @Inject()(val authConnector: AuthConnector,
                                            val controllerComponents: ControllerComponents,
-                                           val featureService: FeatureService,
-                                           val classroomService: ClassroomService) extends ClassroomController {
-  override def deversityEnabled: Boolean = featureService.getBooleanFeatureState(DEVERSITY)
-}
+                                           val classroomService: ClassroomService) extends ClassroomController
 
 trait ClassroomController extends AuthController {
   val classroomService: ClassroomService

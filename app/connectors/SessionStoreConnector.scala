@@ -16,24 +16,22 @@
 
 package connectors
 
-import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.exceptions.{ClientErrorException, NotFoundException, ServerErrorException}
 import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.session.SessionUtils
 import com.cjwwdev.http.verbs.Http
+import com.cjwwdev.security.deobfuscation.DeObfuscator
 import common.ApplicationConfiguration
 import enums.SessionCache
 import javax.inject.Inject
 import models.SessionUpdateSet
 import play.api.libs.json.{OFormat, Reads}
 import play.api.mvc.Request
-import services.FeatureService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class DefaultSessionStoreConnector @Inject()(val http : Http,
-                                             val featureService: FeatureService) extends SessionStoreConnector
+class DefaultSessionStoreConnector @Inject()(val http : Http) extends SessionStoreConnector
 
 trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils with WsResponseHelpers {
   val http: Http
@@ -47,7 +45,7 @@ trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils w
     }
   }
 
-  def getDataElement[T](key : String)(implicit reads: Reads[T], request: Request[_]) : Future[Option[T]] = {
+  def getDataElement[T](key : String)(implicit deObfuscator: DeObfuscator[T], reads: Reads[T], request: Request[_]) : Future[Option[T]] = {
     http.get(s"$sessionStore/session/$getCookieId/data?key=$key") map { resp =>
       Some(resp.toDataType[T](needsDecrypt = true))
     } recover {

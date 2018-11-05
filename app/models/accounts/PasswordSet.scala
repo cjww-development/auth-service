@@ -16,7 +16,8 @@
 
 package models.accounts
 
-import com.cjwwdev.security.encryption.SHA512
+import com.cjwwdev.implicits.ImplicitDataSecurity._
+import com.cjwwdev.security.obfuscation.{Obfuscation, Obfuscator}
 import play.api.libs.json._
 
 case class PasswordSet(oldPassword : String, newPassword : String, confirmPassword : String)
@@ -24,12 +25,16 @@ case class PasswordSet(oldPassword : String, newPassword : String, confirmPasswo
 object PasswordSet {
   implicit val passwordSetWrite: OWrites[PasswordSet] = OWrites[PasswordSet] {
     set => Json.obj(
-      "previousPassword" -> SHA512.encrypt(set.oldPassword),
-      "newPassword"      -> SHA512.encrypt(set.newPassword)
+      "previousPassword" -> set.oldPassword.sha512,
+      "newPassword"      -> set.newPassword.sha512
     )
   }
 
   implicit val passwordSetReads: Reads[PasswordSet] = Json.reads[PasswordSet]
 
   implicit val standardFormat: OFormat[PasswordSet] = OFormat(passwordSetReads, passwordSetWrite)
+
+  implicit val obfuscator: Obfuscator[PasswordSet] = new Obfuscator[PasswordSet] {
+    override def encrypt(value: PasswordSet): String = Obfuscation.obfuscateJson(Json.toJson(value))
+  }
 }

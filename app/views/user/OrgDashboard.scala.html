@@ -3,7 +3,7 @@
 @import models.deversity.{OrgDetails, TeacherDetails}
 @import views.html.helpers._
 
-@(basicDetails: OrgDetails, teacherList: List[TeacherDetails])(implicit request: Request[_], messages: MessagesApi, lang: Lang, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
+@(basicDetails: OrgDetails, teacherList: List[TeacherDetails], deversityEnabled: Boolean)(implicit request: Request[_], messages: MessagesApi, lang: Lang, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 
 @colourSwitcher(random : Int) = {
     @random match {
@@ -71,18 +71,20 @@
                 <h2>@messages("pages.org-dashboard.quick-links.heading")</h2>
                 <hr>
                 <div class="list-group">
-                    <a id="review-enrolments-link" href="" class="list-group-item">
-                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> @messages("pages.org-dashboard.quick-links.list.one")</h4>
-                    </a>
                     <a id="edit-profile-link" href="" class="list-group-item">
                         <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> @messages("pages.org-dashboard.quick-links.list.two")</h4>
                     </a>
                     <a id="messages-link" href="#" class="list-group-item">
                         <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> @messages("pages.org-dashboard.quick-links.list.three") <span class="badge">0</span></h4>
                     </a>
+                    @if(deversityEnabled) {
+                    <a id="review-enrolments-link" href="" class="list-group-item">
+                        <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> @messages("pages.org-dashboard.quick-links.list.one")</h4>
+                    </a>
                     <a href="@controllers.user.routes.GenerateCodeController.getRegistrationCodeShow()" id="registration-code-link" class="list-group-item">
                         <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-qrcode"></span> @messages("pages.org-dashboard.quick-links.list.four")</h4>
                     </a>
+                    }
                 </div>
             </div>
 

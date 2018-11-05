@@ -17,15 +17,20 @@
 package common
 
 import com.cjwwdev.config.{ConfigurationLoader, DefaultConfigurationLoader}
+import com.cjwwdev.featuremanagement.models.Features
+import com.cjwwdev.filters.IpWhitelistFilter
 import com.cjwwdev.health.{DefaultHealthController, HealthController}
+import com.cjwwdev.http.headers.filters.{DefaultHeadersFilter, HeadersFilter}
+import com.cjwwdev.shuttering.filters.FrontendShutteringFilter
 import connectors._
 import connectors.test._
 import controllers.login.{DefaultLoginController, LoginController}
 import controllers.redirect.{DefaultRedirectController, RedirectController}
 import controllers.register.{DefaultOrgRegisterController, DefaultUserRegisterController, OrgRegisterController, UserRegisterController}
-import controllers.test.{DefaultFeatureController, DefaultTeardownController, FeatureController, TeardownController}
+import controllers.test._
 import controllers.user._
 import controllers.user.deversity.{ClassroomController, DefaultClassroomController}
+import filters.{DefaultIpWhitelistFilter, DefaultShutteringFilter}
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
 import services._
@@ -49,8 +54,7 @@ class ServiceBindings extends Module {
     bind(classOf[LoginService]).to(classOf[DefaultLoginService]).eagerly(),
     bind(classOf[RegisterService]).to(classOf[DefaultRegisterService]).eagerly(),
     bind(classOf[RegistrationCodeService]).to(classOf[DefaultRegistrationCodeService]).eagerly(),
-    bind(classOf[ClassroomService]).to(classOf[DefaultClassroomService]).eagerly(),
-    bind(classOf[FeatureService]).to(classOf[DefaultFeatureService]).eagerly()
+    bind(classOf[ClassroomService]).to(classOf[DefaultClassroomService]).eagerly()
   )
 
   private def bindControllers(): Seq[Binding[_]] = Seq(
@@ -68,6 +72,10 @@ class ServiceBindings extends Module {
   )
 
   private def bindOther(): Seq[Binding[_]] = Seq(
-    bind(classOf[ConfigurationLoader]).to(classOf[DefaultConfigurationLoader]).eagerly()
+    bind(classOf[ConfigurationLoader]).to(classOf[DefaultConfigurationLoader]).eagerly(),
+    bind(classOf[HeadersFilter]).to(classOf[DefaultHeadersFilter]).eagerly(),
+    bind(classOf[IpWhitelistFilter]).to(classOf[DefaultIpWhitelistFilter]).eagerly(),
+    bind(classOf[FrontendShutteringFilter]).to(classOf[DefaultShutteringFilter]).eagerly(),
+    bind(classOf[Features]).to(classOf[FeatureDef]).eagerly()
   )
 }

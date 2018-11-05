@@ -21,8 +21,9 @@ import com.cjwwdev.http.exceptions.NotFoundException
 import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.implicits.ImplicitDataSecurity._
+import com.cjwwdev.logging.Logging
+import com.cjwwdev.security.obfuscation.Obfuscation._
 import common.ApplicationConfiguration
-import common.helpers.Logging
 import enums.HttpResponse
 import javax.inject.Inject
 import models.RegistrationCode
@@ -30,13 +31,11 @@ import models.accounts.DeversityEnrolment
 import models.deversity.{Classroom, OrgDetails, TeacherDetails}
 import play.api.http.Status._
 import play.api.mvc.Request
-import services.FeatureService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DefaultDeversityMicroserviceConnector @Inject()(val http: Http,
-                                                      val featureService: FeatureService,
                                                       val configurationLoader: ConfigurationLoader) extends DeversityMicroserviceConnector
 
 trait DeversityMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers with Logging {

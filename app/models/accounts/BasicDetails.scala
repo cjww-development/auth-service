@@ -17,6 +17,7 @@
 package models.accounts
 
 import com.cjwwdev.json.TimeFormat
+import com.cjwwdev.security.deobfuscation.{DeObfuscation, DeObfuscator, DecryptionError}
 import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -35,4 +36,10 @@ object BasicDetails extends TimeFormat {
     (__ \ "email").format[String] and
     (__ \ "createdAt").format[DateTime](dateTimeRead)(dateTimeWrite)
   )(BasicDetails.apply, unlift(BasicDetails.unapply))
+
+  implicit val deObfuscator: DeObfuscator[BasicDetails] = new DeObfuscator[BasicDetails] {
+    override def decrypt(value: String): Either[BasicDetails, DecryptionError] = {
+      DeObfuscation.deObfuscate[BasicDetails](value)
+    }
+  }
 }
