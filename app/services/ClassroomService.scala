@@ -22,27 +22,26 @@ import javax.inject.Inject
 import models.deversity.Classroom
 import play.api.mvc.Request
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext => ExC, Future}
 
 class DefaultClassroomService @Inject()(val deversityConnector: DeversityMicroserviceConnector) extends ClassroomService
 
 trait ClassroomService {
   val deversityConnector: DeversityMicroserviceConnector
 
-  def createClassroom(classroomName: String)(implicit user: CurrentUser, request: Request[_]): Future[String] = {
+  def createClassroom(classroomName: String)(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[String] = {
     deversityConnector.createClassroom(classroomName)
   }
 
-  def getClassrooms(implicit user: CurrentUser, request: Request[_]): Future[Seq[Classroom]] = {
+  def getClassrooms(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[Seq[Classroom]] = {
     deversityConnector.getClassrooms
   }
 
-  def getClassroom(classId: String)(implicit user: CurrentUser, request: Request[_]): Future[Classroom] = {
+  def getClassroom(classId: String)(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[Classroom] = {
     deversityConnector.getClassroom(classId)
   }
 
-  def deleteClassroom(classId: String)(implicit user: CurrentUser, request: Request[_]): Future[String] = {
+  def deleteClassroom(classId: String)(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[String] = {
     deversityConnector.deleteClassroom(classId) map(_ => classId)
   }
 }

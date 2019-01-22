@@ -26,7 +26,7 @@ import models.feed.{EventDetail, FeedItem, SourceDetail}
 import org.joda.time.DateTime
 import play.api.mvc.Request
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext => ExC, Future}
 
 class DefaultFeedService @Inject()(val accountConnector: AccountsMicroserviceConnector,
                                    val config: ConfigurationLoader) extends FeedService {
@@ -47,22 +47,22 @@ trait FeedService extends ApplicationConfiguration {
     )
   }
 
-  def basicDetailsFeedEvent(implicit user: CurrentUser, request: Request[_]) : Future[HttpResponse.Value] = {
+  def basicDetailsFeedEvent(implicit user: CurrentUser, req: Request[_], ec: ExC) : Future[HttpResponse.Value] = {
     val feedEvent = buildFeedItem("edit-profile","You updated your basic details")
     accountConnector.createFeedItem(feedEvent)
   }
 
-  def passwordUpdateFeedEvent(implicit user: CurrentUser, request: Request[_]) : Future[HttpResponse.Value] = {
+  def passwordUpdateFeedEvent(implicit user: CurrentUser, req: Request[_], ec: ExC) : Future[HttpResponse.Value] = {
     val feedEvent = buildFeedItem("edit-profile","You changed your password")
     accountConnector.createFeedItem(feedEvent)
   }
 
-  def accountSettingsFeedEvent(implicit user: CurrentUser, request: Request[_]) : Future[HttpResponse.Value] = {
+  def accountSettingsFeedEvent(implicit user: CurrentUser, req: Request[_], ec: ExC) : Future[HttpResponse.Value] = {
     val feedEvent = buildFeedItem("edit-profile","You updated your account settings")
     accountConnector.createFeedItem(feedEvent)
   }
 
-  def processRetrievedList(implicit user: CurrentUser, request: Request[_]): Future[Option[List[FeedItem]]] = {
+  def processRetrievedList(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[List[FeedItem]] = {
     accountConnector.getFeedItems
   }
 }

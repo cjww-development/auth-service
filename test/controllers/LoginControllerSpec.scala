@@ -27,15 +27,19 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.LoginService
 
+import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits
+
 class LoginControllerSpec extends ControllerSpec {
 
   class Setup(deversity: Boolean = false) {
     val testController = new LoginController {
+      override implicit val ec: ExecutionContext                = Implicits.global
       override def deversityEnabled: Boolean                    = deversity
       override val controllerComponents: ControllerComponents   = stubControllerComponents()
       override val loginService: LoginService                   = mockLoginService
       override val sessionStoreConnector: SessionStoreConnector = mockSessionStoreConnector
-      override def authConnector: AuthConnector                 = mockAuthConnector
+      override val authConnector: AuthConnector                 = mockAuthConnector
     }
   }
 

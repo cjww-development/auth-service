@@ -22,7 +22,7 @@ import javax.inject.Inject
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Request
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext => ExC, Future}
 
 class DefaultTeardownConnector @Inject()(val http: Http,
                                          val configurationLoader: ConfigurationLoader) extends TeardownConnector
@@ -30,7 +30,9 @@ class DefaultTeardownConnector @Inject()(val http: Http,
 trait TeardownConnector extends ApplicationConfiguration {
   val http: Http
 
-  def deleteTestAccountInstance(userName: String, credentialType: String)(implicit request: Request[_]): Future[WSResponse] = {
-    http.delete(s"$accountsMicroservice/test-only/test-user/$userName/credential-type/$credentialType/tear-down")
+  def deleteTestAccountInstance(userName: String, credentialType: String)(implicit req: Request[_], ec: ExC): Future[WSResponse] = {
+    http.delete(s"$accountsMicroservice/test-only/test-user/$userName/credential-type/$credentialType/tear-down") map {
+      _.fold(identity, identity)
+    }
   }
 }

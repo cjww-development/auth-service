@@ -22,15 +22,14 @@ import javax.inject.Inject
 import models.registration.{OrgRegistration, UserRegistration}
 import play.api.mvc.Request
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext => ExC, Future}
 
 class DefaultRegisterService @Inject()(val accountsConnector: AccountsMicroserviceConnector) extends RegisterService
 
 trait RegisterService {
   val accountsConnector: AccountsMicroserviceConnector
 
-  def registerIndividual(user : UserRegistration)(implicit request: Request[_]): Future[Registration.Value] = {
+  def registerIndividual(user : UserRegistration)(implicit req: Request[_], ec: ExC): Future[Registration.Value] = {
     for {
       userNameInUse <- accountsConnector.checkUserName(user.userName)
       emailInUse    <- accountsConnector.checkEmailAddress(user.email)
@@ -42,7 +41,7 @@ trait RegisterService {
     } yield registered
   }
 
-  def registerOrg(org: OrgRegistration)(implicit request: Request[_]): Future[Registration.Value] = {
+  def registerOrg(org: OrgRegistration)(implicit req: Request[_], ec: ExC): Future[Registration.Value] = {
     for {
       userNameInUse <- accountsConnector.checkUserName(org.orgUserName)
       emailInUse    <- accountsConnector.checkEmailAddress(org.orgEmail)

@@ -25,8 +25,7 @@ import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.FeedItem
 import play.api.mvc.Request
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext => ExC, Future}
 
 class DefaultDashboardService @Inject()(val accountConnector: AccountsMicroserviceConnector,
                                         val deversityConnector: DeversityMicroserviceConnector,
@@ -37,15 +36,15 @@ trait DashboardService {
   val deversityConnector: DeversityMicroserviceConnector
   val feedService: FeedService
 
-  def getBasicDetails(implicit user: CurrentUser, request: Request[_]): Future[BasicDetails] = {
+  def getBasicDetails(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[Option[BasicDetails]] = {
     accountConnector.getBasicDetails
   }
 
-  def getSettings(implicit user: CurrentUser, request: Request[_]): Future[Settings] = {
+  def getSettings(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[Settings] = {
     accountConnector.getSettings
   }
 
-  def getFeed(implicit user: CurrentUser, request: Request[_]): Future[Option[List[FeedItem]]] = {
+  def getFeed(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[List[FeedItem]] = {
     feedService.processRetrievedList
   }
 
@@ -53,13 +52,13 @@ trait DashboardService {
     info => s"${info.title}. ${info.lastName}"
   }
 
-  def getSchoolInfo(schoolName: String)(implicit user: CurrentUser, request: Request[_]): Future[OrgDetails] = {
+  def getSchoolInfo(schoolName: String)(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[OrgDetails] = {
     deversityConnector.getSchoolInfo(schoolName) map {
       _.getOrElse(throw new MissingOrgDetailsException(s"Couldn't find org details for org name $schoolName"))
     }
   }
 
-  def getDeversityEnrolment(implicit user: CurrentUser, request: Request[_]): Future[Option[DeversityEnrolment]] = {
+  def getDeversityEnrolment(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[Option[DeversityEnrolment]] = {
     for {
       enrolment <- deversityConnector.getDeversityEnrolment
       school    <- enrolment match {
@@ -73,22 +72,20 @@ trait DashboardService {
         }
         case None => Future.successful(None)
       }
-    } yield {
-      enrolment match {
-        case Some(enr) => Some(enr.copy(
-          schoolDevId = school.get.orgName,
-          teacher     = concatTeacherName(teacher)
-        ))
-        case None => None
-      }
+    } yield enrolment match {
+      case Some(enr) => Some(enr.copy(
+        schoolDevId = school.get.orgName,
+        teacher     = concatTeacherName(teacher)
+      ))
+      case None => None
     }
   }
 
-  def getOrgBasicDetails(implicit user: CurrentUser, request: Request[_]): Future[Option[OrgDetails]] = {
+  def getOrgBasicDetails(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[Option[OrgDetails]] = {
     accountConnector.getOrgBasicDetails
   }
 
-  def getTeacherList(implicit user: CurrentUser, request: Request[_]): Future[List[TeacherDetails]] = {
+  def getTeacherList(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[List[TeacherDetails]] = {
     accountConnector.getTeacherList
   }
 }

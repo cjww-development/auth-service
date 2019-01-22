@@ -16,14 +16,12 @@
 
 package connectors
 
-import com.cjwwdev.http.exceptions.{ClientErrorException, NotFoundException, ServerErrorException}
 import com.cjwwdev.implicits.ImplicitDataSecurity._
 import enums.SessionCache
 import helpers.connectors.ConnectorSpec
 import models.SessionUpdateSet
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class SessionStoreConnectorSpec extends ConnectorSpec {
 
@@ -34,7 +32,7 @@ class SessionStoreConnectorSpec extends ConnectorSpec {
   "cache" should {
     "return a cached" when {
       "the session has been initialised" in {
-        mockHttpPostString(response = Future(fakeHttpResponse(OK)))
+        mockHttpPostString(response = fakeHttpResponse(OK))
 
         awaitAndAssert(testConnector.cache(generateTestSystemId(SESSION))) {
           _ mustBe SessionCache.cached
@@ -44,7 +42,7 @@ class SessionStoreConnectorSpec extends ConnectorSpec {
 
     "return a cacheFailure" when {
       "there was a problem initialising the session" in {
-        mockHttpPostString(response = Future.failed(new ServerErrorException("", INTERNAL_SERVER_ERROR)))
+        mockHttpPostString(response = fakeHttpResponse(INTERNAL_SERVER_ERROR))
 
         awaitAndAssert(testConnector.cache(generateTestSystemId(SESSION))) {
           _ mustBe SessionCache.cacheFailure
@@ -58,7 +56,7 @@ class SessionStoreConnectorSpec extends ConnectorSpec {
       "data has been found matching the key" in {
         val testModel = TestModel("test", 616)
 
-        mockHttpGet(response = Future(fakeHttpResponse(OK, testModel.encrypt)))
+        mockHttpGet(response = fakeHttpResponse(OK, testModel.encrypt))
 
         awaitAndAssert(testConnector.getDataElement[TestModel]("testKey")) {
           _ mustBe Some(testModel)
@@ -68,7 +66,7 @@ class SessionStoreConnectorSpec extends ConnectorSpec {
 
     "return None" when {
       "no data has been found matching the key" in {
-        mockHttpGet(response = Future.failed(new NotFoundException("")))
+        mockHttpGet(response = fakeHttpResponse(NOT_FOUND))
 
         awaitAndAssert(testConnector.getDataElement[TestModel]("testKey")) {
           _ mustBe None
@@ -80,7 +78,7 @@ class SessionStoreConnectorSpec extends ConnectorSpec {
   "updateSession" should {
     "return a cacheUpdated" when {
       "the session has been updated" in {
-        mockHttpPatch(response = Future(fakeHttpResponse(OK)))
+        mockHttpPatch(response = fakeHttpResponse(OK))
 
         awaitAndAssert(testConnector.updateSession(SessionUpdateSet("testKey", "testData"), None)) {
           _ mustBe SessionCache.cacheUpdated
@@ -90,7 +88,7 @@ class SessionStoreConnectorSpec extends ConnectorSpec {
 
     "return a cacheUpdateFailure" when {
       "there was a problem updating the session" in {
-        mockHttpPatch(response = Future.failed(new ServerErrorException("", INTERNAL_SERVER_ERROR)))
+        mockHttpPatch(response = fakeHttpResponse(INTERNAL_SERVER_ERROR))
 
         awaitAndAssert(testConnector.updateSession(SessionUpdateSet("testKey", "testData"), None)) {
           _ mustBe SessionCache.cacheUpdateFailure
@@ -102,7 +100,7 @@ class SessionStoreConnectorSpec extends ConnectorSpec {
   "destroySession" should {
     "return a cacheDestroyed" when {
       "the response contains an Ok" in {
-        mockHttpDelete(response = Future(fakeHttpResponse(OK)))
+        mockHttpDelete(response = fakeHttpResponse(OK))
 
         awaitAndAssert(testConnector.destroySession) {
           _ mustBe SessionCache.cacheDestroyed
@@ -110,7 +108,7 @@ class SessionStoreConnectorSpec extends ConnectorSpec {
       }
 
       "the response contains an BadRequest" in {
-        mockHttpDelete(response = Future.failed(new ClientErrorException("", BAD_REQUEST)))
+        mockHttpDelete(response = fakeHttpResponse(BAD_REQUEST))
 
         awaitAndAssert(testConnector.destroySession) {
           _ mustBe SessionCache.cacheDestroyed
@@ -120,7 +118,7 @@ class SessionStoreConnectorSpec extends ConnectorSpec {
 
     "return a cacheDestructionFailure" when {
       "the response contains an InternalServerError" in {
-        mockHttpDelete(response = Future.failed(new ServerErrorException("", INTERNAL_SERVER_ERROR)))
+        mockHttpDelete(response = fakeHttpResponse(INTERNAL_SERVER_ERROR))
 
         awaitAndAssert(testConnector.destroySession) {
           _ mustBe SessionCache.cacheDestructionFailure

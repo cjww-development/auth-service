@@ -23,12 +23,12 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import views.html.test.{ActionCompleteView, TearDownUserView}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext => ExC, Future}
 
 class DefaultTeardownController @Inject()(val authConnector: AuthConnector,
                                           val controllerComponents: ControllerComponents,
-                                          val tearDownConnector: TeardownConnector) extends TeardownController
+                                          val tearDownConnector: TeardownConnector,
+                                          implicit val ec: ExC) extends TeardownController
 
 trait TeardownController extends AuthController {
   val tearDownConnector: TeardownConnector

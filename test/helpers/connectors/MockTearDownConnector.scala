@@ -27,7 +27,6 @@ import org.scalatestplus.play.PlaySpec
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.OK
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait MockTearDownConnector extends BeforeAndAfterEach with MockitoSugar with Fixtures {
@@ -41,7 +40,7 @@ trait MockTearDownConnector extends BeforeAndAfterEach with MockitoSugar with Fi
   }
 
   def mockDeleteTestAccountInstance: OngoingStubbing[Future[WSResponse]] = {
-    when(mockTearDownConnector.deleteTestAccountInstance(any(), any())(any()))
-      .thenReturn(Future(fakeHttpResponse(OK)))
+    when(mockTearDownConnector.deleteTestAccountInstance(any(), any())(any(), any()))
+      .thenReturn(Future.successful(fakeHttpResponse(OK)))
   }
 }

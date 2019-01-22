@@ -1,6 +1,6 @@
 @import models.feed.FeedItem
 
-@(feed : Option[List[FeedItem]])(implicit messages: MessagesApi, lang: Lang)
+@(feed : List[FeedItem])(implicit messages: MessagesApi, lang: Lang)
 
 @image(source : String) = {
     @source match {
@@ -16,8 +16,8 @@
     }
 }
 
-@if(feed.isDefined) {
-    @for((feedItem, count) <- feed.get.zipWithIndex) {
+@if(feed.nonEmpty) {
+    @for((feedItem, count) <- feed.zipWithIndex) {
         <div id="feed-item-@count" class="media">
             <div class="media-left">
                 <img class="media-object" src="@routes.Assets.versioned(s"images/${image(feedItem.sourceDetail.service).toString.replace(" ", "")}.png")" width="100px" alt="">

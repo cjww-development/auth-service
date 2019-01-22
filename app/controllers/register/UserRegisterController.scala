@@ -27,12 +27,12 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.RegisterService
 import views.html.register.{RegisterSuccess, UserRegisterView}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DefaultUserRegisterController @Inject()(val registrationService : RegisterService,
                                               val controllerComponents: ControllerComponents,
-                                              val authConnector: AuthConnector) extends UserRegisterController
+                                              val authConnector: AuthConnector,
+                                              implicit val ec: ExecutionContext) extends UserRegisterController
 
 trait UserRegisterController extends FrontendController {
   val registrationService: RegisterService

@@ -17,8 +17,8 @@ package connectors
 
 import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.config.ConfigurationLoader
-import com.cjwwdev.http.exceptions.ForbiddenException
 import com.cjwwdev.http.responses.WsResponseHelpers
+import com.cjwwdev.http.responses.EvaluateResponse._
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.implicits.ImplicitDataSecurity._
 import common._
@@ -26,8 +26,7 @@ import javax.inject.Inject
 import models.UserLogin
 import play.api.mvc.Request
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext => ExC, Future}
 
 class DefaultAuthMicroserviceConnector @Inject()(val http: Http,
                                                  val configurationLoader: ConfigurationLoader) extends AuthMicroserviceConnector
@@ -35,11 +34,10 @@ class DefaultAuthMicroserviceConnector @Inject()(val http: Http,
 trait AuthMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers {
   val http: Http
 
-  def getUser(loginDetails : UserLogin)(implicit request: Request[_]): Future[Option[CurrentUser]] = {
-    http.get(s"$authMicroservice/login/user?enc=${loginDetails.encrypt}") map { resp =>
-      Some(resp.toDataType[CurrentUser](needsDecrypt = true))
-    } recover {
-      case e: ForbiddenException => None
+  def getUser(loginDetails : UserLogin)(implicit req: Request[_], ec: ExC): Future[Option[CurrentUser]] = {
+    http.get(s"$authMicroservice/login/user?enc=${loginDetails.encrypt}") map {
+      case SuccessResponse(resp) => resp.toDataType[CurrentUser](needsDecrypt = true).fold(Some(_), _ => None)
+      case ErrorResponse(_)      => None
     }
   }
 }

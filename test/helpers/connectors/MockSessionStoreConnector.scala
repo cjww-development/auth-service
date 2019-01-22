@@ -26,7 +26,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait MockSessionStoreConnector extends BeforeAndAfterEach with MockitoSugar with Fixtures {
@@ -40,22 +39,22 @@ trait MockSessionStoreConnector extends BeforeAndAfterEach with MockitoSugar wit
   }
 
   def mockCache(cached: Boolean): OngoingStubbing[Future[SessionCache.Value]] = {
-    when(mockSessionStoreConnector.cache(any())(any()))
-      .thenReturn(Future(if(cached) SessionCache.cached else SessionCache.cacheFailure))
+    when(mockSessionStoreConnector.cache(any())(any(), any()))
+      .thenReturn(Future.successful(if(cached) SessionCache.cached else SessionCache.cacheFailure))
   }
 
   def mockGetDataElement[T](returned: Option[T]): OngoingStubbing[Future[Option[T]]] = {
-    when(mockSessionStoreConnector.getDataElement[T](any())(any(), any(), any()))
-      .thenReturn(Future(returned))
+    when(mockSessionStoreConnector.getDataElement[T](any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(returned))
   }
 
   def mockUpdateSession(updated: Boolean): OngoingStubbing[Future[SessionCache.Value]] = {
-    when(mockSessionStoreConnector.updateSession(any(), any())(any(), any()))
-      .thenReturn(Future(if(updated) SessionCache.cacheUpdated else SessionCache.cacheUpdateFailure))
+    when(mockSessionStoreConnector.updateSession(any(), any())(any(), any(), any()))
+      .thenReturn(Future.successful(if(updated) SessionCache.cacheUpdated else SessionCache.cacheUpdateFailure))
   }
 
   def mockDestroySession(cacheValue: SessionCache.Value): OngoingStubbing[Future[SessionCache.Value]] = {
-    when(mockSessionStoreConnector.destroySession(any()))
-      .thenReturn(Future(cacheValue))
+    when(mockSessionStoreConnector.destroySession(any(), any()))
+      .thenReturn(Future.successful(cacheValue))
   }
 }

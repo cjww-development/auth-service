@@ -30,7 +30,7 @@ class TeardownConnectorSpec extends ConnectorSpec {
   "deleteTestAccountInstance" should {
     "return an Ok" when {
       "the test account has been torn down (individual)" in {
-        mockHttpDelete(response = Future(fakeHttpResponse(OK)))
+        mockHttpDelete(response = fakeHttpResponse(OK))
 
         awaitAndAssert(testConnector.deleteTestAccountInstance("testUserName", "individual")) {
           _.status mustBe OK
@@ -38,7 +38,7 @@ class TeardownConnectorSpec extends ConnectorSpec {
       }
 
       "the test account has been torn down (organisation)" in {
-        mockHttpDelete(response = Future(fakeHttpResponse(OK)))
+        mockHttpDelete(response = fakeHttpResponse(OK))
 
         awaitAndAssert(testConnector.deleteTestAccountInstance("testUserName", "organisation")) {
           _.status mustBe OK

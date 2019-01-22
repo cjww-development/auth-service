@@ -29,7 +29,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait MockDeversityMicroserviceConnector extends BeforeAndAfterEach with MockitoSugar with Fixtures {
@@ -43,52 +42,52 @@ trait MockDeversityMicroserviceConnector extends BeforeAndAfterEach with Mockito
   }
 
   def mockGetTeacherDeversityEnrolment(fetched: Boolean): OngoingStubbing[Future[Option[DeversityEnrolment]]] = {
-    when(mockDeversityMicroserviceConnector.getDeversityEnrolment(any(), any()))
-      .thenReturn(Future(if(fetched) Some(testTeacherEnrolment) else None))
+    when(mockDeversityMicroserviceConnector.getDeversityEnrolment(any(), any(), any()))
+      .thenReturn(Future.successful(if(fetched) Some(testTeacherEnrolment) else None))
   }
 
   def mockGetStudentDeversityEnrolment(fetched: Boolean): OngoingStubbing[Future[Option[DeversityEnrolment]]] = {
-    when(mockDeversityMicroserviceConnector.getDeversityEnrolment(any(), any()))
-      .thenReturn(Future(if(fetched) Some(testStudentEnrolment) else None))
+    when(mockDeversityMicroserviceConnector.getDeversityEnrolment(any(), any(), any()))
+      .thenReturn(Future.successful(if(fetched) Some(testStudentEnrolment) else None))
   }
 
   def mockGetTeacherInfo(fetched: Boolean): OngoingStubbing[Future[Option[TeacherDetails]]] = {
-    when(mockDeversityMicroserviceConnector.getTeacherInfo(any(), any())(any(), any()))
-      .thenReturn(Future(if(fetched) Some(testTeacherDetails) else None))
+    when(mockDeversityMicroserviceConnector.getTeacherInfo(any(), any())(any(), any(), any()))
+      .thenReturn(Future.successful(if(fetched) Some(testTeacherDetails) else None))
   }
 
   def mockGetSchoolInfo(fetched: Boolean): OngoingStubbing[Future[Option[OrgDetails]]] = {
-    when(mockDeversityMicroserviceConnector.getSchoolInfo(any())(any(), any()))
-      .thenReturn(Future(if(fetched) Some(testOrgDetails) else None))
+    when(mockDeversityMicroserviceConnector.getSchoolInfo(any())(any(), any(), any()))
+      .thenReturn(Future.successful(if(fetched) Some(testOrgDetails) else None))
   }
 
   def mockGetRegistrationCode: OngoingStubbing[Future[RegistrationCode]] = {
-    when(mockDeversityMicroserviceConnector.getRegistrationCode(any(), any()))
-      .thenReturn(Future(testRegistrationCode))
+    when(mockDeversityMicroserviceConnector.getRegistrationCode(any(), any(), any()))
+      .thenReturn(Future.successful(testRegistrationCode))
   }
 
   def mockGenerateRegistrationCode: OngoingStubbing[Future[HttpResponse.Value]] = {
-    when(mockDeversityMicroserviceConnector.generateRegistrationCode(any(), any()))
-      .thenReturn(Future(HttpResponse.success))
+    when(mockDeversityMicroserviceConnector.generateRegistrationCode(any(), any(), any()))
+      .thenReturn(Future.successful(HttpResponse.success))
   }
 
   def mockCreateClassroom: OngoingStubbing[Future[String]] = {
-    when(mockDeversityMicroserviceConnector.createClassroom(any())(any(), any()))
-      .thenReturn(Future("testClassRoomName"))
+    when(mockDeversityMicroserviceConnector.createClassroom(any())(any(), any(), any()))
+      .thenReturn(Future.successful("testClassRoomName"))
   }
 
   def mockGetClassrooms(populated: Boolean): OngoingStubbing[Future[Seq[Classroom]]] = {
-    when(mockDeversityMicroserviceConnector.getClassrooms(any(), any()))
-      .thenReturn(Future(if(populated) testClassSeq else Seq()))
+    when(mockDeversityMicroserviceConnector.getClassrooms(any(), any(), any()))
+      .thenReturn(Future.successful(if(populated) testClassSeq else Seq()))
   }
 
   def mockGetClassroom: OngoingStubbing[Future[Classroom]] = {
-    when(mockDeversityMicroserviceConnector.getClassroom(any())(any(), any()))
-      .thenReturn(Future(testClassroom))
+    when(mockDeversityMicroserviceConnector.getClassroom(any())(any(), any(), any()))
+      .thenReturn(Future.successful(testClassroom))
   }
 
   def mockDeleteClassroom: OngoingStubbing[Future[HttpResponse.Value]] = {
-    when(mockDeversityMicroserviceConnector.deleteClassroom(any())(any(), any()))
-      .thenReturn(Future(HttpResponse.success))
+    when(mockDeversityMicroserviceConnector.deleteClassroom(any())(any(), any(), any()))
+      .thenReturn(Future.successful(HttpResponse.success))
   }
 }

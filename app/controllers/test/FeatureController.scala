@@ -24,8 +24,11 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import views.html.test.FeatureSwitchView
 
+import scala.concurrent.ExecutionContext
+
 class DefaultFeatureController @Inject()(val controllerComponents: ControllerComponents,
-                                         val featureService: FeatureService) extends FeatureController
+                                         val featureService: FeatureService,
+                                         implicit val ec: ExecutionContext) extends FeatureController
 
 trait FeatureController extends FrontendController {
 

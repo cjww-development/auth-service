@@ -23,10 +23,11 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import views.html.misc.ServiceUnavailableView
 import views.html.redirect.ServiceSelector
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DefaultRedirectController @Inject()(val authConnector: AuthConnector,
-                                          val controllerComponents: ControllerComponents) extends RedirectController
+                                          val controllerComponents: ControllerComponents,
+                                          implicit val ec: ExecutionContext) extends RedirectController
 
 trait RedirectController extends AuthController {
   def chooseService : Action[AnyContent] = isAuthorised { implicit request => implicit user =>

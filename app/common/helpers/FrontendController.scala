@@ -21,11 +21,15 @@ import org.slf4j.{Logger, LoggerFactory}
 import play.api.i18n.Lang
 import play.api.mvc._
 
+import scala.concurrent.ExecutionContext
+
 trait FrontendController
   extends BaseController
     with ControllerHelpers
     with ApplicationConfiguration
     with UrlParser{
+
+  implicit val ec: ExecutionContext
 
   implicit def getLang(implicit request: Request[_]): Lang = supportedLangs.preferred(request.acceptLanguages)
 

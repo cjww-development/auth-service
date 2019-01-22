@@ -24,11 +24,12 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.ClassroomService
 import views.html.user.deversity.{ManageClassroomView, ManageClassroomsView}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 class DefaultClassroomController @Inject()(val authConnector: AuthConnector,
                                            val controllerComponents: ControllerComponents,
-                                           val classroomService: ClassroomService) extends ClassroomController
+                                           val classroomService: ClassroomService,
+                                           implicit val ec: ExecutionContext) extends ClassroomController
 
 trait ClassroomController extends AuthController {
   val classroomService: ClassroomService

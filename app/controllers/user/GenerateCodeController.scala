@@ -24,14 +24,14 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.{DashboardService, RegistrationCodeService}
 import views.html.user.GenerateCodeView
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DefaultGenerateCodeController @Inject()(val authConnector: AuthConnector,
                                               val registrationCodeService: RegistrationCodeService,
                                               val dashboardService: DashboardService,
                                               val controllerComponents: ControllerComponents,
-                                              val deversityConnector: DeversityMicroserviceConnector) extends GenerateCodeController
+                                              val deversityConnector: DeversityMicroserviceConnector,
+                                              implicit val ec: ExecutionContext) extends GenerateCodeController
 
 trait GenerateCodeController extends AuthController {
   val registrationCodeService: RegistrationCodeService

@@ -22,18 +22,18 @@ import javax.inject.Inject
 import models.RegistrationCode
 import play.api.mvc.Request
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext => ExC, Future}
 
-class DefaultRegistrationCodeService @Inject()(val deversityMicroserviceConnector: DeversityMicroserviceConnector) extends RegistrationCodeService
+class DefaultRegistrationCodeService @Inject()(val deversityConnector: DeversityMicroserviceConnector) extends RegistrationCodeService
 
 trait RegistrationCodeService {
-  val deversityMicroserviceConnector: DeversityMicroserviceConnector
+  val deversityConnector: DeversityMicroserviceConnector
 
-  def getGeneratedCode(implicit user: CurrentUser, request: Request[_]): Future[RegistrationCode] = {
-    deversityMicroserviceConnector.getRegistrationCode
+  def getGeneratedCode(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[RegistrationCode] = {
+    deversityConnector.getRegistrationCode
   }
 
-  def generateRegistrationCode(implicit user: CurrentUser, request: Request[_]): Future[HttpResponse.Value] = {
-    deversityMicroserviceConnector.generateRegistrationCode
+  def generateRegistrationCode(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[HttpResponse.Value] = {
+    deversityConnector.generateRegistrationCode
   }
 }
