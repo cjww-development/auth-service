@@ -21,13 +21,12 @@ import common.ApplicationConfiguration
 import play.api.i18n.Lang
 import play.api.mvc.{BaseController, Request, Result}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait ControllerHelpers extends ApplicationConfiguration {
   self: BaseController =>
 
   protected def deversityGuard(result: => Future[Result])(implicit request: Request[_], lang: Lang): Future[Result] = {
-    if(deversityEnabled) result else Future(NotFound(NotFoundView()))
+    if(deversityEnabled) result else Future.successful(NotFound(NotFoundView()))
   }
 }

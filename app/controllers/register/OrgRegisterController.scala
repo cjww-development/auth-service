@@ -26,12 +26,12 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.RegisterService
 import views.html.register.{OrgRegisterView, RegisterSuccess}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DefaultOrgRegisterController @Inject()(val registrationService : RegisterService,
                                              val controllerComponents: ControllerComponents,
-                                             val authConnector: AuthConnector) extends OrgRegisterController
+                                             val authConnector: AuthConnector,
+                                             implicit val ec: ExecutionContext) extends OrgRegisterController
 
 trait OrgRegisterController extends FrontendController {
   val registrationService: RegisterService

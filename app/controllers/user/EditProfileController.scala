@@ -28,13 +28,13 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.{EditProfileService, FeedService}
 import views.html.user.EditProfile
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DefaultEditProfileController @Inject()(val accountsConnector: AccountsMicroserviceConnector,
                                              val feedService : FeedService,
                                              val controllerComponents: ControllerComponents,
-                                             val authConnector: AuthConnector) extends EditProfileController
+                                             val authConnector: AuthConnector,
+                                             implicit val ec: ExecutionContext) extends EditProfileController
 
 trait EditProfileController extends AuthController with EditProfileService {
   val accountsConnector: AccountsMicroserviceConnector
@@ -44,8 +44,8 @@ trait EditProfileController extends AuthController with EditProfileService {
     implicit request =>
       implicit user =>
         for {
-          basicDetails <- accountsConnector.getBasicDetails
-          settings     <- accountsConnector.getSettings
+          Some(basicDetails) <- accountsConnector.getBasicDetails
+          settings           <- accountsConnector.getSettings
         } yield {
           Ok(
             EditProfile(
@@ -64,8 +64,8 @@ trait EditProfileController extends AuthController with EditProfileService {
         UserProfileForm.form.bindFromRequest.fold(
           errors => {
             for {
-              basicDetails   <- accountsConnector.getBasicDetails
-              settings       <- accountsConnector.getSettings
+              Some(basicDetails) <- accountsConnector.getBasicDetails
+              settings           <- accountsConnector.getSettings
             } yield {
               BadRequest(
                 EditProfile(
@@ -93,8 +93,8 @@ trait EditProfileController extends AuthController with EditProfileService {
         NewPasswordForm.form.bindFromRequest.fold(
           errors => {
             for {
-              basicDetails    <- accountsConnector.getBasicDetails
-              settings        <- accountsConnector.getSettings
+              Some(basicDetails) <- accountsConnector.getBasicDetails
+              settings           <- accountsConnector.getSettings
             } yield {
               BadRequest(
                 EditProfile(
@@ -117,10 +117,10 @@ trait EditProfileController extends AuthController with EditProfileService {
                     settings =>
                       BadRequest(
                         EditProfile(
-                          UserProfileForm.form.fill(basicDetails),
+                          UserProfileForm.form.fill(basicDetails.get),
                           NewPasswordForm.form.fill(valid).withError("oldPassword", "Your old password is incorrect"),
                           SettingsForm.form.fill(settings),
-                          basicDetails
+                          basicDetails.get
                         )
                       )
                   }
@@ -135,7 +135,7 @@ trait EditProfileController extends AuthController with EditProfileService {
         SettingsForm.form.bindFromRequest.fold(
           errors => {
             for {
-              basicDetails    <- accountsConnector.getBasicDetails
+              Some(basicDetails) <- accountsConnector.getBasicDetails
             } yield {
               BadRequest(
                 EditProfile(

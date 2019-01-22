@@ -16,11 +16,9 @@
 
 package connectors
 
-import com.cjwwdev.http.exceptions.ServerErrorException
 import enums.HttpResponse
 import helpers.connectors.ConnectorSpec
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class AccountsMicroserviceConnectorSpec extends ConnectorSpec {
@@ -32,7 +30,7 @@ class AccountsMicroserviceConnectorSpec extends ConnectorSpec {
   "updateProfile" should {
     "return a Http success" when {
       "the update returns an Ok response" in {
-        mockHttpPatch(response = Future(fakeHttpResponse(OK)))
+        mockHttpPatch(response = fakeHttpResponse(OK))
 
         awaitAndAssert(testConnector.updateProfile(testUserProfile)) {
           _ mustBe HttpResponse.success
@@ -42,7 +40,7 @@ class AccountsMicroserviceConnectorSpec extends ConnectorSpec {
 
     "return a Http failed" when {
       "the update doesn't return an Ok response" in {
-        mockHttpPatch(response = Future.failed(new ServerErrorException("", INTERNAL_SERVER_ERROR)))
+        mockHttpPatch(response = fakeHttpResponse(INTERNAL_SERVER_ERROR))
 
         awaitAndAssert(testConnector.updateProfile(testUserProfile)) {
           _ mustBe HttpResponse.failed

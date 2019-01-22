@@ -40,12 +40,12 @@ trait MockLoginService extends BeforeAndAfterEach with MockitoSugar with Fixture
   }
 
   def mockProcessIndividualLoginAttempt(success: Boolean): OngoingStubbing[Future[Option[Session]]] = {
-    when(mockLoginService.processLoginAttempt(ArgumentMatchers.any())(ArgumentMatchers.any()))
-      .thenReturn(if(success) Future(Some(Session(data = individualSession))) else Future(None))
+    when(mockLoginService.processLoginAttempt(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(if(success) Future.successful(Some(Session(data = individualSession))) else Future.successful(None))
   }
 
   def mockProcessOrgLoginAttempt(success: Boolean): OngoingStubbing[Future[Option[Session]]] = {
-    when(mockLoginService.processLoginAttempt(ArgumentMatchers.any())(ArgumentMatchers.any()))
-      .thenReturn(if(success) Future(Some(Session(data = orgSession))) else Future(None))
+    when(mockLoginService.processLoginAttempt(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(if(success) Future.successful(Some(Session(data = orgSession))) else Future.successful(None))
   }
 }

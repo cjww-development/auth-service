@@ -21,12 +21,16 @@ import helpers.controllers.ControllerSpec
 import play.api.test.Helpers._
 import play.api.test.CSRFTokenHelper._
 
+import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits
+
 class FeatureControllerSpec extends ControllerSpec {
 
   class Setup {
     val testController = new FeatureController {
-      override val featureService       = mockFeatureService
-      override val controllerComponents = stubControllerComponents()
+      override implicit val ec: ExecutionContext = Implicits.global
+      override val featureService                = mockFeatureService
+      override val controllerComponents          = stubControllerComponents()
     }
   }
 

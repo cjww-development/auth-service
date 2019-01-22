@@ -28,8 +28,7 @@ import javax.inject.Inject
 import models.{SessionUpdateSet, UserLogin}
 import play.api.mvc.{Request, Session}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext => ExC, Future}
 
 class DefaultLoginService @Inject()(val authConnector: AuthMicroserviceConnector,
                                     val sessionStoreConnector: SessionStoreConnector) extends LoginService {
@@ -59,9 +58,9 @@ trait LoginService extends Logging {
     }
   }
 
-  def processLoginAttempt(credentials: UserLogin)(implicit request: Request[_]): Future[Option[Session]] = {
+  def processLoginAttempt(credentials: UserLogin)(implicit req: Request[_], ec: ExC): Future[Option[Session]] = {
     authConnector.getUser(credentials) flatMap {
-      _.fold(Future(Option.empty[Session])) { user =>
+      _.fold(Future.successful(Option.empty[Session])) { user =>
         val session = Session(sessionMap(user))
         sessionStoreConnector.cache(session("cookieId")) flatMap { _ =>
           sessionStoreConnector.updateSession(SessionUpdateSet("contextId", user.contextId.encrypt), Some(session("cookieId"))) map {

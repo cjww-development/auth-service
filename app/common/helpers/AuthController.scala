@@ -17,16 +17,19 @@
 package common.helpers
 
 import com.cjwwdev.auth.frontend.AuthorisedAction
-import common.ApplicationConfiguration
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.i18n.Lang
 import play.api.mvc.{BaseController, Call, Request}
+
+import scala.concurrent.ExecutionContext
 
 trait AuthController
   extends BaseController
     with ControllerHelpers
     with UrlParser
     with AuthorisedAction {
+
+  implicit val ec: ExecutionContext
 
   implicit def getLang(implicit request: Request[_]): Lang = supportedLangs.preferred(request.acceptLanguages)
 

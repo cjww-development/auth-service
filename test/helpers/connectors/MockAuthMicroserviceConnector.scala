@@ -26,7 +26,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait MockAuthMicroserviceConnector extends BeforeAndAfterEach with MockitoSugar with Fixtures {
@@ -40,12 +39,12 @@ trait MockAuthMicroserviceConnector extends BeforeAndAfterEach with MockitoSugar
   }
 
   def mockGetIndividualUser(fetched: Boolean): OngoingStubbing[Future[Option[CurrentUser]]] = {
-    when(mockAuthMicroserviceConnector.getUser(any())(any()))
-      .thenReturn(if(fetched) Future(Some(testCurrentUser)) else Future(None))
+    when(mockAuthMicroserviceConnector.getUser(any())(any(), any()))
+      .thenReturn(if(fetched) Future.successful(Some(testCurrentUser)) else Future.successful(None))
   }
 
   def mockGetOrgUser(fetched: Boolean): OngoingStubbing[Future[Option[CurrentUser]]] = {
-    when(mockAuthMicroserviceConnector.getUser(any())(any()))
-      .thenReturn(if(fetched) Future(Some(testOrgCurrentUser)) else Future(None))
+    when(mockAuthMicroserviceConnector.getUser(any())(any(), any()))
+      .thenReturn(if(fetched) Future.successful(Some(testOrgCurrentUser)) else Future.successful(None))
   }
 }

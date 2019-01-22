@@ -17,7 +17,7 @@ package connectors
 
 import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.config.ConfigurationLoader
-import com.cjwwdev.http.exceptions._
+import com.cjwwdev.http.responses.EvaluateResponse._
 import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.implicits.ImplicitDataSecurity._
@@ -36,8 +36,7 @@ import play.api.http.Status._
 import play.api.libs.json.{JsObject, OFormat}
 import play.api.mvc.Request
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext => ExC, Future}
 
 class DefaultAccountsMicroserviceConnector @Inject()(val http: Http,
                                                      val configurationLoader: ConfigurationLoader) extends AccountsMicroserviceConnector
@@ -45,125 +44,111 @@ class DefaultAccountsMicroserviceConnector @Inject()(val http: Http,
 trait AccountsMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers {
   val http: Http
 
-  def updateProfile(userProfile: UserProfile)(implicit user: CurrentUser, request: Request[_]) : Future[HttpResponse.Value] = {
+  def updateProfile(userProfile: UserProfile)(implicit user: CurrentUser, req: Request[_], ec: ExC) : Future[HttpResponse.Value] = {
     http.patch[UserProfile](s"$accountsMicroservice/account/${user.id}/update-profile", userProfile) map {
-      _.status match {
-        case OK => HttpResponse.success
-      }
-    } recover {
-      case _: ServerErrorException => HttpResponse.failed
+      case SuccessResponse(x) =>
+        println(s"SUCCESS => ${x.status}")
+        println(s"SUCCESS => ${x.json}")
+        HttpResponse.success
+      case ErrorResponse(x)   =>
+        println(s"ERROR => ${x.status}")
+        println(s"ERROR => ${x.json}")
+        HttpResponse.failed
     }
   }
 
   def updatePassword(passwordSet: PasswordSet)
-                    (implicit user: CurrentUser, format: OFormat[PasswordSet], request: Request[_]): Future[UpdatedPasswordResponse] = {
+                    (implicit user: CurrentUser, format: OFormat[PasswordSet], req: Request[_], ec: ExC): Future[UpdatedPasswordResponse] = {
     http.patch[PasswordSet](s"$accountsMicroservice/account/${user.id}/update-password", passwordSet) map {
-      _.status match {
-        case OK => PasswordUpdated
-      }
-    } recover {
-      case _: ConflictException => InvalidOldPassword
+      case SuccessResponse(_) => PasswordUpdated
+      case ErrorResponse(_)   => InvalidOldPassword
     }
   }
 
-  def updateSettings(settings: Settings)(implicit user: CurrentUser, format: OFormat[Settings], request: Request[_]): Future[HttpResponse.Value] = {
+  def updateSettings(settings: Settings)(implicit user: CurrentUser, format: OFormat[Settings], req: Request[_], ec: ExC): Future[HttpResponse.Value] = {
     http.patch[Settings](s"$accountsMicroservice/account/${user.id}/update-settings", settings) map {
-      _.status match {
-        case OK => HttpResponse.success
-      }
-    } recover {
-      case _: ServerErrorException => HttpResponse.failed
+      case SuccessResponse(_) => HttpResponse.success
+      case ErrorResponse(_)   => HttpResponse.failed
     }
   }
 
-  def createFeedItem(feedItem: FeedItem)(implicit user: CurrentUser, request: Request[_]) : Future[HttpResponse.Value] = {
+  def createFeedItem(feedItem: FeedItem)(implicit user: CurrentUser, req: Request[_], ec: ExC) : Future[HttpResponse.Value] = {
     http.post[FeedItem](s"$accountsMicroservice/create-feed-item", feedItem) map {
-      _.status match {
-        case OK => HttpResponse.success
-      }
+      case SuccessResponse(_) => HttpResponse.success
+      case ErrorResponse(_)   => HttpResponse.failed
     }
   }
 
-  def getFeedItems(implicit user: CurrentUser, request: Request[_]) : Future[Option[List[FeedItem]]] = {
-    http.get(s"$accountsMicroservice/account/${user.id}/get-user-feed") map { resp =>
-      Some(resp.toDataType[JsObject](needsDecrypt = true).get[List[FeedItem]]("feed-array"))
-    } recover {
-      case _: NotFoundException => None
+  def getFeedItems(implicit user: CurrentUser, req: Request[_], ec: ExC) : Future[List[FeedItem]] = {
+    http.get(s"$accountsMicroservice/account/${user.id}/get-user-feed") map {
+      case SuccessResponse(resp) => resp.toDataType[JsObject](needsDecrypt = true).fold(
+        _.get[List[FeedItem]]("feed-array"),
+        _ => List.empty[FeedItem]
+      )
+      case ErrorResponse(_)      => List.empty[FeedItem]
     }
   }
 
-  def getBasicDetails(implicit user: CurrentUser, request: Request[_]) : Future[BasicDetails] = {
+  def getBasicDetails(implicit user: CurrentUser, req: Request[_], ec: ExC) : Future[Option[BasicDetails]] = {
     http.get(s"$accountsMicroservice/account/${user.id}/basic-details") map {
-      _.toDataType[BasicDetails](needsDecrypt = true)
-    } recover {
-      case _: ClientErrorException =>
-        throw new MissingBasicDetailsException(s"No basic details were found for user ${user.id}")
+      case SuccessResponse(resp) => resp.toDataType[BasicDetails](needsDecrypt = true).fold(Some(_), _ => None)
+      case ErrorResponse(_)      => None
     }
   }
 
-  def getEnrolments(implicit user: CurrentUser, request: Request[_]) : Future[Option[Enrolments]] = {
-    http.get(s"$accountsMicroservice/account/${user.id}/enrolments") map { resp =>
-      Some(resp.toDataType[Enrolments](needsDecrypt = true))
-    } recover {
-      case _: NotFoundException => None
+  def getEnrolments(implicit user: CurrentUser, req: Request[_], ec: ExC) : Future[Option[Enrolments]] = {
+    http.get(s"$accountsMicroservice/account/${user.id}/enrolments") map {
+      case SuccessResponse(resp) => resp.toDataType[Enrolments](needsDecrypt = true).fold(Some(_), _ => None)
+      case ErrorResponse(_)      => None
     }
   }
 
-  def getSettings(implicit user: CurrentUser, request: Request[_]) : Future[Settings] = {
+  def getSettings(implicit user: CurrentUser, req: Request[_], ec: ExC) : Future[Settings] = {
     http.get(s"$accountsMicroservice/account/${user.id}/settings") map {
-      _.toDataType[Settings](needsDecrypt = true)
-    } recover {
-      case _: NotFoundException => Settings.default
+      case SuccessResponse(resp) => resp.toDataType[Settings](needsDecrypt = true).fold(identity, _ => Settings.default)
+      case ErrorResponse(_)      => Settings.default
     }
   }
 
-  def getOrgBasicDetails(implicit user: CurrentUser, request: Request[_]): Future[Option[OrgDetails]] = {
-    http.get(s"$accountsMicroservice/account/${user.id}/org-basic-details") map { resp =>
-      Some(resp.toDataType[OrgDetails](needsDecrypt = true))
-    } recover {
-      case _: NotFoundException => None
+  def getOrgBasicDetails(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[Option[OrgDetails]] = {
+    http.get(s"$accountsMicroservice/account/${user.id}/org-basic-details") map {
+      case SuccessResponse(resp) => resp.toDataType[OrgDetails](needsDecrypt = true).fold(Some(_), _ => None)
+      case ErrorResponse(_)      => None
     }
   }
 
-  def getTeacherList(implicit user: CurrentUser, request: Request[_]): Future[List[TeacherDetails]] = {
+  def getTeacherList(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[List[TeacherDetails]] = {
     http.get(s"$accountsMicroservice/account/${user.id}/teachers") map {
-      _.toDataType[List[TeacherDetails]](needsDecrypt = true)
+      case SuccessResponse(resp) => resp.toDataType[List[TeacherDetails]](needsDecrypt = true).fold(identity, _ => List.empty[TeacherDetails])
+      case ErrorResponse(_)      => List.empty
     }
   }
 
-  def createNewIndividualUser(userDetails : UserRegistration)(implicit request: Request[_], format: OFormat[UserRegistration]) : Future[Registration.Value] = {
+  def createNewIndividualUser(userDetails : UserRegistration)(implicit req: Request[_], ec: ExC, format: OFormat[UserRegistration]) : Future[Registration.Value] = {
     http.post[UserRegistration](s"$accountsMicroservice/account/create-new-user", userDetails) map {
-      _ => Registration.success
-    } recover {
-      case _ => Registration.failed
+      case SuccessResponse(_) => Registration.success
+      case ErrorResponse(_) => Registration.failed
     }
   }
 
-  def createNewOrgUser(orgUserDetails: OrgRegistration)(implicit request: Request[_], format: OFormat[OrgRegistration]): Future[Registration.Value] = {
+  def createNewOrgUser(orgUserDetails: OrgRegistration)(implicit req: Request[_], ec: ExC, format: OFormat[OrgRegistration]): Future[Registration.Value] = {
     http.post[OrgRegistration](s"$accountsMicroservice/account/create-new-org-user", orgUserDetails) map {
-      _ => Registration.success
-    } recover {
-      case _ => Registration.failed
+      case SuccessResponse(_) => Registration.success
+      case ErrorResponse(_)   => Registration.failed
     }
   }
 
-  def checkUserName(username : String)(implicit request: Request[_]) : Future[Boolean] = {
+  def checkUserName(username : String)(implicit req: Request[_], ec: ExC) : Future[Boolean] = {
     http.head(s"$accountsMicroservice/validate/user-name/${username.encrypt}") map {
-      _.status match {
-        case OK => false
-      }
-    } recover {
-      case _: ConflictException => true
+      case SuccessResponse(_) => false
+      case ErrorResponse(_)   => true
     }
   }
 
-  def checkEmailAddress(email : String)(implicit request: Request[_]) : Future[Boolean] = {
+  def checkEmailAddress(email : String)(implicit req: Request[_], ec: ExC) : Future[Boolean] = {
     http.head(s"$accountsMicroservice/validate/email/${email.encrypt}") map {
-      _.status match {
-        case OK => false
-      }
-    } recover {
-      case _: ConflictException => true
+      case SuccessResponse(_) => false
+      case ErrorResponse(_)   => true
     }
   }
 }

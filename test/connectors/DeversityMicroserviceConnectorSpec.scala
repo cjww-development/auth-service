@@ -16,14 +16,12 @@
 
 package connectors
 
-import com.cjwwdev.http.exceptions.NotFoundException
 import com.cjwwdev.implicits.ImplicitDataSecurity._
 import enums.HttpResponse
 import helpers.connectors.ConnectorSpec
 import models.deversity.Classroom
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
@@ -34,7 +32,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
   "getDeversityEnrolment" should {
     "return some DeversityEnrolment" when {
       "the response has an Ok status" in {
-        mockHttpGet(response = Future(fakeHttpResponse(OK, testTeacherEnrolment.encrypt)))
+        mockHttpGet(response = fakeHttpResponse(OK, testTeacherEnrolment.encrypt))
 
         awaitAndAssert(testConnector.getDeversityEnrolment) {
           _ mustBe Some(testTeacherEnrolment)
@@ -44,7 +42,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
     "return None" when {
       "the response has a NoContent status" in {
-        mockHttpGet(response = Future(fakeHttpResponse(NO_CONTENT)))
+        mockHttpGet(response = fakeHttpResponse(NO_CONTENT))
 
         awaitAndAssert(testConnector.getDeversityEnrolment) {
           _ mustBe None
@@ -52,7 +50,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
       }
 
       "the response has NotFound status" in {
-        mockHttpGet(response = Future.failed(new NotFoundException("")))
+        mockHttpGet(response = fakeHttpResponse(NOT_FOUND))
 
         awaitAndAssert(testConnector.getDeversityEnrolment) {
           _ mustBe None
@@ -63,7 +61,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "getTeacherInfo" should {
     "return some TeacherInfo" in {
-      mockHttpGet(response = Future(fakeHttpResponse(OK, testTeacherDetails.encrypt)))
+      mockHttpGet(response = fakeHttpResponse(OK, testTeacherDetails.encrypt))
 
       awaitAndAssert(testConnector.getTeacherInfo("testTeacher", "testSchool")) {
         _ mustBe Some(testTeacherDetails)
@@ -71,7 +69,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
     }
 
     "return None" in {
-      mockHttpGet(response = Future.failed(new NotFoundException("")))
+      mockHttpGet(response = fakeHttpResponse(NOT_FOUND))
 
       awaitAndAssert(testConnector.getTeacherInfo("testTeacher", "testSchool")) {
         _ mustBe None
@@ -81,7 +79,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "getSchoolInfo" should {
     "return some OrgDetails" in {
-      mockHttpGet(response = Future(fakeHttpResponse(OK, testOrgDetails.encrypt)))
+      mockHttpGet(response = fakeHttpResponse(OK, testOrgDetails.encrypt))
 
       awaitAndAssert(testConnector.getSchoolInfo("testSchool")) {
         _ mustBe Some(testOrgDetails)
@@ -89,7 +87,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
     }
 
     "return None" in {
-      mockHttpGet(response = Future.failed(new NotFoundException("")))
+      mockHttpGet(response = fakeHttpResponse(NOT_FOUND))
 
       awaitAndAssert(testConnector.getSchoolInfo("testSchool")) {
         _ mustBe None
@@ -99,7 +97,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "getRegistrationCode" should {
     "return some OrgDetails" in {
-      mockHttpGet(response = Future(fakeHttpResponse(OK, testRegistrationCode.encrypt)))
+      mockHttpGet(response = fakeHttpResponse(OK, testRegistrationCode.encrypt))
 
       awaitAndAssert(testConnector.getRegistrationCode) {
         _ mustBe testRegistrationCode
@@ -110,7 +108,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
   "generateRegistrationCode" should {
     "return a success" when {
       "a code has been generated" in {
-        mockHttpHead(response = Future(fakeHttpResponse(OK)))
+        mockHttpHead(response = fakeHttpResponse(OK))
 
         awaitAndAssert(testConnector.generateRegistrationCode) {
           _ mustBe HttpResponse.success
@@ -121,7 +119,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "createClassroom" should {
     "return the name of the created classroom" in {
-      mockHttpPostString(response = Future(fakeHttpResponse(OK)))
+      mockHttpPostString(response = fakeHttpResponse(OK))
 
       awaitAndAssert(testConnector.createClassroom("testClassRoom")) {
         _ mustBe "testClassRoom"
@@ -131,7 +129,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "getClassrooms" should {
     "return a seq of class rooms" in {
-      mockHttpGet(response = Future(fakeHttpResponse(OK, testClassSeq.encrypt)))
+      mockHttpGet(response = fakeHttpResponse(OK, testClassSeq.encrypt))
 
       awaitAndAssert(testConnector.getClassrooms) {
         _ mustBe testClassSeq
@@ -139,7 +137,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
     }
 
     "return an empty seq" in {
-      mockHttpGet(response = Future(fakeHttpResponse(NO_CONTENT)))
+      mockHttpGet(response = fakeHttpResponse(NO_CONTENT))
 
       awaitAndAssert(testConnector.getClassrooms) {
         _ mustBe Seq.empty[Classroom]
@@ -149,7 +147,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "getClassroom" should {
     "return a classroom" in {
-      mockHttpGet(response = Future(fakeHttpResponse(OK, testClassroom.encrypt)))
+      mockHttpGet(response = fakeHttpResponse(OK, testClassroom.encrypt))
 
       awaitAndAssert(testConnector.getClassroom(generateTestSystemId("class"))) {
         _ mustBe testClassroom
@@ -159,7 +157,7 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
   "deleteClassroom" should {
     "return a HttpSuccess" in {
-      mockHttpDelete(response = Future(fakeHttpResponse(OK)))
+      mockHttpDelete(response = fakeHttpResponse(OK))
 
       awaitAndAssert(testConnector.deleteClassroom(generateTestSystemId("class"))) {
         _ mustBe HttpResponse.success

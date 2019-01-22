@@ -19,6 +19,8 @@ package services
 import connectors.{AuthMicroserviceConnector, SessionStoreConnector}
 import helpers.services.ServiceSpec
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class LoginServiceSpec extends ServiceSpec {
 
   val testService = new LoginService {
@@ -36,8 +38,8 @@ class LoginServiceSpec extends ServiceSpec {
 
         mockUpdateSession(updated = true)
 
-        awaitAndAssert(testService.processLoginAttempt(testUserLogin)) { res =>
-          res.get.data mustBe orgSession
+        awaitAndAssert(testService.processLoginAttempt(testUserLogin)) {
+          _.get.data mustBe orgSession
         }
       }
     }
@@ -50,8 +52,8 @@ class LoginServiceSpec extends ServiceSpec {
 
         mockUpdateSession(updated = true)
 
-        awaitAndAssert(testService.processLoginAttempt(testUserLogin)) { res =>
-          res.get.data mustBe individualSession
+        awaitAndAssert(testService.processLoginAttempt(testUserLogin)) {
+          _.get.data mustBe individualSession
         }
       }
     }

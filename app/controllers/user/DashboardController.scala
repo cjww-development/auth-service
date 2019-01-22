@@ -23,12 +23,12 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.DashboardService
 import views.html.user.{Dashboard, OrgDashboard}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DefaultDashboardController @Inject()(val dashboardService: DashboardService,
                                            val controllerComponents: ControllerComponents,
-                                           val authConnector: AuthConnector) extends DashboardController
+                                           val authConnector: AuthConnector,
+                                           implicit val ec: ExecutionContext) extends DashboardController
 
 trait DashboardController extends AuthController {
   val dashboardService: DashboardService
@@ -42,13 +42,13 @@ trait DashboardController extends AuthController {
             teacherList         <- dashboardService.getTeacherList
           } yield Ok(OrgDashboard(basicDetails, teacherList, deversityEnabled))
           case "individual" => for {
-            basicDetails        <- dashboardService.getBasicDetails
+            Some(basicDetails)  <- dashboardService.getBasicDetails
             settings            <- dashboardService.getSettings
             feed                <- dashboardService.getFeed
             deversityEnrolment  <- if(deversityEnabled) {
               dashboardService.getDeversityEnrolment
             } else {
-              Future(None)
+              Future.successful(None)
             }
           } yield Ok(Dashboard(feed, basicDetails, settings, deversityEnabled, deversityEnrolment))
         }
