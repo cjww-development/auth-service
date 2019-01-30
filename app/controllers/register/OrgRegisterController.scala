@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,11 @@
 package controllers.register
 
 import com.cjwwdev.auth.connectors.AuthConnector
+import com.cjwwdev.config.ConfigurationLoader
+import com.cjwwdev.featuremanagement.services.FeatureService
 import com.cjwwdev.views.html.templates.errors.StandardErrorView
 import common.helpers.FrontendController
+import common.{FeatureManagement, RedirectUrls}
 import enums.Registration
 import forms.OrgRegisterForm
 import javax.inject.Inject
@@ -31,16 +34,18 @@ import scala.concurrent.{ExecutionContext, Future}
 class DefaultOrgRegisterController @Inject()(val registrationService : RegisterService,
                                              val controllerComponents: ControllerComponents,
                                              val authConnector: AuthConnector,
-                                             implicit val ec: ExecutionContext) extends OrgRegisterController
+                                             val config: ConfigurationLoader,
+                                             val featureService: FeatureService,
+                                             implicit val ec: ExecutionContext) extends OrgRegisterController with RedirectUrls
 
-trait OrgRegisterController extends FrontendController {
+trait OrgRegisterController extends FrontendController with FeatureManagement {
   val registrationService: RegisterService
 
-  def show: Action[AnyContent] = Action.async { implicit request =>
+  def show: Action[AnyContent] = Action.async { implicit req =>
     Future.successful(Ok(OrgRegisterView(OrgRegisterForm.orgRegisterForm)))
   }
 
-  def submit: Action[AnyContent] = Action.async { implicit request =>
+  def submit: Action[AnyContent] = Action.async { implicit req =>
     OrgRegisterForm.orgRegisterForm.bindFromRequest.fold(
       errors => Future.successful(BadRequest(OrgRegisterView(errors))),
       newOrg => registrationService.registerOrg(newOrg) map {

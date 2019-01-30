@@ -18,6 +18,8 @@ GET     /where-do-you-want-to-go              controllers.redirect.RedirectContr
 GET     /go-to-deversity                      controllers.redirect.RedirectController.redirectToDeversity
 GET     /go-to-diagnostics                    controllers.redirect.RedirectController.redirectToDiagnostics
 GET     /go-to-hub                            controllers.redirect.RedirectController.redirectToHub
+GET     /registration-code                    controllers.redirect.RedirectController.redirectToRegistrationCodeGenerator()
+GET     /manage-classrooms                    controllers.redirect.RedirectController.redirectToManageClassRooms()
 
 GET     /goodbye                              controllers.login.LoginController.signOut()
 
@@ -27,14 +29,6 @@ GET     /edit-your-profile                    controllers.user.EditProfileContro
 POST    /update-profile                       controllers.user.EditProfileController.updateProfile()
 POST    /update-password                      controllers.user.EditProfileController.updatePassword()
 POST    /update-settings                      controllers.user.EditProfileController.updateSettings()
-
-GET     /registration-code                    controllers.user.GenerateCodeController.getRegistrationCodeShow
-GET     /generate-registration-code           controllers.user.GenerateCodeController.generateRegistrationCode
-
-GET     /manage-classrooms                    controllers.user.deversity.ClassroomController.manageClassRooms
-POST    /create-classroom                     controllers.user.deversity.ClassroomController.createClassRoom
-GET     /delete-classroom                     controllers.user.deversity.ClassroomController.deleteClassRoom(classId: String ?= "")
-GET     /manage-classroom                     controllers.user.deversity.ClassroomController.manageClassRoom(classId: String ?= "")
 
 # Map static resources from the /public folderto the /assets URL path
 GET     /assets/*file                         controllers.Assets.versioned(path="/public", file: Asset)

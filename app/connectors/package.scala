@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,4 +22,10 @@ package object connectors {
   implicit val stringReads: json.Reads.StringReads.type = Reads.StringReads
   implicit val stringWrites: libs.json.Writes.StringWrites.type = Writes.StringWrites
   implicit val stringFormat: Format[String] = Format(stringReads, stringWrites)
+
+  private val fourXXRange = 400 to 499
+  private val fiveXXRange = 500 to 599
+
+  val isFourXX: Int => Boolean = fourXXRange.contains
+  val isFiveXX: Int => Boolean = fiveXXRange.contains
 }

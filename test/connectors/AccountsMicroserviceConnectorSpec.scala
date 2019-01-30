@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package connectors
 
+import com.cjwwdev.http.verbs.Http
 import enums.HttpResponse
 import helpers.connectors.ConnectorSpec
 
@@ -23,8 +24,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class AccountsMicroserviceConnectorSpec extends ConnectorSpec {
 
-  val testConnector = new AccountsMicroserviceConnector {
-    override val http = mockHttp
+  val testConnector = new AccountsConnector {
+    override val accounts: String = "/test/accounts"
+    override val http: Http       = mockHttp
   }
 
   "updateProfile" should {

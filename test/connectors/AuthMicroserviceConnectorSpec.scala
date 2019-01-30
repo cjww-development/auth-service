@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package connectors
 
+import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.implicits.ImplicitDataSecurity._
 import helpers.connectors.ConnectorSpec
 
@@ -24,7 +25,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class AuthMicroserviceConnectorSpec extends ConnectorSpec {
 
   val testConnector = new AuthMicroserviceConnector {
-    override val http = mockHttp
+    override val auth: String = "/test/auth"
+    override val http: Http   = mockHttp
   }
 
   "getUser" should {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,25 @@
 package services
 
 import com.cjwwdev.auth.models.CurrentUser
-import common.responses.MissingOrgDetailsException
-import connectors.{AccountsMicroserviceConnector, DeversityMicroserviceConnector}
+import com.cjwwdev.featuremanagement.services.FeatureService
+import common.responses.{FeatureStates, MissingOrgDetailsException}
+import connectors.{AccountsConnector, DeversityConnector}
 import javax.inject.Inject
 import models.accounts.{BasicDetails, DeversityEnrolment, Settings}
 import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.FeedItem
 import play.api.mvc.Request
 
-import scala.concurrent.{ExecutionContext => ExC, Future}
+import scala.concurrent.{Future, ExecutionContext => ExC}
 
-class DefaultDashboardService @Inject()(val accountConnector: AccountsMicroserviceConnector,
-                                        val deversityConnector: DeversityMicroserviceConnector,
+class DefaultDashboardService @Inject()(val accountConnector: AccountsConnector,
+                                        val deversityConnector: DeversityConnector,
+                                        val featureService: FeatureService,
                                         val feedService: FeedService) extends DashboardService
 
-trait DashboardService {
-  val accountConnector: AccountsMicroserviceConnector
-  val deversityConnector: DeversityMicroserviceConnector
+trait DashboardService extends FeatureStates {
+  val accountConnector: AccountsConnector
+  val deversityConnector: DeversityConnector
   val feedService: FeedService
 
   def getBasicDetails(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[Option[BasicDetails]] = {
@@ -58,9 +60,13 @@ trait DashboardService {
     }
   }
 
+  private def getEnrolment(implicit req: Request[_], currentUser: CurrentUser, ec: ExC): Future[Option[DeversityEnrolment]] = {
+    if(deversityEnabled) deversityConnector.getDeversityEnrolment else Future.successful(None)
+  }
+
   def getDeversityEnrolment(implicit user: CurrentUser, req: Request[_], ec: ExC): Future[Option[DeversityEnrolment]] = {
     for {
-      enrolment <- deversityConnector.getDeversityEnrolment
+      enrolment <- getEnrolment
       school    <- enrolment match {
         case Some(enr) => deversityConnector.getSchoolInfo(enr.schoolDevId)
         case None      => Future.successful(None)

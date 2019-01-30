@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,148 +14,98 @@
  * limitations under the License.
  */
 
-
 package controllers.user
 
 import com.cjwwdev.auth.connectors.AuthConnector
+import com.cjwwdev.config.ConfigurationLoader
+import com.cjwwdev.featuremanagement.services.FeatureService
 import common.helpers.AuthController
-import common.responses.{InvalidOldPassword, PasswordUpdated}
-import connectors.AccountsMicroserviceConnector
+import common.{FeatureManagement, RedirectUrls}
+import connectors.AccountsConnector
 import enums.HttpResponse
 import forms.{NewPasswordForm, SettingsForm, UserProfileForm}
 import javax.inject.Inject
+import models.accounts.{BasicDetails, UserProfile}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.{EditProfileService, FeedService}
 import views.html.user.EditProfile
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-class DefaultEditProfileController @Inject()(val accountsConnector: AccountsMicroserviceConnector,
+class DefaultEditProfileController @Inject()(val accountsConnector: AccountsConnector,
                                              val feedService : FeedService,
                                              val controllerComponents: ControllerComponents,
                                              val authConnector: AuthConnector,
-                                             implicit val ec: ExecutionContext) extends EditProfileController
+                                             val config: ConfigurationLoader,
+                                             val editProfileService: EditProfileService,
+                                             val featureService: FeatureService,
+                                             implicit val ec: ExecutionContext) extends EditProfileController with RedirectUrls
 
-trait EditProfileController extends AuthController with EditProfileService {
-  val accountsConnector: AccountsMicroserviceConnector
+trait EditProfileController extends AuthController with FeatureManagement {
+  val accountsConnector: AccountsConnector
   val feedService: FeedService
+  val editProfileService: EditProfileService
 
-  def show : Action[AnyContent] = isAuthorised {
-    implicit request =>
-      implicit user =>
-        for {
-          Some(basicDetails) <- accountsConnector.getBasicDetails
-          settings           <- accountsConnector.getSettings
-        } yield {
-          Ok(
-            EditProfile(
-              UserProfileForm.form.fill(basicDetails),
-              NewPasswordForm.form,
-              SettingsForm.form.fill(settings),
-              basicDetails
-            )
-          )
-        }
+  implicit def basicDetailsToUserProfile(basicDetails: BasicDetails): UserProfile = UserProfile(
+    firstName = basicDetails.firstName,
+    lastName  = basicDetails.lastName,
+    userName  = basicDetails.userName,
+    email     = basicDetails.email
+  )
+
+  def show : Action[AnyContent] = isAuthorised { implicit req => implicit user =>
+    editProfileService.getDetailsAndSettings map { case (details, settings) =>
+      val profileForm  = UserProfileForm.form.fill(details)
+      val passwordForm = NewPasswordForm.form
+      val settingsForm = SettingsForm.form.fill(settings)
+
+      Ok(EditProfile(profileForm, passwordForm, settingsForm, details))
+    }
   }
 
-  def updateProfile() : Action[AnyContent] = isAuthorised {
-    implicit request =>
-      implicit user =>
-        UserProfileForm.form.bindFromRequest.fold(
-          errors => {
-            for {
-              Some(basicDetails) <- accountsConnector.getBasicDetails
-              settings           <- accountsConnector.getSettings
-            } yield {
-              BadRequest(
-                EditProfile(
-                  errors,
-                  NewPasswordForm.form,
-                  SettingsForm.form.fill(settings),
-                  basicDetails
-                )
-              )
-            }
-          },
-          valid => accountsConnector.updateProfile(valid) flatMap {
-            case HttpResponse.success => for {
-              _ <- feedService.basicDetailsFeedEvent
-            } yield {
-              Redirect(routes.EditProfileController.show()).withSession(request.session. +("firstName" -> valid.firstName) +("lastName" -> valid.lastName))
-            }
-          }
-        )
+  def updateProfile() : Action[AnyContent] = isAuthorised { implicit req => implicit user =>
+    UserProfileForm.form.bindFromRequest.fold(
+      errors => editProfileService.getDetailsAndSettings map { case (details, settings) =>
+        BadRequest(EditProfile(errors, NewPasswordForm.form, SettingsForm.form.fill(settings), details))
+      },
+      valid => editProfileService.updateProfile(valid) map {
+        _ => Redirect(routes.EditProfileController.show())
+          .withSession(req.session. +("firstName" -> valid.firstName) + ("lastName" -> valid.lastName))
+      }
+    )
   }
 
-  def updatePassword() : Action[AnyContent] = isAuthorised {
-    implicit user =>
-      implicit request =>
-        NewPasswordForm.form.bindFromRequest.fold(
-          errors => {
-            for {
-              Some(basicDetails) <- accountsConnector.getBasicDetails
-              settings           <- accountsConnector.getSettings
-            } yield {
-              BadRequest(
-                EditProfile(
-                  UserProfileForm.form.fill(basicDetails),
-                  errors,
-                  SettingsForm.form.fill(settings),
-                  basicDetails
-                )
-              )
-            }
-          },
-          valid => accountsConnector.updatePassword(valid) flatMap {
-            case PasswordUpdated => feedService.passwordUpdateFeedEvent map {
-              _ => Redirect(s"${routes.EditProfileController.show().url}#password")
-            }
-            case InvalidOldPassword =>
-              accountsConnector.getBasicDetails flatMap {
-                basicDetails =>
-                  accountsConnector.getSettings map {
-                    settings =>
-                      BadRequest(
-                        EditProfile(
-                          UserProfileForm.form.fill(basicDetails.get),
-                          NewPasswordForm.form.fill(valid).withError("oldPassword", "Your old password is incorrect"),
-                          SettingsForm.form.fill(settings),
-                          basicDetails.get
-                        )
-                      )
-                  }
-              }
-          }
-        )
+  def updatePassword() : Action[AnyContent] = isAuthorised { implicit req => implicit user =>
+    NewPasswordForm.form.bindFromRequest.fold(
+      errors => editProfileService.getDetailsAndSettings map { case (details, settings) =>
+        BadRequest(EditProfile(UserProfileForm.form.fill(details), errors, SettingsForm.form.fill(settings), details))
+      },
+      valid => editProfileService.updatePassword(valid) map {
+        case Left((details, settings)) => BadRequest(EditProfile(
+          UserProfileForm.form.fill(details),
+          NewPasswordForm.form.fill(valid).withError("oldPassword", "Your old password is incorrect"),
+          SettingsForm.form.fill(settings),
+          details
+        ))
+        case Right(_) => Redirect(s"${routes.EditProfileController.show().url}#password")
+      }
+    )
   }
 
-  def updateSettings() : Action[AnyContent] = isAuthorised {
-    implicit user =>
-      implicit request =>
-        SettingsForm.form.bindFromRequest.fold(
-          errors => {
-            for {
-              Some(basicDetails) <- accountsConnector.getBasicDetails
-            } yield {
-              BadRequest(
-                EditProfile(
-                  UserProfileForm.form.fill(basicDetails),
-                  NewPasswordForm.form,
-                  errors,
-                  basicDetails
-                )
-              )
-            }
-          },
-          valid => {
-            accountsConnector.updateSettings(valid) flatMap {
-              case HttpResponse.success =>
-                feedService.accountSettingsFeedEvent map {
-                  _ => Redirect(routes.EditProfileController.show())
-                }
-              case HttpResponse.failed => Future.successful(InternalServerError)
-            }
-          }
-        )
+  def updateSettings() : Action[AnyContent] = isAuthorised { implicit req => implicit user =>
+    SettingsForm.form.bindFromRequest.fold(
+      errors => editProfileService.getBasicDetails map { details =>
+        BadRequest(EditProfile(
+          UserProfileForm.form.fill(details),
+          NewPasswordForm.form,
+          errors,
+          details
+        ))
+      },
+      valid => editProfileService.updateSettings(valid) map {
+        case HttpResponse.success => Redirect(routes.EditProfileController.show())
+        case HttpResponse.failed  => InternalServerError
+      }
+    )
   }
 }

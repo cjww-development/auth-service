@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package forms
+package common.responses
 
-import forms.validation.ClassroomValidation.classNameValidation
-import play.api.data.Form
-import play.api.data.Forms._
-import play.api.i18n.{Lang, MessagesApi}
+import com.cjwwdev.featuremanagement.services.FeatureService
+import common.Features
 
-object CreateClassForm {
-  def form(implicit messages: MessagesApi, lang: Lang): Form[String] = Form(
-    single(
-      "classRoomName" -> classNameValidation
-    )
-  )
+trait FeatureStates {
+
+  val featureService: FeatureService
+
+  def deversityEnabled: Boolean = featureService.getState(Features.deversity).state
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,58 @@
 
 package services
 
-import models.accounts.{BasicDetails, Settings, UserProfile}
+import com.cjwwdev.auth.models.CurrentUser
+import common.responses.{InvalidOldPassword, PasswordUpdated, UpdatedPasswordResponse}
+import connectors.AccountsConnector
+import enums.HttpResponse
+import javax.inject.Inject
+import models.accounts.{BasicDetails, PasswordSet, Settings, UserProfile}
+import play.api.mvc.Request
 
-import scala.language.implicitConversions
+import scala.concurrent.{Future, ExecutionContext => ExC}
 
-object EditProfileService extends EditProfileService
+class DefaultEditProfileService @Inject()(val accountsConnector: AccountsConnector,
+                                          val feedService: FeedService) extends EditProfileService
 
 trait EditProfileService {
 
-  implicit def basicDetailsToUserProfile(basicDetails: BasicDetails): UserProfile = UserProfile(
-    firstName = basicDetails.firstName,
-    lastName  = basicDetails.lastName,
-    userName  = basicDetails.userName,
-    email     = basicDetails.email
-  )
+  val accountsConnector: AccountsConnector
+  val feedService: FeedService
 
-  def getDisplayOption(settings: Settings): String = {
-    settings.displayNameColour
+  def getDetailsAndSettings(implicit req: Request[_], currentUser: CurrentUser, ec: ExC): Future[(BasicDetails, Settings)] = {
+    for {
+      Some(details) <- accountsConnector.getBasicDetails
+      settings      <- accountsConnector.getSettings
+    } yield (details, settings)
   }
 
-  def getDisplayNameColour(settings: Settings): String = {
-    settings.displayNameColour
+  def getBasicDetails(implicit req: Request[_], currentUser: CurrentUser, ec: ExC): Future[BasicDetails] = {
+    accountsConnector.getBasicDetails.map(_.get)
   }
 
-  def getDisplayImageURL(settings: Settings): String = {
-    settings.displayImageURL
+  def updateProfile(updatedProfile: UserProfile)(implicit req: Request[_], currentUser: CurrentUser, ec: ExC): Future[HttpResponse.Value] = {
+    for {
+      res <- accountsConnector.updateProfile(updatedProfile)
+      _   <- feedService.basicDetailsFeedEvent
+    } yield res
+  }
+
+  def updatePassword(newPassword: PasswordSet)(implicit req: Request[_],
+                                               currentUser: CurrentUser,
+                                               ec: ExC): Future[Either[(BasicDetails, Settings), UpdatedPasswordResponse]] = {
+    accountsConnector.updatePassword(newPassword) flatMap {
+      case res@PasswordUpdated => feedService.passwordUpdateFeedEvent map(_ => Right(res))
+      case InvalidOldPassword  => for {
+        Some(details) <- accountsConnector.getBasicDetails
+        settings      <- accountsConnector.getSettings
+      } yield Left((details, settings))
+    }
+  }
+
+  def updateSettings(newSettings: Settings)(implicit req: Request[_], currentUser: CurrentUser, ec: ExC): Future[HttpResponse.Value] = {
+    accountsConnector.updateSettings(newSettings) flatMap {
+      case res@HttpResponse.success => feedService.accountSettingsFeedEvent map(_ => res)
+      case res@HttpResponse.failed  => Future.successful(res)
+    }
   }
 }

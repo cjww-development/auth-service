@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package common
 
+import com.cjwwdev.featuremanagement.services.FeatureService
 import com.cjwwdev.logging.Logging
 import com.cjwwdev.request.RequestBuilder
 import com.cjwwdev.views.html.templates.errors.{NotFoundView, ServerErrorView, StandardErrorView}
@@ -24,22 +25,29 @@ import play.api.http.HttpErrorHandler
 import play.api.http.Status.{FORBIDDEN, NOT_FOUND}
 import play.api.i18n.{Lang, Langs, MessagesApi}
 import play.api.mvc.Results.{InternalServerError, NotFound, Redirect, Status}
-import play.api.mvc.{Request, RequestHeader, Result}
+import play.api.mvc._
 import play.api.routing.Router
 import play.api.{Environment, OptionalSourceMapper}
 
 import scala.concurrent.Future
 
 @Singleton
-class ErrorHandler @Inject()(env: Environment,
-                             sm: OptionalSourceMapper,
-                             router: Provider[Router],
-                             langs: Langs,
-                             implicit val messages: MessagesApi) extends HttpErrorHandler with ApplicationConfiguration with Logging {
+class ErrorHandler @Inject()(val env: Environment,
+                             val sm: OptionalSourceMapper,
+                             val router: Provider[Router],
+                             val langs: Langs,
+                             val featureService: FeatureService,
+                             implicit val messages: MessagesApi)
+  extends HttpErrorHandler
+    with ViewConfiguration
+    with FeatureManagement
+    with Logging {
+
+  private val LOGIN_REDIRECT = "/account-services/login"
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
     implicit val lang: Lang = langs.preferred(request.acceptLanguages)
-    logger.error(s"[ErrorHandler] - [onClientError] - Url: ${request.uri}, status code: $statusCode")
+    logger.error(s"[onClientError] - Url: ${request.uri}, status code: $statusCode")
     implicit val req: Request[String] = RequestBuilder.buildRequest[String](request, "")
     statusCode match {
       case NOT_FOUND  => Future.successful(NotFound(NotFoundView()))
@@ -50,8 +58,7 @@ class ErrorHandler @Inject()(env: Environment,
 
   override def onServerError(request: RequestHeader, exception: Throwable): Future[Result] = {
     implicit val lang: Lang = langs.preferred(request.acceptLanguages)
-    logger.error(s"[ErrorHandler] - [onServerError] - exception : $exception")
-    exception.printStackTrace()
+    logger.error(s"[onServerError] - !EXCEPTION!", exception)
     implicit val req: Request[String] = RequestBuilder.buildRequest[String](request, "")
     Future.successful(InternalServerError(ServerErrorView()))
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,16 @@
 package common.helpers
 
 import com.cjwwdev.logging.Logging
-import common.ApplicationConfiguration
 import play.api.mvc.Request
 
-trait UrlParser extends ApplicationConfiguration with Logging {
+trait UrlParser extends Logging {
+
+  protected val diagnosticsFrontend: String
+  protected val deversityFrontend: String
+  protected val hubFrontend: String
+
   def serviceDirector(implicit request: Request[_]) : String = {
-    logger.info(s"[UrlParser] - [serviceDirector] ${request.getQueryString("redirect").getOrElse("Redirecting to service selector")}")
+    logger.info(s"[serviceDirector] - ${request.getQueryString("redirect").getOrElse("Redirecting to service selector")}")
     request.getQueryString("redirect") match {
       case Some("diagnostics") => diagnosticsFrontend
       case Some("deversity")   => deversityFrontend

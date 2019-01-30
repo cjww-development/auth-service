@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,25 +18,27 @@ package services
 
 import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.config.ConfigurationLoader
-import common.ApplicationConfiguration
-import connectors.AccountsMicroserviceConnector
+import connectors.AccountsConnector
 import enums.HttpResponse
 import javax.inject.Inject
 import models.feed.{EventDetail, FeedItem, SourceDetail}
 import org.joda.time.DateTime
 import play.api.mvc.Request
 
-import scala.concurrent.{ExecutionContext => ExC, Future}
+import scala.concurrent.{Future, ExecutionContext => ExC}
 
-class DefaultFeedService @Inject()(val accountConnector: AccountsMicroserviceConnector,
+class DefaultFeedService @Inject()(val accountConnector: AccountsConnector,
                                    val config: ConfigurationLoader) extends FeedService {
   override val appName: String = config.get[String]("appName")
+  override val TITLE: String   = "Your profile has been updated"
 }
 
-trait FeedService extends ApplicationConfiguration {
-  val accountConnector: AccountsMicroserviceConnector
+trait FeedService {
+  val accountConnector: AccountsConnector
 
   val appName: String
+
+  val TITLE: String
 
   private[services] def buildFeedItem(location : String, desc : String)(implicit user: CurrentUser) : FeedItem = {
     FeedItem(

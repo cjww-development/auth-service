@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package common.helpers
 
-import common.ApplicationConfiguration
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.i18n.Lang
 import play.api.mvc._
@@ -25,9 +24,7 @@ import scala.concurrent.ExecutionContext
 
 trait FrontendController
   extends BaseController
-    with ControllerHelpers
-    with ApplicationConfiguration
-    with UrlParser{
+    with UrlParser {
 
   implicit val ec: ExecutionContext
 

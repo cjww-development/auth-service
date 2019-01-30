@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 package filters
 
 import akka.stream.Materializer
+import com.cjwwdev.featuremanagement.services.FeatureService
 import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
 import com.cjwwdev.shuttering.filters.FrontendShutteringFilter
+import common.FeatureManagement
 import controllers.login.{routes => loginRoutes}
 import controllers.redirect.{routes => redirectRoutes}
 import controllers.register.{routes => registerRoutes}
@@ -30,8 +32,8 @@ import play.api.mvc.{Call, RequestHeader}
 
 class DefaultShutteringFilter @Inject()(implicit val mat: Materializer,
                                         implicit val messages: MessagesApi,
-                                        val langs: Langs) extends FrontendShutteringFilter {
-  private def deversityEnabled: Boolean = System.getProperty("features.deversity", "false").toBoolean
+                                        val featureService: FeatureService,
+                                        val langs: Langs) extends FrontendShutteringFilter with FeatureManagement {
 
   override implicit def pageLinks(implicit rh: RequestHeader): Seq[NavBarLinkBuilder] = {
     val home = Seq(NavBarLinkBuilder("/", "glyphicon-home", "Home", "home"))

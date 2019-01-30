@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,28 @@ package connectors
 
 import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.config.ConfigurationLoader
-import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.responses.EvaluateResponse._
+import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.implicits.ImplicitDataSecurity._
-import common._
 import javax.inject.Inject
 import models.UserLogin
 import play.api.mvc.Request
 
-import scala.concurrent.{ExecutionContext => ExC, Future}
+import scala.concurrent.{Future, ExecutionContext => ExC}
 
 class DefaultAuthMicroserviceConnector @Inject()(val http: Http,
-                                                 val configurationLoader: ConfigurationLoader) extends AuthMicroserviceConnector
+                                                 val config: ConfigurationLoader) extends AuthMicroserviceConnector {
+  override val auth: String = config.getServiceUrl("auth-microservice")
+}
 
-trait AuthMicroserviceConnector extends ApplicationConfiguration with WsResponseHelpers {
+trait AuthMicroserviceConnector extends WsResponseHelpers {
   val http: Http
 
+  val auth: String
+
   def getUser(loginDetails : UserLogin)(implicit req: Request[_], ec: ExC): Future[Option[CurrentUser]] = {
-    http.get(s"$authMicroservice/login/user?enc=${loginDetails.encrypt}") map {
+    http.get(s"$auth/login/user?enc=${loginDetails.encrypt}") map {
       case SuccessResponse(resp) => resp.toDataType[CurrentUser](needsDecrypt = true).fold(Some(_), _ => None)
       case ErrorResponse(_)      => None
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package common.helpers
+package common
 
-import com.cjwwdev.views.html.templates.errors.NotFoundView
-import common.ApplicationConfiguration
-import play.api.i18n.Lang
-import play.api.mvc.{BaseController, Request, Result}
+import com.cjwwdev.config.ConfigurationLoader
 
-import scala.concurrent.Future
+trait RedirectUrls {
 
-trait ControllerHelpers extends ApplicationConfiguration {
-  self: BaseController =>
+  val config: ConfigurationLoader
 
-  protected def deversityGuard(result: => Future[Result])(implicit request: Request[_], lang: Lang): Future[Result] = {
-    if(deversityEnabled) result else Future.successful(NotFound(NotFoundView()))
-  }
+  protected val diagnosticsFrontend: String = config.getServiceUrl("diagnostics-frontend")
+  protected val deversityFrontend: String   = config.getServiceUrl("deversity-frontend")
+  protected val hubFrontend: String         = config.getServiceUrl("hub-frontend")
 }
