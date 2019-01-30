@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 
 package connectors
 
+import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.implicits.ImplicitDataSecurity._
-import enums.HttpResponse
 import helpers.connectors.ConnectorSpec
-import models.deversity.Classroom
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
-  val testConnector = new DeversityMicroserviceConnector {
-    override val http = mockHttp
+  val testConnector = new DeversityConnector {
+    override val deversity: String = "/test/deversity"
+    override val http: Http        = mockHttp
   }
 
   "getDeversityEnrolment" should {
@@ -91,76 +91,6 @@ class DeversityMicroserviceConnectorSpec extends ConnectorSpec {
 
       awaitAndAssert(testConnector.getSchoolInfo("testSchool")) {
         _ mustBe None
-      }
-    }
-  }
-
-  "getRegistrationCode" should {
-    "return some OrgDetails" in {
-      mockHttpGet(response = fakeHttpResponse(OK, testRegistrationCode.encrypt))
-
-      awaitAndAssert(testConnector.getRegistrationCode) {
-        _ mustBe testRegistrationCode
-      }
-    }
-  }
-
-  "generateRegistrationCode" should {
-    "return a success" when {
-      "a code has been generated" in {
-        mockHttpHead(response = fakeHttpResponse(OK))
-
-        awaitAndAssert(testConnector.generateRegistrationCode) {
-          _ mustBe HttpResponse.success
-        }
-      }
-    }
-  }
-
-  "createClassroom" should {
-    "return the name of the created classroom" in {
-      mockHttpPostString(response = fakeHttpResponse(OK))
-
-      awaitAndAssert(testConnector.createClassroom("testClassRoom")) {
-        _ mustBe "testClassRoom"
-      }
-    }
-  }
-
-  "getClassrooms" should {
-    "return a seq of class rooms" in {
-      mockHttpGet(response = fakeHttpResponse(OK, testClassSeq.encrypt))
-
-      awaitAndAssert(testConnector.getClassrooms) {
-        _ mustBe testClassSeq
-      }
-    }
-
-    "return an empty seq" in {
-      mockHttpGet(response = fakeHttpResponse(NO_CONTENT))
-
-      awaitAndAssert(testConnector.getClassrooms) {
-        _ mustBe Seq.empty[Classroom]
-      }
-    }
-  }
-
-  "getClassroom" should {
-    "return a classroom" in {
-      mockHttpGet(response = fakeHttpResponse(OK, testClassroom.encrypt))
-
-      awaitAndAssert(testConnector.getClassroom(generateTestSystemId("class"))) {
-        _ mustBe testClassroom
-      }
-    }
-  }
-
-  "deleteClassroom" should {
-    "return a HttpSuccess" in {
-      mockHttpDelete(response = fakeHttpResponse(OK))
-
-      awaitAndAssert(testConnector.deleteClassroom(generateTestSystemId("class"))) {
-        _ mustBe HttpResponse.success
       }
     }
   }

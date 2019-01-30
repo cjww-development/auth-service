@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-// Reset filters for IE
-//
-// When you need to remove a gradient background, do not forget to use this to reset
-// the IE filter for IE9 and below.
+package common
 
-@mixin reset-filter() {
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+import common.responses.FeatureStates
+import play.api.i18n.{Lang, MessagesApi}
+import play.api.mvc.Results.NotFound
+import play.api.mvc.{Request, Result}
+
+import scala.concurrent.Future
+
+trait FeatureManagement extends ViewConfiguration with FeatureStates {
+  def featureGuard(featureState: Boolean)(result: => Future[Result])(implicit req: Request[_], messages: MessagesApi, lang: Lang): Future[Result] = {
+    if(featureState) result else Future.successful(NotFound(notFoundView))
+  }
 }

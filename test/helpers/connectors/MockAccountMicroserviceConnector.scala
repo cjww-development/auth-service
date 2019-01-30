@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package helpers.connectors
 
-import common.responses.{InvalidOldPassword, MissingBasicDetailsException, PasswordUpdated, UpdatedPasswordResponse}
-import connectors.AccountsMicroserviceConnector
+import common.responses.{InvalidOldPassword, PasswordUpdated, UpdatedPasswordResponse}
+import connectors.AccountsConnector
 import enums.{HttpResponse, Registration}
 import helpers.other.Fixtures
 import models.accounts.{BasicDetails, Enrolments, Settings}
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 trait MockAccountMicroserviceConnector extends BeforeAndAfterEach with MockitoSugar with Fixtures {
   self: PlaySpec =>
 
-  val mockAccountsMicroserviceConnector = mock[AccountsMicroserviceConnector]
+  val mockAccountsMicroserviceConnector = mock[AccountsConnector]
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()

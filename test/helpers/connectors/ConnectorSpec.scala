@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,8 @@ import com.cjwwdev.security.obfuscation.{Obfuscation, Obfuscator}
 import connectors.{stringReads, stringWrites}
 import helpers.other.{Fixtures, FutureAsserts, MockHttp, MockRequest}
 import helpers.services.MockFeatureService
-import models.RegistrationCode
 import models.accounts.DeversityEnrolment
-import models.deversity.{Classroom, OrgDetails, TeacherDetails}
+import models.deversity.{OrgDetails, TeacherDetails}
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status
 import play.api.libs.json._
@@ -75,17 +74,5 @@ trait ConnectorSpec
 
   implicit val orgDetailsObs: Obfuscator[OrgDetails] = new Obfuscator[OrgDetails] {
     override def encrypt(value: OrgDetails): String = Obfuscation.obfuscateJson(Json.toJson(value))
-  }
-
-  implicit val regCodeObs: Obfuscator[RegistrationCode] = new Obfuscator[RegistrationCode] {
-    override def encrypt(value: RegistrationCode): String = Obfuscation.obfuscateJson(Json.toJson(value))
-  }
-
-  implicit val classSeqObs: Obfuscator[Seq[Classroom]] = new Obfuscator[Seq[Classroom]] {
-    override def encrypt(value: Seq[Classroom]): String = Obfuscation.obfuscateJson(Json.toJson(value))
-  }
-
-  implicit val classObs: Obfuscator[Classroom] = new Obfuscator[Classroom] {
-    override def encrypt(value: Classroom): String = Obfuscation.obfuscateJson(Json.toJson(value))
   }
 }

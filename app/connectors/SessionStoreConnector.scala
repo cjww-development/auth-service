@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,29 @@
 
 package connectors
 
-import com.cjwwdev.http.responses.WsResponseHelpers
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.responses.EvaluateResponse._
+import com.cjwwdev.http.responses.WsResponseHelpers
 import com.cjwwdev.http.session.SessionUtils
 import com.cjwwdev.http.verbs.Http
 import com.cjwwdev.security.deobfuscation.DeObfuscator
-import common.ApplicationConfiguration
 import enums.SessionCache
 import javax.inject.Inject
 import models.SessionUpdateSet
 import play.api.libs.json.{OFormat, Reads}
 import play.api.mvc.Request
 
-import scala.concurrent.{ExecutionContext => ExC, Future}
+import scala.concurrent.{Future, ExecutionContext => ExC}
 
-class DefaultSessionStoreConnector @Inject()(val http : Http) extends SessionStoreConnector
+class DefaultSessionStoreConnector @Inject()(val http : Http,
+                                             val config: ConfigurationLoader) extends SessionStoreConnector {
+  override val sessionStore: String = config.getServiceUrl("session-store")
+}
 
-trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils with WsResponseHelpers {
+trait SessionStoreConnector extends SessionUtils with WsResponseHelpers {
   val http: Http
+
+  val sessionStore: String
 
   def cache(sessionId : String)(implicit req: Request[_], ec: ExC) : Future[SessionCache.Value] = {
     http.postString(s"$sessionStore/session/$sessionId", "") map {
@@ -62,8 +67,8 @@ trait SessionStoreConnector extends ApplicationConfiguration with SessionUtils w
     http.delete(s"$sessionStore/session/$getCookieId") map {
       case SuccessResponse(_)  => SessionCache.cacheDestroyed
       case ErrorResponse(resp) => resp.status match {
-        case client if (400 to 499).contains(client) => SessionCache.cacheDestroyed
-        case server if (500 to 599).contains(server) => SessionCache.cacheDestructionFailure
+        case client if isFourXX(client) => SessionCache.cacheDestroyed
+        case server if isFiveXX(server) => SessionCache.cacheDestructionFailure
       }
     }
   }

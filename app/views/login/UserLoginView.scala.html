@@ -1,6 +1,6 @@
 @import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
-@import com.cjwwdev.views.html.templates.MainTemplate
 @import com.cjwwdev.views.html.helpers.{errorPanel, textInput}
+@import com.cjwwdev.views.html.templates.MainTemplate
 @import helper._
 
 @(login: Form[models.UserLogin])(implicit request: Request[_], messages: MessagesApi, lang: Lang, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])

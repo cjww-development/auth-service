@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 package helpers.other
 
 import com.cjwwdev.auth.models.CurrentUser
+import models.UserLogin
 import models.accounts._
-import models.deversity.{Classroom, OrgDetails, TeacherDetails}
+import models.deversity.{OrgDetails, TeacherDetails}
 import models.feed.{EventDetail, FeedItem, SourceDetail}
 import models.registration.OrgRegistration
-import models.{RegistrationCode, UserLogin}
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 
@@ -155,24 +155,6 @@ trait Fixtures extends TestDataGenerator with MockRequest {
     userName  = "tUserName",
     email     = "test@email.com"
   )
-
-  val testRegistrationCode = RegistrationCode(
-    identifier  = generateTestSystemId(DEVERSITY),
-    code        = "testCode",
-    createdAt   = now
-  )
-
-  val testClassroom = Classroom(
-    classId = generateTestSystemId("class"),
-    name    = "testClassroomName"
-  )
-
-  val testClassroom2 = Classroom(
-    classId = generateTestSystemId("class"),
-    name    = "testClassroomName2"
-  )
-
-  val testClassSeq = Seq(testClassroom, testClassroom2)
 
   val testUserLogin = UserLogin(
     username = "testUserName",

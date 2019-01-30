@@ -1,9 +1,9 @@
 @import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
-@import com.cjwwdev.views.html.templates.MainTemplate
 @import com.cjwwdev.views.html.helpers.{errorPanel, textInput}
+@import com.cjwwdev.views.html.templates.MainTemplate
+@import controllers.register.{routes => registerRoutes}
 @import helper._
 @import models.registration.OrgRegistration
-@import controllers.register.{routes => registerRoutes}
 
 @(register: Form[OrgRegistration])(implicit request: Request[_], messages: MessagesApi, lang: Lang, links: Seq[NavBarLinkBuilder], navBarRoutes: Map[String, Call])
 

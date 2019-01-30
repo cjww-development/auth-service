@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,44 +17,20 @@
 package common
 
 import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
-import com.typesafe.config.ConfigFactory
-import play.api.mvc.{Call, RequestHeader}
+import com.cjwwdev.views.html.templates.errors.NotFoundView
+import controllers.login.{routes => loginRoutes}
 import controllers.redirect.{routes => redirectRoutes}
 import controllers.register.{routes => registerRoutes}
-import controllers.login.{routes => loginRoutes}
 import controllers.user.{routes => userRoutes}
 import controllers.{routes => assetRoutes}
+import play.api.i18n.{Lang, MessagesApi}
+import play.api.mvc.{Call, Request, RequestHeader}
+import play.twirl.api.HtmlFormat
 
-trait ApplicationConfiguration {
+trait ViewConfiguration {
+  self: FeatureManagement =>
 
-  def deversityEnabled: Boolean = System.getProperty("features.deversity", "false").toBoolean
-
-  def buildServiceUrl(service: String): String = ConfigFactory.load.getString(s"microservice.external-services.$service.domain")
-
-  //FeedServiceConfig
-  val EDIT_PROFILE          = "edit-profile"
-  val TITLE                 = "Your profile has been updated"
-
-  val LOGIN_CALLBACK        = controllers.login.routes.LoginController.show(None).url
-
-  val LOGIN_REDIRECT        = "/account-services/login"
-
-  //Account types
-  val ORGANISATION          = "organisation"
-  val INDIVIDUAL            = "individual"
-
-  //routes
-  val accountsMicroservice  = buildServiceUrl("accounts-microservice")
-  val authMicroservice      = buildServiceUrl("auth-microservice")
-  val sessionStore          = buildServiceUrl("session-store")
-  val authService           = buildServiceUrl("auth-service")
-  val diagnosticsFrontend   = buildServiceUrl("diagnostics-frontend")
-  val deversityFrontend     = buildServiceUrl("deversity-frontend")
-  val deversityMicroservice = buildServiceUrl("deversity")
-  val hubFrontend           = buildServiceUrl("hub-frontend")
-
-
-  implicit def serviceLinks(implicit requestHeader: RequestHeader): Seq[NavBarLinkBuilder] = {
+  implicit def serviceLinks(implicit rh: RequestHeader): Seq[NavBarLinkBuilder] = {
     val home = Seq(NavBarLinkBuilder("/", "glyphicon-home", "Home", "home"))
     val diag = Seq(NavBarLinkBuilder(redirectRoutes.RedirectController.redirectToDiagnostics().url, "glyphicon-wrench", "Diagnostics", "diagnostics"))
     val dev  = Seq(NavBarLinkBuilder(redirectRoutes.RedirectController.redirectToDeversity().url, "glyphicon-education", "Deversity", "deversity"))
@@ -63,7 +39,7 @@ trait ApplicationConfiguration {
     home ++ diag ++ (if(deversityEnabled) dev else Seq.empty) ++ hub
   }
 
-  implicit def standardNavBarRoutes(implicit requestHeader: RequestHeader): Map[String, Call] = Map(
+  implicit def standardNavBarRoutes(implicit rh: RequestHeader): Map[String, Call] = Map(
     "navBarLogo"   -> assetRoutes.Assets.versioned("images/logo.png"),
     "globalAssets" -> assetRoutes.Assets.versioned("stylesheets/global-assets.css"),
     "favicon"      -> assetRoutes.Assets.versioned("images/favicon.ico"),
@@ -73,4 +49,6 @@ trait ApplicationConfiguration {
     "dashboard"    -> userRoutes.DashboardController.show(),
     "signOut"      -> loginRoutes.LoginController.signOut()
   )
+
+  def notFoundView(implicit req: Request[_], messages: MessagesApi, lang: Lang): HtmlFormat.Appendable = NotFoundView()
 }

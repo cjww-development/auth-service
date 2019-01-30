@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package controllers
 
 import com.cjwwdev.auth.connectors.AuthConnector
+import com.cjwwdev.featuremanagement.services.FeatureService
 import connectors.SessionStoreConnector
 import controllers.login.LoginController
 import enums.SessionCache
@@ -34,6 +35,10 @@ class LoginControllerSpec extends ControllerSpec {
 
   class Setup(deversity: Boolean = false) {
     val testController = new LoginController {
+      override protected val diagnosticsFrontend: String        = "/test/diagnostics"
+      override protected val deversityFrontend: String          = "/test/deversity"
+      override protected val hubFrontend: String                = "/test/hub"
+      override val featureService: FeatureService               = mockFeatureService
       override implicit val ec: ExecutionContext                = Implicits.global
       override def deversityEnabled: Boolean                    = deversity
       override val controllerComponents: ControllerComponents   = stubControllerComponents()
@@ -98,7 +103,7 @@ class LoginControllerSpec extends ControllerSpec {
     "return a SeeOther and redirect to the service director page" in new Setup(deversity = true) {
       runActionWithoutAuth(testController.activateAuthServiceSession("testCookieId"), addCSRFToken(FakeRequest())) { res =>
         status(res)           mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some("http://localhost:9986/deversity/private/build-deversity-session/testCookieId")
+        redirectLocation(res) mustBe Some("/test/deversity/private/build-deversity-session/testCookieId")
       }
     }
   }

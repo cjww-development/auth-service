@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import controllers.redirect.{DefaultRedirectController, RedirectController}
 import controllers.register.{DefaultOrgRegisterController, DefaultUserRegisterController, OrgRegisterController, UserRegisterController}
 import controllers.test._
 import controllers.user._
-import controllers.user.deversity.{ClassroomController, DefaultClassroomController}
 import filters.{DefaultIpWhitelistFilter, DefaultShutteringFilter}
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
@@ -42,10 +41,10 @@ class ServiceBindings extends Module {
     bindOther() ++ bindConnectors() ++ bindServices() ++ bindControllers()
 
   private def bindConnectors(): Seq[Binding[_]] = Seq(
-    bind(classOf[TeardownConnector]).to(classOf[DefaultTeardownConnector]).eagerly(),
-    bind(classOf[AccountsMicroserviceConnector]).to(classOf[DefaultAccountsMicroserviceConnector]).eagerly(),
+    bind(classOf[TeardownConnector]) to classOf[DefaultTeardownConnector] eagerly(),
+    bind(classOf[AccountsConnector]).to(classOf[DefaultAccountsConnector]).eagerly(),
     bind(classOf[AuthMicroserviceConnector]).to(classOf[DefaultAuthMicroserviceConnector]).eagerly(),
-    bind(classOf[DeversityMicroserviceConnector]).to(classOf[DefaultDeversityMicroserviceConnector]).eagerly(),
+    bind(classOf[DeversityConnector]).to(classOf[DefaultDeversityConnector]).eagerly(),
     bind(classOf[SessionStoreConnector]).to(classOf[DefaultSessionStoreConnector]).eagerly()
   )
 
@@ -54,8 +53,7 @@ class ServiceBindings extends Module {
     bind(classOf[FeedService]).to(classOf[DefaultFeedService]).eagerly(),
     bind(classOf[LoginService]).to(classOf[DefaultLoginService]).eagerly(),
     bind(classOf[RegisterService]).to(classOf[DefaultRegisterService]).eagerly(),
-    bind(classOf[RegistrationCodeService]).to(classOf[DefaultRegistrationCodeService]).eagerly(),
-    bind(classOf[ClassroomService]).to(classOf[DefaultClassroomService]).eagerly()
+    bind(classOf[EditProfileService]).to(classOf[DefaultEditProfileService]).eagerly()
   )
 
   private def bindControllers(): Seq[Binding[_]] = Seq(
@@ -66,10 +64,7 @@ class ServiceBindings extends Module {
     bind(classOf[TeardownController]).to(classOf[DefaultTeardownController]).eagerly(),
     bind(classOf[DashboardController]).to(classOf[DefaultDashboardController]).eagerly(),
     bind(classOf[EditProfileController]).to(classOf[DefaultEditProfileController]).eagerly(),
-    bind(classOf[GenerateCodeController]).to(classOf[DefaultGenerateCodeController]).eagerly(),
-    bind(classOf[ClassroomController]).to(classOf[DefaultClassroomController]).eagerly(),
-    bind(classOf[HealthController]).to(classOf[DefaultHealthController]).eagerly(),
-    bind(classOf[FeatureController]).to(classOf[DefaultFeatureController]).eagerly()
+    bind(classOf[HealthController]).to(classOf[DefaultHealthController]).eagerly()
   )
 
   private def bindOther(): Seq[Binding[_]] = Seq(

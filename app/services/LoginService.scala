@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@ import java.util.UUID
 
 import com.cjwwdev.auth.models.CurrentUser
 import com.cjwwdev.implicits.ImplicitDataSecurity._
-import com.cjwwdev.security.obfuscation.Obfuscation._
 import com.cjwwdev.logging.Logging
+import com.cjwwdev.security.obfuscation.Obfuscation._
 import connectors._
 import javax.inject.Inject
 import models.{SessionUpdateSet, UserLogin}
 import play.api.mvc.{Request, Session}
 
-import scala.concurrent.{ExecutionContext => ExC, Future}
+import scala.concurrent.{Future, ExecutionContext => ExC}
 
 class DefaultLoginService @Inject()(val authConnector: AuthMicroserviceConnector,
                                     val sessionStoreConnector: SessionStoreConnector) extends LoginService {

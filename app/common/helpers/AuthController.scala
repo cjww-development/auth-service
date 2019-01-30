@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,12 @@ import scala.concurrent.ExecutionContext
 
 trait AuthController
   extends BaseController
-    with ControllerHelpers
     with UrlParser
     with AuthorisedAction {
 
   implicit val ec: ExecutionContext
+
+  val LOGIN_CALLBACK = controllers.login.routes.LoginController.show(None).url
 
   implicit def getLang(implicit request: Request[_]): Lang = supportedLangs.preferred(request.acceptLanguages)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2019 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,18 @@
 
 package services
 
-import connectors.AccountsMicroserviceConnector
+import connectors.AccountsConnector
 import enums.Registration
 import javax.inject.Inject
 import models.registration.{OrgRegistration, UserRegistration}
 import play.api.mvc.Request
 
-import scala.concurrent.{ExecutionContext => ExC, Future}
+import scala.concurrent.{Future, ExecutionContext => ExC}
 
-class DefaultRegisterService @Inject()(val accountsConnector: AccountsMicroserviceConnector) extends RegisterService
+class DefaultRegisterService @Inject()(val accountsConnector: AccountsConnector) extends RegisterService
 
 trait RegisterService {
-  val accountsConnector: AccountsMicroserviceConnector
+  val accountsConnector: AccountsConnector
 
   def registerIndividual(user : UserRegistration)(implicit req: Request[_], ec: ExC): Future[Registration.Value] = {
     for {
